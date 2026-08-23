@@ -1,0 +1,208 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo.png';
+
+const links = [
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
+  { href: '/reviews', label: 'Reviews' },
+  { href: '/insights', label: 'Insights' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">
+      <Image src={logo} alt="Tax for Taxi Drivers logo" width={44} height={44} />
+      <span class="brand-text"><b>Tax for Taxi Drivers</b><span>Tax made easy</span></span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      {links.map((link) => (
+        <a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined}>{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="nav-cta">
+      <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+    </div>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+      <span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav">
+    {links.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
+    <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(251, 250, 245, 0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand :global(img) {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .brand-text b {
+    display: block;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .brand-text span {
+    display: block;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 26px;
+    font-weight: 700;
+    font-size: 14.5px;
+  }
+
+  .nav-links a {
+    color: var(--ink-2);
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover,
+  .nav-links a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .nav-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    position: relative;
+  }
+
+  .nav-toggle span,
+  .nav-toggle span::before,
+  .nav-toggle span::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    height: 2px;
+    background: var(--ink);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-toggle span {
+    top: 19px;
+  }
+
+  .nav-toggle span::before {
+    top: -6px;
+  }
+
+  .nav-toggle span::after {
+    top: 6px;
+  }
+
+  .nav-toggle[aria-expanded='true'] span {
+    background: transparent;
+  }
+
+  .nav-toggle[aria-expanded='true'] span::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .nav-toggle[aria-expanded='true'] span::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 0 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-nav a {
+    padding: 12px 0;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  .mobile-nav .btn {
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .mobile-nav.is-open {
+    display: flex;
+  }
+
+  @media (max-width: 860px) {
+    .nav-links,
+    .nav-cta {
+      display: none;
+    }
+
+    .nav-toggle {
+      display: block;
+    }
+
+    .mobile-nav {
+      display: none;
+    }
+
+    .mobile-nav.is-open {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const mobileNav = document.querySelector<HTMLDivElement>('.mobile-nav');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = mobileNav?.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+  });
+</script>

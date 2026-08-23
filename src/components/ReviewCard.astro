@@ -1,0 +1,49 @@
+---
+interface Props {
+  quote: string;
+  attribution: string;
+  rating?: number;
+}
+
+const { quote, attribution, rating = 5 } = Astro.props;
+const stars = '&#9733;'.repeat(rating);
+---
+
+<div class="rv quote">
+  <span class="stars" set:html={stars} />
+  <p>&ldquo;{quote}&rdquo;</p>
+  <div class="who">&mdash; {attribution}</div>
+</div>
+
+<style>
+  .quote {
+    break-inside: avoid;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+
+  .quote .stars {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: block;
+    color: var(--yellow-deep);
+    letter-spacing: 2px;
+  }
+
+  .quote p {
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .quote .who {
+    margin-top: 12px;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--ink-2);
+    letter-spacing: 0.02em;
+  }
+</style>

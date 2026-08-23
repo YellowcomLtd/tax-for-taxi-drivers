@@ -1,0 +1,27 @@
+---
+interface Props {
+  label?: string;
+}
+
+const { label = 'Placeholder content — replace before launch.' } = Astro.props;
+---
+
+<div class="placeholder-note">
+  <span>&#9888;&#65039;</span> {label}
+</div>
+
+<style>
+  .placeholder-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff3cd;
+    border: 1px dashed #c99a1f;
+    color: #6b4e00;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+  }
+</style>

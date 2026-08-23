@@ -1,0 +1,110 @@
+---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+
+const services = [
+  {
+    icon: '🧾',
+    title: 'Self Assessment returns',
+    text: 'Registration, preparation and submission, done for you. Income & expenditure account, tax calculation and submission report included.',
+  },
+  {
+    icon: '💷',
+    title: 'Benefit claims & checks',
+    text: 'A full entitlement check for every client. Universal Credit, PIP, ESA, Tax Credits and Housing Benefit, claimed and appealed.',
+  },
+  {
+    icon: '⚖️',
+    title: 'HMRC penalty appeals',
+    text: "Hit with a penalty? We've helped clients appeal more than £100,000 in HMRC penalties. We'll take it on for you.",
+  },
+  {
+    icon: '📒',
+    title: 'Records made simple',
+    text: 'A free Income & Expenditure book, plus guidance on what to keep, so logging your daily expenses takes minutes.',
+  },
+  {
+    icon: '🏦',
+    title: 'Pensions & NIC',
+    text: 'State Pension forecasts and National Insurance contribution checks, so there are no gaps and no shocks later.',
+  },
+  {
+    icon: '🛡️',
+    title: 'HMRC investigations',
+    text: 'Under investigation or behind on returns? We deal with HMRC on your behalf, from first letter to final resolution.',
+  },
+];
+
+const items = compact ? services.slice(0, 3) : services;
+---
+
+<div class="cards">
+  {items.map((service) => (
+    <div class="rv card">
+      <div class="ico">{service.icon}</div>
+      <h3>{service.title}</h3>
+      <p>{service.text}</p>
+    </div>
+  ))}
+</div>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+
+  .ico {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--yellow-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 1px solid #f3e4a8;
+  }
+
+  .card h3 {
+    font-size: 19px;
+    margin: 18px 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .card p {
+    color: var(--ink-2);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 960px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

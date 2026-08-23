@@ -1,0 +1,161 @@
+---
+---
+
+<section class="section refer" id="refer">
+  <div class="wrap">
+    <div class="rv refer-in">
+      <div>
+        <span class="eyebrow">Refer a mate</span>
+        <h2 style="margin-top: 12px">Know a driver who dreads tax time?<br />Send them our way, pocket <em>&pound;50</em>.</h2>
+        <p class="lead2">Our best clients come from a word in the cab office. Refer any self-employed driver and you get &pound;50 cash when they join. They get a free first consultation.</p>
+        <div class="steps">
+          <div class="rstep"><div class="n">1</div><div><b>Give us a call</b><p>Tell us who you're referring, or pass them our number.</p></div></div>
+          <div class="rstep"><div class="n">2</div><div><b>They sign up</b><p>They start on any monthly plan. No catch, cancel anytime.</p></div></div>
+          <div class="rstep"><div class="n">3</div><div><b>You both win</b><p>You get &pound;50 cash once they complete their first payment. They get sorted with HMRC.</p></div></div>
+        </div>
+      </div>
+      <div class="rcard">
+        <span class="eyebrow" style="color: var(--yellow)">Your reward</span>
+        <div class="fifty">&pound;50 <small>cash</small></div>
+        <p class="fine">for every driver you refer who joins</p>
+        <a class="btn btn-y" href="tel:07799414972">Ring to refer a mate</a>
+      </div>
+    </div>
+    <p class="refnote rv">Referral reward paid once your referred driver completes their first monthly payment. Full terms provided on request.</p>
+  </div>
+</section>
+
+<style>
+  .refer-in {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 44px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .refer-in::before {
+    content: '';
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--yellow-soft), transparent 70%);
+  }
+
+  .refer h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    position: relative;
+  }
+
+  .refer h2 em {
+    font-style: normal;
+    color: var(--yellow-deep);
+  }
+
+  .refer .lead2 {
+    color: var(--ink-2);
+    font-weight: 500;
+    margin-top: 14px;
+    max-width: 38ch;
+    position: relative;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 26px;
+    position: relative;
+  }
+
+  .rstep {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .rstep .n {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    border-radius: 9px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .rstep b {
+    font-weight: 800;
+    font-size: 15px;
+  }
+
+  .rstep p {
+    font-size: 14px;
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  .rcard {
+    background: var(--ink);
+    border-radius: 20px;
+    padding: 34px 30px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .rcard .fifty {
+    font-weight: 800;
+    font-size: 64px;
+    color: var(--yellow);
+    line-height: 1;
+    margin-top: 14px;
+  }
+
+  .rcard .fifty small {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .rcard .fine {
+    color: #c3bdb1;
+    font-weight: 600;
+    font-size: 13.5px;
+    margin: 6px 0 22px;
+  }
+
+  .rcard .btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .refnote {
+    text-align: center;
+    color: var(--ink-3);
+    font-weight: 600;
+    font-size: 12.5px;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 960px) {
+    .refer-in {
+      grid-template-columns: 1fr;
+      padding: 32px;
+    }
+  }
+</style>

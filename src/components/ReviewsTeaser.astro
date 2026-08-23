@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import ReviewCard from './ReviewCard.astro';
+
+const allReviews = await getCollection('reviews');
+const teaser = allReviews.slice(0, 6);
+---
+
+<section class="section" id="reviews">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="rv"><span class="eyebrow">Genuine client reviews</span><h2 style="margin-top: 12px">Drivers who'd send a mate our way.</h2></div>
+      <p class="rv">Real comments from real clients. <a class="see-all" href="/reviews">See all reviews &rarr;</a></p>
+    </div>
+    <div class="rev-grid">
+      {teaser.map((review) => (
+        <ReviewCard quote={review.data.quote} attribution={review.data.attribution} rating={review.data.rating} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .rev-grid {
+    columns: 3;
+    column-gap: 20px;
+    margin-top: 40px;
+  }
+
+  .see-all {
+    font-weight: 700;
+    color: var(--ink);
+    border-bottom: 1.5px solid var(--yellow-deep);
+  }
+
+  @media (max-width: 960px) {
+    .rev-grid {
+      columns: 2;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rev-grid {
+      columns: 1;
+    }
+  }
+</style>

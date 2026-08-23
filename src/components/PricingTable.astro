@@ -1,0 +1,261 @@
+---
+const plans = [
+  { key: 'bronze', name: 'Bronze', price: 45 },
+  { key: 'silver', name: 'Silver', price: 50, featured: true },
+  { key: 'gold', name: 'Gold', price: 55 },
+];
+
+// Rows and tick data transcribed exactly from the client's supplied services/pricing grid.
+const rows: { label: string; ticks: [boolean, boolean, boolean]; highlight?: boolean }[] = [
+  { label: 'Register client for Self Assessment', ticks: [true, true, true] },
+  { label: 'Register as a client with HMRC', ticks: [true, true, true] },
+  { label: 'Supply an Income & Expenditure recording system', ticks: [true, true, true] },
+  { label: 'Prepare a Self Assessment tax return for HMRC', ticks: [true, true, true] },
+  { label: 'Prepare an Income & Expenditure account', ticks: [true, true, true] },
+  { label: 'Submit a Self Assessment tax return to HMRC', ticks: [true, true, true] },
+  { label: 'Supply a copy of HMRC tax return', ticks: [true, true, true] },
+  { label: 'Supply a copy of the Income & Expenditure account', ticks: [true, true, true] },
+  { label: 'Provide tax saving recommendations', ticks: [true, true, true] },
+  { label: 'Complete a HMRC tax check', ticks: [false, true, true] },
+  { label: 'Complete a pension forecast', ticks: [false, true, true] },
+  { label: 'Loss of earning calculations', ticks: [false, true, true] },
+  { label: 'Referrals to our Chartered Accountant', ticks: [false, true, true], highlight: true },
+  { label: 'Making Tax Digital tax returns', ticks: [false, true, true], highlight: true },
+  { label: 'Provide telephone support', ticks: [false, true, true], highlight: true },
+  { label: 'Provide accountancy services for HMRC investigations', ticks: [false, false, true], highlight: true },
+];
+
+const otherServices = [
+  { label: 'Consultations', price: '£50' },
+  { label: 'Setup Government Gateway account', price: '£100' },
+  { label: 'Letters', price: '£50' },
+  { label: 'State Pension forecast', price: '£150' },
+  { label: 'References', price: '£50' },
+  { label: 'Loss of earnings calculations', price: '£150' },
+  { label: 'Passport verification', price: '£50' },
+  { label: 'Making Tax Digital', price: 'Fees by arrangement' },
+  { label: 'HMRC tax checks', price: '£50' },
+];
+---
+
+<div class="pricing-scroll">
+  <table class="pricing">
+    <thead>
+      <tr>
+        <th class="row-label"><span class="sr-only">Service</span></th>
+        {plans.map((plan) => (
+          <th class:list={[plan.featured && 'featured']}>
+            {plan.featured && <span class="popular">Most popular</span>}
+            <div class="pname">{plan.name}</div>
+            <div class="price">&pound;{plan.price}<small>/mo</small></div>
+            <div class="from">by Direct Debit</div>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr class:list={[row.highlight && 'highlight']}>
+          <th scope="row" class="row-label">{row.label}</th>
+          {row.ticks.map((ticked, i) => (
+            <td class:list={[plans[i].featured && 'featured']}>
+              {ticked ? <span class="tick" aria-label="Included">&#10003;</span> : <span class="sr-only">Not included</span>}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<div class="other-services">
+  <h3>Other services</h3>
+  <ul>
+    {otherServices.map((item) => (
+      <li><span>{item.label}</span><b>{item.price}</b></li>
+    ))}
+  </ul>
+</div>
+
+<p class="fees-note rv">All plans by direct debit. Remember, your accountancy fees are tax deductible.</p>
+
+<style>
+  .pricing-scroll {
+    margin-top: 40px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--panel);
+  }
+
+  .pricing {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+  }
+
+  .pricing th,
+  .pricing td {
+    padding: 16px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row-label {
+    text-align: left;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--ink);
+    position: sticky;
+    left: 0;
+    background: var(--panel);
+    min-width: 260px;
+    z-index: 1;
+  }
+
+  thead .row-label {
+    background: var(--panel);
+  }
+
+  thead th {
+    position: relative;
+    padding-top: 24px;
+    min-width: 140px;
+  }
+
+  thead th.featured {
+    background: var(--yellow-soft);
+  }
+
+  .popular {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ink);
+    color: var(--yellow);
+    font-weight: 800;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .pname {
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .price {
+    font-weight: 800;
+    font-size: 30px;
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  .price small {
+    font-size: 14px;
+    color: var(--ink-2);
+    font-weight: 700;
+  }
+
+  .from {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+
+  tbody tr.highlight td,
+  tbody tr.highlight .row-label {
+    background: var(--yellow-soft);
+  }
+
+  tbody td.featured {
+    background: rgba(255, 196, 0, 0.08);
+  }
+
+  tbody tr.highlight td.featured {
+    background: rgba(255, 196, 0, 0.28);
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #2fae4e;
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .other-services {
+    margin-top: 44px;
+  }
+
+  .other-services h3 {
+    font-size: 22px;
+  }
+
+  .other-services ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 40px;
+    margin-top: 18px;
+  }
+
+  .other-services li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 14.5px;
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  .other-services li b {
+    color: var(--ink);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .fees-note {
+    text-align: center;
+    margin-top: 26px;
+    color: var(--ink-2);
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+
+  @media (max-width: 640px) {
+    .other-services ul {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

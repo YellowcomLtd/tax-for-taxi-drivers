@@ -1,0 +1,118 @@
+---
+---
+
+<section class="section promise" id="promise">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="rv">
+        <span class="eyebrow" style="color: var(--yellow)">Our difference</span>
+        <h2 style="margin-top: 12px">Two things every driver needs.<br /><em>One accountant who does both.</em></h2>
+      </div>
+    </div>
+    <div class="lanes">
+      <div class="rv lane">
+        <span class="tag">Lower bills</span>
+        <h3>We <u>minimise</u> your tax</h3>
+        <p>We claim every allowable expense, get your figures right the first time, and keep you the right side of HMRC. Realistic fees, no surprises.</p>
+        <div class="glow"></div>
+      </div>
+      <div class="rv lane">
+        <span class="tag">More support</span>
+        <h3>We <u>maximise</u> your benefits</h3>
+        <p>We're the accountant that also checks your entitlement to Universal Credit, PIP, ESA and Housing Benefit, then helps you claim and appeal.</p>
+        <div class="glow"></div>
+      </div>
+    </div>
+    <div class="rv first-note">First accountancy practice in Northern Ireland to help clients claim Universal Credit.</div>
+  </div>
+</section>
+
+<style>
+  .promise {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .promise h2 {
+    font-size: clamp(30px, 4vw, 46px);
+    color: #fff;
+  }
+
+  .promise h2 em {
+    font-style: normal;
+    color: var(--yellow);
+  }
+
+  .lanes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 38px;
+  }
+
+  .lane {
+    background: #1b1916;
+    border: 1px solid #2b2823;
+    border-radius: 18px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lane .tag {
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0e0d0c;
+    background: var(--yellow);
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 6px;
+  }
+
+  .lane h3 {
+    font-size: 28px;
+    margin: 18px 0 10px;
+    color: #fff;
+  }
+
+  .lane h3 u {
+    text-decoration: none;
+    color: var(--yellow);
+  }
+
+  .lane p {
+    color: #c3bdb1;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .lane .glow {
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 196, 0, 0.14), transparent 70%);
+  }
+
+  .first-note {
+    margin-top: 26px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: #e8e3d7;
+    font-weight: 600;
+    font-size: 15px;
+    border-left: 3px solid var(--yellow);
+    padding-left: 16px;
+  }
+
+  @media (max-width: 960px) {
+    .lanes {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

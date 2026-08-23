@@ -1,0 +1,143 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PlaceholderNote from '../components/PlaceholderNote.astro';
+import CtaBand from '../components/CtaBand.astro';
+import shopfront from '../assets/images/shopfront.jpg';
+import teamPhoto from '../assets/images/office-team-1.jpg';
+import consultPhoto from '../assets/images/office-consult-3.jpg';
+---
+
+<BaseLayout
+  title="About us"
+  description="Meet Tax for Taxi Drivers, a Belfast accountancy practice built around real, face-to-face relationships with self-employed drivers."
+>
+  <section class="section intro">
+    <div class="wrap">
+      <span class="eyebrow rv">About us</span>
+      <h1 class="rv">A Belfast accountant who actually knows your trade.</h1>
+      <PlaceholderNote label="Placeholder About Us copy — swap in the client's own wording once supplied." />
+      <p class="rv lead">
+        Tax for Taxi Drivers was set up to do one thing well: take the stress of Self Assessment, HMRC and benefit
+        entitlement off the shoulders of self-employed drivers across Belfast and Northern Ireland. No jargon, no
+        hourly surprises, just straight answers from people who sit down with you in person.
+      </p>
+    </div>
+  </section>
+
+  <section class="section split">
+    <div class="wrap split-grid">
+      <div class="rv">
+        <Image src={consultPhoto} alt="A client consultation in progress at the Tax for Taxi Drivers office" width={900} height={1150} />
+      </div>
+      <div class="rv">
+        <span class="eyebrow">Our approach</span>
+        <h2 style="margin-top: 12px">Face to face, not just a form.</h2>
+        <p>
+          Every client gets a proper conversation, not a portal login. We come to know your circumstances, your
+          family, and what you're entitled to, so nothing gets missed on your return or your benefit claims.
+        </p>
+        <p>
+          We're proud to be the first accountancy practice in Northern Ireland to help clients claim Universal
+          Credit alongside their Self Assessment, and we've helped clients appeal more than £100,000 in HMRC
+          penalties.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section split reverse">
+    <div class="wrap split-grid">
+      <div class="rv order-2">
+        <Image src={teamPhoto} alt="Members of the Tax for Taxi Drivers team in the Belfast office" width={900} height={1150} />
+      </div>
+      <div class="rv order-1">
+        <span class="eyebrow">Visit us</span>
+        <h2 style="margin-top: 12px">Based in Belfast, open for appointments.</h2>
+        <p>
+          Drop by the office for a free, no-obligation chat, or give us a ring and we'll talk you through what we
+          can do. Most clients are seen the same week.
+        </p>
+        <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section shopfront-band">
+    <div class="wrap">
+      <Image src={shopfront} alt="The Tax for Taxi Drivers shopfront in Belfast" width={1180} height={640} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .intro h1 {
+    font-size: clamp(34px, 5vw, 54px);
+    margin: 14px 0 22px;
+    max-width: 18ch;
+  }
+
+  .intro .lead {
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 60ch;
+    font-weight: 500;
+  }
+
+  .split-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .split-grid :global(img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .split h2 {
+    font-size: clamp(26px, 3.4vw, 38px);
+  }
+
+  .split p {
+    color: var(--ink-2);
+    font-weight: 500;
+    margin-top: 14px;
+    max-width: 46ch;
+  }
+
+  .split .btn {
+    margin-top: 24px;
+  }
+
+  .split.reverse .split-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .shopfront-band :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+  }
+
+  @media (max-width: 860px) {
+    .split-grid,
+    .split.reverse .split-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .order-1,
+    .order-2 {
+      order: initial;
+    }
+  }
+</style>

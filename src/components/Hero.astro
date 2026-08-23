@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import heroPhoto from '../assets/images/office-consult-1.jpg';
+---
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="rv">
+      <span class="eyebrow"><span class="dot"></span> Belfast &nbsp;&bull;&nbsp; Self-employed specialists &nbsp;&bull;&nbsp; 10+ years</span>
+      <h1>Tax made <span class="hl">easy</span> for taxi drivers.</h1>
+      <p class="lead">We prepare and submit your Self Assessment return, minimise what you owe, and check every benefit you're entitled to.</p>
+      <div class="hero-cta">
+        <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+        <a class="btn btn-ghost" href="/services">See services &amp; fees</a>
+      </div>
+      <div class="trust"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Trusted by hundreds of Belfast taxi drivers. Ask any of them.</div>
+    </div>
+
+    <div class="rv hero-photo">
+      <Image src={heroPhoto} alt="A client consultation at the Tax for Taxi Drivers office in Belfast" width={1000} height={1250} />
+      <div class="hero-badge">
+        <div class="hb-row"><span>Returns from</span><b>&pound;45/mo</b></div>
+        <div class="hb-row"><span>First consultation</span><b>Free</b></div>
+        <div class="hb-row"><span>Paid by</span><b>Direct debit</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding: 70px 0 40px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 54px;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(44px, 6.4vw, 80px);
+    margin: 22px 0 0;
+  }
+
+  .hero h1 .hl {
+    color: var(--ink);
+    background: linear-gradient(180deg, transparent 58%, var(--yellow) 58%);
+    padding: 0 0.06em;
+  }
+
+  .hero p.lead {
+    font-size: 19px;
+    color: var(--ink-2);
+    max-width: 33ch;
+    margin-top: 22px;
+    font-weight: 500;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+
+  .hero-cta .btn {
+    padding: 15px 26px;
+    font-size: 16px;
+  }
+
+  .trust {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 26px;
+    color: var(--ink-2);
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+
+  .stars {
+    color: var(--yellow-deep);
+    letter-spacing: 2px;
+    font-size: 16px;
+  }
+
+  .hero-photo {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+  }
+
+  .hero-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .hero-badge {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    background: rgba(20, 19, 16, 0.82);
+    backdrop-filter: blur(6px);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    color: #fff;
+  }
+
+  .hb-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #d8d3c6;
+  }
+
+  .hb-row + .hb-row {
+    border-top: 1px dashed rgba(255, 255, 255, 0.14);
+  }
+
+  .hb-row b {
+    color: var(--yellow);
+    font-weight: 800;
+    font-size: 15px;
+  }
+
+  @media (max-width: 960px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .hero-photo :global(img) {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 {
+      font-size: clamp(38px, 11vw, 56px);
+    }
+  }
+</style>

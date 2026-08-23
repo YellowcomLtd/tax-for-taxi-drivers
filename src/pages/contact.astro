@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaBand from '../components/CtaBand.astro';
+import PlaceholderNote from '../components/PlaceholderNote.astro';
+---
+
+<BaseLayout
+  title="Contact us"
+  description="Get in touch with Tax for Taxi Drivers in Belfast for a free, confidential chat about your Self Assessment or benefit claim."
+>
+  <section class="section intro">
+    <div class="wrap">
+      <span class="eyebrow rv">Get in touch</span>
+      <h1 class="rv">Let's talk about your tax.</h1>
+      <p class="rv lead">Ring, email, or drop by the office. First consultations are always free and confidential.</p>
+      <PlaceholderNote label="Full office address and opening hours to be confirmed with the client." />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .intro h1 {
+    font-size: clamp(34px, 5vw, 54px);
+    margin: 14px 0 12px;
+    max-width: 20ch;
+  }
+
+  .intro .lead {
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 55ch;
+    font-weight: 500;
+    margin-bottom: 18px;
+  }
+</style>
