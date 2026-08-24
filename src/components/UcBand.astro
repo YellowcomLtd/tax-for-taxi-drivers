@@ -1,13 +1,21 @@
 ---
+import { Image } from 'astro:assets';
+import photo from '../assets/images/office-consult-4.jpg';
 ---
 
 <section class="section uc">
-  <div class="wrap uc-in">
-    <div class="rv">
-      <h3>Working 30+ hours a week? You may qualify for Universal Credit.</h3>
-      <p>If you're a self-employed driver, you could be entitled, and we'd be delighted to help you claim it.</p>
+  <div class="wrap">
+    <div class="rv uc-card">
+      <div class="uc-photo">
+        <Image src={photo} alt="Going through a benefit entitlement check at the Tax for Taxi Drivers office" width={700} height={860} />
+      </div>
+      <div class="uc-content">
+        <span class="eyebrow" style="color: var(--yellow)">Universal Credit</span>
+        <h3>Working 30+ hours a week? You may qualify.</h3>
+        <p>If you're a self-employed driver, you could be entitled &mdash; and we'd be delighted to help you claim it.</p>
+        <a class="btn btn-y" href="tel:07366565000">Check my entitlement</a>
+      </div>
     </div>
-    <a class="rv btn btn-dark" href="tel:07366565000">Check my entitlement</a>
   </div>
 </section>
 
@@ -16,29 +24,59 @@
     background: var(--yellow);
   }
 
-  .uc-in {
+  .uc-card {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    overflow: hidden;
+  }
+
+  .uc-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .uc-content {
+    padding: 44px 48px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
   }
 
-  .uc h3 {
-    font-size: clamp(24px, 3.2vw, 36px);
-    color: var(--ink);
-    max-width: 20ch;
+  .uc-content h3 {
+    color: #fff;
+    font-size: clamp(24px, 3vw, 34px);
+    max-width: 15ch;
   }
 
-  .uc p {
-    color: #3d3626;
-    font-weight: 600;
-    max-width: 40ch;
+  .uc-content p {
+    color: #c3bdb1;
+    font-weight: 500;
+    max-width: 36ch;
+  }
+
+  .uc-content .btn {
+    align-self: flex-start;
     margin-top: 8px;
+    padding: 15px 26px;
+    font-size: 15.5px;
   }
 
-  .uc .btn {
-    padding: 16px 28px;
-    font-size: 16px;
+  @media (max-width: 760px) {
+    .uc-card {
+      grid-template-columns: 1fr;
+    }
+
+    .uc-photo :global(img) {
+      aspect-ratio: 16 / 9;
+    }
+
+    .uc-content {
+      padding: 32px;
+    }
   }
 </style>
