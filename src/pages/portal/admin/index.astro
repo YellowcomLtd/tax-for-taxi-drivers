@@ -1,0 +1,8 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import AdminDashboard from '../../../portal/components/AdminDashboard';
+---
+
+<PortalLayout title="Admin dashboard">
+  <AdminDashboard client:only="react" />
+</PortalLayout>

@@ -1,53 +1,27 @@
 ---
+import { getCollection } from 'astro:content';
+
 interface Props {
   compact?: boolean;
 }
 
 const { compact = false } = Astro.props;
 
-const services = [
-  {
-    icon: '🧾',
-    title: 'Self Assessment returns',
-    text: 'Registration, preparation and submission, done for you. Income & expenditure account, tax calculation and submission report included.',
-  },
-  {
-    icon: '💷',
-    title: 'Benefit claims & checks',
-    text: 'A full entitlement check for every client. Universal Credit, PIP, ESA, Tax Credits and Housing Benefit, claimed and appealed.',
-  },
-  {
-    icon: '⚖️',
-    title: 'HMRC penalty appeals',
-    text: "Hit with a penalty? We've helped clients appeal more than £100,000 in HMRC penalties. We'll take it on for you.",
-  },
-  {
-    icon: '📒',
-    title: 'Records made simple',
-    text: 'A free Income & Expenditure book, plus guidance on what to keep, so logging your daily expenses takes minutes.',
-  },
-  {
-    icon: '🏦',
-    title: 'Pensions & NIC',
-    text: 'State Pension forecasts and National Insurance contribution checks, so there are no gaps and no shocks later.',
-  },
-  {
-    icon: '🛡️',
-    title: 'HMRC investigations',
-    text: 'Under investigation or behind on returns? We deal with HMRC on your behalf, from first letter to final resolution.',
-  },
-];
+const all = (await getCollection('services'))
+  .filter((s) => s.data.card)
+  .sort((a, b) => a.data.order - b.data.order);
 
-const items = compact ? services.slice(0, 3) : services;
+const items = compact ? all.slice(0, 3) : all;
 ---
 
 <div class="cards">
   {items.map((service) => (
-    <div class="rv card">
-      <div class="ico">{service.icon}</div>
-      <h3>{service.title}</h3>
-      <p>{service.text}</p>
-    </div>
+    <a class="rv card" href={`/services/${service.id}`}>
+      <div class="ico" aria-hidden="true">{service.data.icon}</div>
+      <h3>{service.data.shortTitle}</h3>
+      <p>{service.data.cardText}</p>
+      <span class="more">Learn more</span>
+    </a>
   ))}
 </div>
 
@@ -65,6 +39,8 @@ const items = compact ? services.slice(0, 3) : services;
     border-radius: 18px;
     padding: 26px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
   }
 
   .card:hover {
@@ -94,6 +70,15 @@ const items = compact ? services.slice(0, 3) : services;
     color: var(--ink-2);
     font-size: 15px;
     font-weight: 500;
+    flex: 1;
+  }
+
+  .more {
+    margin-top: 14px;
+    font-weight: 800;
+    font-size: 13.5px;
+    border-bottom: 1.5px solid var(--yellow-deep);
+    align-self: flex-start;
   }
 
   @media (max-width: 960px) {

@@ -1,0 +1,8 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import SignFlow from '../../../portal/components/SignFlow';
+---
+
+<PortalLayout title="Counter-sign">
+  <SignFlow mode="admin" client:only="react" />
+</PortalLayout>

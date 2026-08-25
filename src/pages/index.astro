@@ -20,7 +20,7 @@ import CtaBand from '../components/CtaBand.astro';
     <div class="wrap">
       <div class="head-row">
         <div class="rv"><span class="eyebrow">What we do</span><h2 style="margin-top: 12px">More than just tax returns.</h2></div>
-        <p class="rv">Everything a self-employed driver needs, handled by people who've done it for a decade.</p>
+        <p class="rv">Everything a self-employed driver needs, handled by people who've done it for a decade. <a class="inline-link" href="/services">All services &amp; fees</a></p>
       </div>
       <ServiceCards />
     </div>
@@ -47,5 +47,11 @@ import CtaBand from '../components/CtaBand.astro';
 <style>
   .fees {
     background: var(--paper-2);
+  }
+
+  .inline-link {
+    font-weight: 800;
+    border-bottom: 1.5px solid var(--yellow-deep);
+    white-space: nowrap;
   }
 </style>

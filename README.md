@@ -13,10 +13,10 @@ Read [`CLAUDE.md`](./CLAUDE.md) first — it's the project brief and governs str
 ├── src/
 │   ├── assets/images/     # Client photography, processed through Astro's image pipeline
 │   ├── components/        # Reusable section components (Nav, Hero, PricingTable, ReviewCard, ...)
-│   ├── content/            # Content Collections: reviews/ and insights/ (Markdown entries)
-│   ├── content.config.ts # Schemas for the reviews and insights collections
+│   ├── content/            # Content Collections: reviews/, insights/, services/
+│   ├── content.config.ts # Schemas for the reviews, insights and services collections
 │   ├── layouts/           # BaseLayout.astro — shared head, nav, footer
-│   ├── pages/             # File-based routes (Home, About, Services, Reviews, Insights, Contact)
+│   ├── pages/             # File-based routes (Home, About, Services/[slug], Reviews, Insights, Contact)
 │   └── styles/global.css # Design tokens and shared base styles
 └── astro.config.mjs
 ```
@@ -35,6 +35,7 @@ Read [`CLAUDE.md`](./CLAUDE.md) first — it's the project brief and governs str
 
 - **A new review**: add a Markdown file to `src/content/reviews/` with `quote`, `attribution`, `rating`, and `source` frontmatter (see existing files for the shape). Set `featured: true` to make it render larger on the `/reviews` wordcloud.
 - **A new Insights post**: add a Markdown file to `src/content/insights/` with `title`, `description`, and `pubDate` frontmatter. Leave `draft: true` to keep it off the listing until ready.
+- **A new service page**: add a Markdown file to `src/content/services/` (see existing entries for frontmatter). Set `card: true` to show it on the homepage/services card grid. Use `relatedServices` / `relatedInsights` for cross-links.
 
 ## Known placeholders
 

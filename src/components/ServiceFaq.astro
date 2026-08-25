@@ -1,0 +1,86 @@
+---
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs: Faq[];
+}
+
+const { faqs } = Astro.props;
+---
+
+<section class="section faq">
+  <div class="wrap narrow">
+    <span class="eyebrow rv">Common questions</span>
+    <h2 class="rv" style="margin-top: 12px">FAQs</h2>
+    <div class="list">
+      {faqs.map((faq) => (
+        <details class="rv item">
+          <summary>{faq.question}</summary>
+          <p>{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    background: var(--paper-2);
+  }
+
+  .narrow {
+    max-width: 760px;
+  }
+
+  h2 {
+    font-size: clamp(28px, 3.6vw, 36px);
+  }
+
+  .list {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .item {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 4px 18px;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 14px 0;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '+';
+    float: right;
+    color: var(--ink-3);
+    font-weight: 800;
+  }
+
+  details[open] summary::after {
+    content: '–';
+  }
+
+  .item p {
+    color: var(--ink-2);
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.65;
+    padding-bottom: 16px;
+  }
+</style>

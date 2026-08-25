@@ -1,0 +1,8 @@
+---
+import PortalLayout from '../../portal/PortalLayout.astro';
+import LoginApp from '../../portal/components/LoginApp';
+---
+
+<PortalLayout title="Sign in">
+  <LoginApp client:only="react" />
+</PortalLayout>

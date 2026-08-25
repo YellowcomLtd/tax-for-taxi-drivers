@@ -1,0 +1,8 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import ClientSubmissionPage from '../../../portal/components/ClientSubmissionPage';
+---
+
+<PortalLayout title="Submission">
+  <ClientSubmissionPage client:only="react" />
+</PortalLayout>

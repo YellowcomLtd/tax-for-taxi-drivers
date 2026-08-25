@@ -1,0 +1,8 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import SignFlow from '../../../portal/components/SignFlow';
+---
+
+<PortalLayout title="Sign declaration">
+  <SignFlow mode="client" client:only="react" />
+</PortalLayout>

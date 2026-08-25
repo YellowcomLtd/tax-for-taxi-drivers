@@ -22,12 +22,23 @@ const year = 2026;
         <a href="/reviews">Reviews</a>
         <a href="/insights">Insights</a>
         <a href="/contact">Contact</a>
+        <a href="/portal">Client portal</a>
+      </div>
+      <div>
+        <h4>Popular services</h4>
+        <a href="/services/self-assessment">Self Assessment</a>
+        <a href="/services/making-tax-digital">Making Tax Digital</a>
+        <a href="/services/hmrc-tax-check">HMRC tax checks</a>
+        <a href="/services/benefit-claims">Benefit claims</a>
+        <a href="/services/hmrc-investigations">HMRC investigations</a>
       </div>
       <div>
         <h4>Get in touch</h4>
         <a href="tel:07799414972">07799 414972 (Michael)</a>
         <a href="tel:07366565000">07366 565000 (Office)</a>
         <a href="mailto:info@taxfortaxidrivers.co.uk">info@taxfortaxidrivers.co.uk</a>
+        <a href="/#refer">Refer a driver — £50</a>
+        <a href="/portal">Sign in to portal</a>
       </div>
     </div>
     <div class="foot-bar">
@@ -46,7 +57,7 @@ const year = 2026;
 
   .foot-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1.1fr 1.1fr;
     gap: 36px;
   }
 
@@ -133,7 +144,7 @@ const year = 2026;
     font-weight: 800;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .foot-grid {
       grid-template-columns: 1fr 1fr;
     }

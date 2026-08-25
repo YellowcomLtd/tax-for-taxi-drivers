@@ -1,0 +1,658 @@
+/* Portal-only styles — denser app UI on the same brand tokens */
+.portal-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 100% -10%, rgba(255, 196, 0, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(241, 239, 230, 0.9), transparent 50%),
+    var(--paper);
+}
+
+.portal-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-top {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(251, 250, 245, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.portal-top-in {
+  width: min(1120px, 94vw);
+  margin: 0 auto;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.portal-brand small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+.portal-demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink);
+  color: var(--yellow);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.portal-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portal-nav a,
+.portal-nav button.linkish {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.portal-nav a:hover,
+.portal-nav button.linkish:hover,
+.portal-nav a[aria-current='page'] {
+  color: var(--ink);
+  background: var(--yellow-soft);
+}
+
+.portal-main {
+  width: min(1120px, 94vw);
+  margin: 0 auto;
+  padding: 32px 0 64px;
+  flex: 1;
+}
+
+.portal-footer {
+  border-top: 1px solid var(--line);
+  padding: 18px 0 28px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.portal-footer .wrap {
+  width: min(1120px, 94vw);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.portal-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 24px;
+  box-shadow: 0 10px 30px -24px rgba(20, 19, 16, 0.35);
+}
+
+.portal-card h1,
+.portal-card h2 {
+  letter-spacing: -0.02em;
+}
+
+.portal-muted {
+  color: var(--ink-2);
+  font-weight: 500;
+  font-size: 14.5px;
+}
+
+.portal-grid-2 {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+}
+
+.portal-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat {
+  background: var(--paper-2);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.stat .label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.stat .value {
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+
+.badge-draft { background: #f1efe6; }
+.badge-submitted { background: #e8f1ff; color: #1e4b8c; border-color: #c9dbf7; }
+.badge-ready_to_sign { background: var(--yellow-soft); color: #6b4e00; border-color: #f3e4a8; }
+.badge-client_signed { background: #ede8ff; color: #4a2d8c; border-color: #d4c9f7; }
+.badge-signed { background: #e6f6ea; color: #1d6b36; border-color: #b7e4c3; }
+
+.month-remove {
+  margin-left: 6px;
+  border: none;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 0 4px;
+  vertical-align: middle;
+}
+
+.month-remove:hover {
+  color: #8a1f1a;
+}
+
+/* DocuSign-style signing envelope */
+.sign-envelope {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  min-height: 70vh;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.sign-sidebar {
+  background: var(--ink);
+  color: #fff;
+  padding: 28px 22px;
+}
+
+.sign-sidebar-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8f897d;
+  margin-bottom: 8px;
+}
+
+.sign-sidebar h1 {
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.sign-sidebar .portal-muted {
+  color: #b7b1a5;
+  font-size: 13px;
+}
+
+.sign-steps {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sign-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #8f897d;
+}
+
+.sign-steps li.active {
+  color: var(--yellow);
+}
+
+.sign-steps li.done {
+  color: #c3bdb1;
+}
+
+.sign-step-n {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #4a4740;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex: none;
+}
+
+.sign-steps li.active .sign-step-n {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--ink);
+}
+
+.sign-client-preview {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #2c2925;
+}
+
+.sign-client-preview img {
+  max-width: 100%;
+  height: 48px;
+  object-fit: contain;
+  filter: invert(1);
+  opacity: 0.9;
+}
+
+.sign-main {
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.sign-doc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sign-doc-viewer {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.sign-doc-viewer h2 {
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.sign-summary-table {
+  min-width: 0;
+  font-size: 13px;
+}
+
+.sign-totals {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.sign-field-placeholder {
+  margin-top: 24px;
+  padding: 16px;
+  border: 2px dashed var(--yellow-deep);
+  border-radius: 12px;
+  background: var(--yellow-soft);
+}
+
+.sign-field-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b4e00;
+}
+
+.sign-field-box {
+  margin-top: 8px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink-2);
+}
+
+.sign-legal section {
+  margin-bottom: 24px;
+}
+
+.sign-legal h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.sign-legal p,
+.sign-legal blockquote {
+  font-size: 14px;
+  color: var(--ink-2);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.sign-legal blockquote {
+  border-left: 3px solid var(--yellow);
+  padding-left: 14px;
+  margin: 12px 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.sign-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sign-check input {
+  margin-top: 3px;
+  width: auto;
+}
+
+.sig-pad {
+  margin-bottom: 20px;
+}
+
+.sig-pad-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sig-pad-head label {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.sig-clear {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.sig-canvas {
+  width: 100%;
+  height: 160px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.sig-hint {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.sign-otp-display {
+  font-size: 28px;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+.sign-upload-btn {
+  cursor: pointer;
+  position: relative;
+}
+
+.sign-doc-attachment {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sign-doc-img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.sign-done {
+  max-width: 640px;
+}
+
+@media (max-width: 860px) {
+  .sign-envelope {
+    grid-template-columns: 1fr;
+  }
+
+  .sign-sidebar {
+    padding: 20px 18px;
+  }
+
+  .sign-steps {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+}
+
+.portal-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.portal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 640px;
+}
+
+.portal-table th,
+.portal-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.portal-table th {
+  background: var(--paper-2);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.portal-table tr:last-child td {
+  border-bottom: none;
+}
+
+.portal-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.portal-table input[type='number'],
+.portal-form input,
+.portal-form textarea,
+.portal-form select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 600;
+  background: #fff;
+  color: var(--ink);
+}
+
+.portal-table input[type='number'] {
+  width: 110px;
+  text-align: right;
+  padding: 8px 10px;
+}
+
+.portal-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+
+.portal-form .field {
+  margin-bottom: 16px;
+}
+
+.portal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.portal-alert {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.portal-alert-info {
+  background: var(--yellow-soft);
+  border: 1px solid #f3e4a8;
+  color: #6b4e00;
+}
+
+.portal-alert-success {
+  background: #e6f6ea;
+  border: 1px solid #b7e4c3;
+  color: #1d6b36;
+}
+
+.portal-alert-error {
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  color: #8a1f1a;
+}
+
+.otp-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.otp-box input {
+  letter-spacing: 0.35em;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  max-width: 180px;
+}
+
+.demo-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.demo-accounts button {
+  text-align: left;
+  border: 1px dashed var(--line);
+  background: var(--paper-2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.demo-accounts button:hover {
+  border-color: var(--yellow-deep);
+  background: var(--yellow-soft);
+}
+
+.demo-accounts strong {
+  display: block;
+  font-size: 13.5px;
+}
+
+.demo-accounts span {
+  font-size: 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.placeholder-flag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a1f1a;
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 860px) {
+  .portal-grid-2,
+  .portal-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

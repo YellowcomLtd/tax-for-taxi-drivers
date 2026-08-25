@@ -8,9 +8,15 @@ const links = [
   { href: '/reviews', label: 'Reviews' },
   { href: '/insights', label: 'Insights' },
   { href: '/contact', label: 'Contact' },
+  { href: '/portal', label: 'Client portal' },
 ];
 
 const currentPath = Astro.url.pathname;
+
+function isCurrent(href: string) {
+  if (href === '/') return currentPath === '/';
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
 ---
 
 <header class="nav">
@@ -22,7 +28,7 @@ const currentPath = Astro.url.pathname;
 
     <nav class="nav-links" aria-label="Primary">
       {links.map((link) => (
-        <a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined}>{link.label}</a>
+        <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
       ))}
     </nav>
 
@@ -30,16 +36,47 @@ const currentPath = Astro.url.pathname;
       <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
     </div>
 
-    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
-      <span></span>
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Open menu"
+    >
+      <span class="nav-toggle-box" aria-hidden="true">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </span>
     </button>
   </div>
 
-  <div class="mobile-nav" id="mobile-nav">
-    {links.map((link) => (
-      <a href={link.href}>{link.label}</a>
-    ))}
-    <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <div class="wrap mobile-nav-in">
+      <nav class="mobile-nav-links" aria-label="Mobile primary">
+        {links.map((link) => (
+          <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
+        ))}
+      </nav>
+
+      <div class="mobile-contact">
+        <p class="mobile-contact-label">Get in touch</p>
+        <a class="mobile-contact-item" href="tel:07799414972">
+          <span>Michael</span>
+          <strong>07799 414972</strong>
+        </a>
+        <a class="mobile-contact-item" href="tel:07366565000">
+          <span>Office</span>
+          <strong>07366 565000</strong>
+        </a>
+        <a class="mobile-contact-item" href="mailto:info@taxfortaxidrivers.co.uk">
+          <span>Email</span>
+          <strong>info@taxfortaxidrivers.co.uk</strong>
+        </a>
+      </div>
+
+      <a class="btn btn-y mobile-cta" href="tel:07799414972">Ring Michael now</a>
+    </div>
   </div>
 </header>
 
@@ -48,7 +85,7 @@ const currentPath = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(251, 250, 245, 0.86);
+    background: rgba(251, 250, 245, 0.92);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
@@ -57,7 +94,7 @@ const currentPath = Astro.url.pathname;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 16px;
     padding: 12px 0;
   }
 
@@ -65,6 +102,7 @@ const currentPath = Astro.url.pathname;
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
   }
 
   .brand :global(img) {
@@ -72,6 +110,11 @@ const currentPath = Astro.url.pathname;
     height: 44px;
     border-radius: 50%;
     object-fit: cover;
+    flex: none;
+  }
+
+  .brand-text {
+    min-width: 0;
   }
 
   .brand-text b {
@@ -109,72 +152,180 @@ const currentPath = Astro.url.pathname;
 
   .nav-toggle {
     display: none;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
     background: var(--panel);
+    padding: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .nav-toggle:hover {
+    border-color: #d6d0c2;
+    background: var(--paper-2);
+  }
+
+  .nav-toggle:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+    border-color: var(--ink);
+  }
+
+  .nav-toggle[aria-expanded='true'] {
+    border-color: var(--ink);
+    background: var(--yellow-soft);
+  }
+
+  .nav-toggle-box {
     position: relative;
+    display: block;
+    width: 20px;
+    height: 14px;
   }
 
-  .nav-toggle span,
-  .nav-toggle span::before,
-  .nav-toggle span::after {
-    content: '';
+  .nav-toggle-bar {
     position: absolute;
-    left: 9px;
-    right: 9px;
+    left: 0;
+    right: 0;
     height: 2px;
+    border-radius: 2px;
     background: var(--ink);
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.22s ease, opacity 0.18s ease, top 0.22s ease;
   }
 
-  .nav-toggle span {
-    top: 19px;
+  .nav-toggle-bar:nth-child(1) {
+    top: 0;
   }
 
-  .nav-toggle span::before {
-    top: -6px;
-  }
-
-  .nav-toggle span::after {
+  .nav-toggle-bar:nth-child(2) {
     top: 6px;
   }
 
-  .nav-toggle[aria-expanded='true'] span {
-    background: transparent;
+  .nav-toggle-bar:nth-child(3) {
+    top: 12px;
   }
 
-  .nav-toggle[aria-expanded='true'] span::before {
-    transform: translateY(6px) rotate(45deg);
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(1) {
+    top: 6px;
+    transform: rotate(45deg);
   }
 
-  .nav-toggle[aria-expanded='true'] span::after {
-    transform: translateY(-6px) rotate(-45deg);
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(3) {
+    top: 6px;
+    transform: rotate(-45deg);
   }
 
   .mobile-nav {
     display: none;
-    flex-direction: column;
-    gap: 4px;
-    padding: 8px 0 20px;
     border-top: 1px solid var(--line);
+    background: var(--paper);
+    max-height: min(78vh, 640px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .mobile-nav a {
-    padding: 12px 0;
+  .mobile-nav-in {
+    padding: 12px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-nav-links a {
+    display: block;
+    padding: 14px 0;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 17px;
     color: var(--ink);
+    border-bottom: 1px solid var(--line);
   }
 
-  .mobile-nav .btn {
+  .mobile-nav-links a[aria-current='page'] {
+    color: var(--ink);
+    box-shadow: inset 3px 0 0 var(--yellow-deep);
+    padding-left: 12px;
+  }
+
+  .mobile-nav-links a:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+  }
+
+  .mobile-contact {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-contact-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 2px;
+  }
+
+  .mobile-contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    transition: border-color 0.2s ease, transform 0.18s ease;
+  }
+
+  .mobile-contact-item span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .mobile-contact-item strong {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+    word-break: break-word;
+  }
+
+  .mobile-contact-item:hover,
+  .mobile-contact-item:focus-visible {
+    border-color: var(--yellow-deep);
+  }
+
+  .mobile-contact-item:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+  }
+
+  .mobile-cta {
     justify-content: center;
     margin-top: 8px;
-  }
-
-  .mobile-nav.is-open {
-    display: flex;
+    min-height: 48px;
+    width: 100%;
   }
 
   @media (max-width: 860px) {
@@ -184,25 +335,79 @@ const currentPath = Astro.url.pathname;
     }
 
     .nav-toggle {
+      display: inline-flex;
+    }
+
+    .mobile-nav:not([hidden]) {
       display: block;
     }
+  }
 
-    .mobile-nav {
-      display: none;
+  @media (max-width: 420px) {
+    .brand-text b {
+      font-size: 15px;
     }
 
-    .mobile-nav.is-open {
-      display: flex;
+    .brand-text span {
+      letter-spacing: 0.12em;
+    }
+
+    .brand :global(img) {
+      width: 40px;
+      height: 40px;
+    }
+
+    .nav-in {
+      gap: 10px;
+      padding: 10px 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-toggle-bar,
+    .mobile-contact-item {
+      transition: none;
     }
   }
 </style>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
-  const mobileNav = document.querySelector<HTMLDivElement>('.mobile-nav');
+  const mobileNav = document.querySelector<HTMLElement>('#mobile-nav');
+
+  function setOpen(open: boolean) {
+    if (!toggle || !mobileNav) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    mobileNav.hidden = !open;
+    document.body.classList.toggle('nav-lock', open);
+  }
 
   toggle?.addEventListener('click', () => {
-    const isOpen = mobileNav?.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    setOpen(open);
+  });
+
+  mobileNav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Close if viewport grows past the mobile breakpoint
+  const mq = window.matchMedia('(min-width: 861px)');
+  mq.addEventListener('change', (event) => {
+    if (event.matches) setOpen(false);
   });
 </script>
+
+<style is:global>
+  body.nav-lock {
+    overflow: hidden;
+  }
+</style>

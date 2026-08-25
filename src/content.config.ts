@@ -25,4 +25,30 @@ const insights = defineCollection({
   }),
 });
 
-export const collections = { reviews, insights };
+const services = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/services' }),
+  schema: z.object({
+    title: z.string(),
+    shortTitle: z.string(),
+    description: z.string(),
+    icon: z.string(),
+    order: z.number(),
+    /** Show on homepage / services index card grid */
+    card: z.boolean().default(true),
+    cardText: z.string(),
+    heroLead: z.string(),
+    planNote: z.string().optional(),
+    relatedServices: z.array(z.string()).default([]),
+    relatedInsights: z.array(z.string()).default([]),
+    faqs: z
+      .array(
+        z.object({
+          question: z.string(),
+          answer: z.string(),
+        })
+      )
+      .default([]),
+  }),
+});
+
+export const collections = { reviews, insights, services };

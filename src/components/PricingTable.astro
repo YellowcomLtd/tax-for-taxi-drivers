@@ -27,15 +27,15 @@ const rows: { label: string; ticks: [boolean, boolean, boolean]; highlight?: boo
 
 // Order matches the client's supplied list exactly (grouped by price, low to high).
 const otherServices = [
-  { label: 'Consultations', price: '£50', blurb: 'A dedicated one-to-one sit-down to talk through your specific tax question.' },
+  { label: 'Consultations', price: '£50', blurb: 'A dedicated one-to-one sit-down to talk through your specific tax question.', href: '/contact' },
   { label: 'Letters', price: '£50', blurb: 'Official correspondence drafted and sent to HMRC or another body on your behalf.' },
   { label: 'References', price: '£50', blurb: "A reference letter for a mortgage, tenancy or loan application." },
   { label: 'Passport verification', price: '£50', blurb: 'Identity document verification for an official application.' },
-  { label: 'HMRC tax checks', price: '£50', blurb: 'The tax check now required before renewing your taxi licence.' },
+  { label: 'HMRC tax checks', price: '£50', blurb: 'The tax check now required before renewing your taxi licence.', href: '/services/hmrc-tax-check' },
   { label: 'Setup Government Gateway account', price: '£100', blurb: 'We create and configure your HMRC online account, ready to use.' },
-  { label: 'State Pension forecast', price: '£150', blurb: 'A full check of your National Insurance record and what it means for your pension.' },
-  { label: 'Loss of earnings calculations', price: '£150', blurb: 'A calculated figure for insurance, legal or compensation claims.' },
-  { label: 'Making Tax Digital', price: 'By arrangement', blurb: 'Getting your setup MTD-compliant, priced to how you actually work.' },
+  { label: 'State Pension forecast', price: '£150', blurb: 'A full check of your National Insurance record and what it means for your pension.', href: '/services/pensions-national-insurance' },
+  { label: 'Loss of earnings calculations', price: '£150', blurb: 'A calculated figure for insurance, legal or compensation claims.', href: '/services/loss-of-earnings' },
+  { label: 'Making Tax Digital', price: 'By arrangement', blurb: 'Getting your setup MTD-compliant, priced to how you actually work.', href: '/services/making-tax-digital' },
 ];
 ---
 
@@ -79,16 +79,29 @@ const otherServices = [
   </div>
   <div class="other-grid">
     {otherServices.map((item) => (
-      <div class="rv other-card">
-        <div class="body">
-          <h4>{item.label}</h4>
-          <p>{item.blurb}</p>
+      item.href ? (
+        <a class="rv other-card" href={item.href}>
+          <div class="body">
+            <h4>{item.label}</h4>
+            <p>{item.blurb}</p>
+          </div>
+          <div class="price-bar">
+            <span class={item.price.startsWith('£') ? 'amount' : 'amount amount-text'}>{item.price}</span>
+            {item.price.startsWith('£') && <span class="unit">one-off</span>}
+          </div>
+        </a>
+      ) : (
+        <div class="rv other-card">
+          <div class="body">
+            <h4>{item.label}</h4>
+            <p>{item.blurb}</p>
+          </div>
+          <div class="price-bar">
+            <span class={item.price.startsWith('£') ? 'amount' : 'amount amount-text'}>{item.price}</span>
+            {item.price.startsWith('£') && <span class="unit">one-off</span>}
+          </div>
         </div>
-        <div class="price-bar">
-          <span class={item.price.startsWith('£') ? 'amount' : 'amount amount-text'}>{item.price}</span>
-          {item.price.startsWith('£') && <span class="unit">one-off</span>}
-        </div>
-      </div>
+      )
     ))}
   </div>
   <p class="other-cta rv">Need one of these? Ring Michael on <a href="tel:07799414972">07799 414972</a> and we'll sort it.</p>
@@ -253,6 +266,8 @@ const otherServices = [
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: inherit;
+    text-decoration: none;
   }
 
   .other-card:hover {
