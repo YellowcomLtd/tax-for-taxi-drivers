@@ -1,19 +1,60 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBand from '../components/CtaBand.astro';
-import PlaceholderNote from '../components/PlaceholderNote.astro';
+
+const contacts = [
+  { label: 'Michael', value: '07799 414972', href: 'tel:07799414972' },
+  { label: 'Cathy', value: '07366 565000', href: 'tel:07366565000' },
+  { label: 'Office', value: '02890 132083', href: 'tel:02890132083' },
+  { label: 'Email', value: 'info@taxfortaxidrivers.co.uk', href: 'mailto:info@taxfortaxidrivers.co.uk' },
+];
 ---
 
 <BaseLayout
   title="Contact us"
-  description="Get in touch with Tax for Taxi Drivers in Belfast for a free, confidential chat about your Self Assessment or benefit claim."
+  description="We minimise your tax and maximise your benefits. Contact Tax for Taxi Drivers in Belfast - Unit 4, North City Business Centre, 2 Duncairn Gardens, BT15 2GG."
 >
   <section class="section intro">
     <div class="wrap">
       <span class="eyebrow rv">Get in touch</span>
-      <h1 class="rv">Let's talk about your tax.</h1>
-      <p class="rv lead">Ring, email, or drop by the office. First consultations are always free and confidential.</p>
-      <PlaceholderNote label="Full office address and opening hours to be confirmed with the client." />
+      <h1 class="rv">We minimise your tax and maximise your benefits.</h1>
+      <p class="rv lead">
+        Ring, email, or drop by the office. We'll talk through what we can do for you and give you a clear idea of the fees.
+      </p>
+    </div>
+  </section>
+
+  <section class="section details">
+    <div class="wrap details-grid">
+      <div class="rv card">
+        <h2>Visit us</h2>
+        <address>
+          Unit 4, North City Business Centre<br />
+          2 Duncairn Gardens<br />
+          Belfast<br />
+          BT15 2GG
+        </address>
+        <a
+          class="map-link"
+          href="https://www.google.com/maps/search/?api=1&query=Unit+4+North+City+Business+Centre+2+Duncairn+Gardens+Belfast+BT15+2GG"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open in Google Maps
+        </a>
+      </div>
+
+      <div class="rv card">
+        <h2>Contact details</h2>
+        <ul class="contact-list">
+          {contacts.map((item) => (
+            <li>
+              <span class="label">{item.label}</span>
+              <a href={item.href}>{item.value}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -24,7 +65,7 @@ import PlaceholderNote from '../components/PlaceholderNote.astro';
   .intro h1 {
     font-size: clamp(34px, 5vw, 54px);
     margin: 14px 0 12px;
-    max-width: 20ch;
+    max-width: 18ch;
   }
 
   .intro .lead {
@@ -32,6 +73,86 @@ import PlaceholderNote from '../components/PlaceholderNote.astro';
     color: var(--ink-2);
     max-width: 55ch;
     font-weight: 500;
-    margin-bottom: 18px;
+  }
+
+  .details {
+    padding-top: 0;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 28px 26px;
+  }
+
+  .card h2 {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 16px;
+  }
+
+  address {
+    font-style: normal;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  .map-link {
+    display: inline-block;
+    margin-top: 18px;
+    font-weight: 800;
+    font-size: 14px;
+    border-bottom: 1.5px solid var(--yellow-deep);
+  }
+
+  .contact-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .contact-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .contact-list .label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .contact-list a {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .contact-list a:hover {
+    color: var(--ink);
+    border-bottom: 1.5px solid var(--yellow-deep);
+    align-self: start;
+  }
+
+  @media (max-width: 720px) {
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

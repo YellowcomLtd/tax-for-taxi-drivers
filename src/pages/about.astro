@@ -1,38 +1,41 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PlaceholderNote from '../components/PlaceholderNote.astro';
 import CtaBand from '../components/CtaBand.astro';
 import shopfront from '../assets/images/shopfront.jpg';
 import teamPhoto from '../assets/images/office-team-1.jpg';
 import consultPhoto from '../assets/images/office-consult-3.jpg';
-import introPhoto from '../assets/images/office-consult-2.jpg';
+import michaelBio from '../assets/images/michael-bio.jpg';
 
 const stats = [
   { value: '10+', label: 'Years helping Belfast drivers with tax' },
-  { value: '£100,000+', label: 'In HMRC penalties successfully appealed for clients' },
+  { value: '3,000+', label: 'Tax returns submitted successfully' },
   { value: '1st', label: 'Accountancy practice in NI to help clients claim Universal Credit' },
 ];
 ---
 
 <BaseLayout
   title="About us"
-  description="Meet Tax for Taxi Drivers, a Belfast accountancy practice built around real, face-to-face relationships with self-employed drivers."
+  description="Tax for Taxi Drivers was set up by Michael, a Belfast accountant who was a taxi driver for 10 years. Over 3,000 tax returns submitted successfully."
 >
   <section class="section intro">
     <div class="wrap intro-grid">
       <div class="rv">
         <span class="eyebrow">About us</span>
-        <h1>A Belfast accountant who actually knows your trade.</h1>
-        <PlaceholderNote label="Placeholder About Us copy - swap in the client's own wording once supplied." />
+        <h1>A Belfast accountant who was a taxi driver.</h1>
         <p class="lead">
-          Tax for Taxi Drivers was set up to do one thing well: take the stress of Self Assessment, HMRC and benefit
-          entitlement off the shoulders of self-employed drivers across Belfast and Northern Ireland. No jargon, no
-          hourly surprises, just straight answers from people who sit down with you in person.
+          Tax for Taxi Drivers was set up by Michael who was a taxi driver for 10 years. The goal was to do one thing:
+          take the stress out of tax returns and make tax easy. We have 10 years' experience of preparing tax returns
+          and have submitted more than 3,000 successfully.
         </p>
       </div>
-      <div class="rv photo-frame">
-        <Image src={introPhoto} alt="A member of the Tax for Taxi Drivers team going through paperwork with a client" width={900} height={1150} />
+      <div class="rv photo-frame feature">
+        <Image
+          src={michaelBio}
+          alt="Michael, founder of Tax for Taxi Drivers"
+          width={1024}
+          height={680}
+        />
       </div>
     </div>
   </section>
@@ -114,7 +117,7 @@ const stats = [
   .intro h1 {
     font-size: clamp(34px, 5vw, 54px);
     margin: 14px 0 18px;
-    max-width: 15ch;
+    max-width: 16ch;
   }
 
   .intro .lead {
@@ -139,6 +142,12 @@ const stats = [
     border-radius: var(--radius-lg);
     border: 1px solid var(--line);
     box-shadow: var(--shadow);
+  }
+
+  .photo-frame.feature :global(img) {
+    aspect-ratio: 3 / 4;
+    object-position: center top;
+    background: #1a1a1a;
   }
 
   .photo-frame.accent::before {
