@@ -6,18 +6,27 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="rv">
-      <span class="eyebrow"><span class="dot"></span> Belfast &nbsp;&bull;&nbsp; Self-employed specialists &nbsp;&bull;&nbsp; 10+ years</span>
-      <h1>Tax made <span class="hl">easy</span> for taxi drivers.</h1>
-      <p class="lead">We prepare and submit your Self Assessment return, minimise what you owe, and check every benefit you're entitled to.</p>
+      <h1>
+        <span class="brand-line">Tax for Taxi Drivers</span>
+        <span class="tagline">Tax Made Easy</span>
+      </h1>
+      <p class="subhead">Specialists in Tax Returns for the Self Employed for more than 10 years</p>
+      <p class="lead">We prepare and submit your Self Assessment Tax Returns — minimise your tax liability and check your benefit entitlements.</p>
+      <div class="hero-phones">
+        <a href="tel:07799414972"><span>Michael</span><b>07799 414972</b></a>
+        <a href="tel:07366565000"><span>Cathy</span><b>07366 565000</b></a>
+        <a href="tel:02890132083"><span>Office</span><b>02890 132083</b></a>
+      </div>
       <div class="hero-cta">
-        <a class="btn btn-y" href="tel:07799414972">Ring 07799 414972</a>
+        <a class="btn btn-y" href="tel:07799414972">Ring Michael</a>
         <a class="btn btn-ghost" href="/services">See services &amp; fees</a>
       </div>
-      <div class="trust"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Trusted by hundreds of Belfast taxi drivers. Ask any of them.</div>
+      <div class="trust"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Trusted by hundreds of taxi drivers in N.Ireland — ask them.</div>
     </div>
 
     <div class="rv hero-photo">
-      <Image src={heroPhoto} alt="A client consultation at the Tax for Taxi Drivers office in Belfast" width={1000} height={1250} />
+      {/* Placeholder until Michael supplies the replacement hero photograph */}
+      <Image src={heroPhoto} alt="Tax for Taxi Drivers team — replacement photograph pending from client" width={1000} height={1250} />
       <div class="hero-badge">
         <div class="hb-row"><span>Returns from</span><b>&pound;45/mo</b></div>
         <div class="hb-row"><span>First consultation</span><b>Free</b></div>
@@ -41,29 +50,86 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
   }
 
   .hero h1 {
-    font-size: clamp(44px, 6.4vw, 80px);
-    margin: 22px 0 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .hero h1 .hl {
+  .hero h1 .brand-line {
+    display: block;
+    font-size: clamp(36px, 5.2vw, 62px);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+  }
+
+  .hero h1 .tagline {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
     color: var(--ink);
     background: linear-gradient(180deg, transparent 58%, var(--yellow) 58%);
-    padding: 0 0.06em;
+    padding: 0 0.08em;
+    line-height: 1.15;
+  }
+
+  .subhead {
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-2);
+    max-width: 42ch;
+    line-height: 1.45;
   }
 
   .hero p.lead {
-    font-size: 19px;
+    font-size: 18px;
     color: var(--ink-2);
-    max-width: 33ch;
-    margin-top: 22px;
+    max-width: 38ch;
+    margin-top: 14px;
     font-weight: 500;
+  }
+
+  .hero-phones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .hero-phones a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-weight: 700;
+  }
+
+  .hero-phones span {
+    min-width: 72px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 800;
+  }
+
+  .hero-phones b {
+    font-size: 18px;
+    color: var(--ink);
+    border-bottom: 1.5px solid var(--yellow-deep);
+  }
+
+  .hero-phones a:hover b {
+    color: var(--yellow-deep);
   }
 
   .hero-cta {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
-    margin-top: 30px;
+    margin-top: 26px;
   }
 
   .hero-cta .btn {
@@ -85,6 +151,7 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
     color: var(--yellow-deep);
     letter-spacing: 2px;
     font-size: 16px;
+    flex: none;
   }
 
   .hero-photo {
@@ -146,8 +213,16 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
   }
 
   @media (max-width: 640px) {
-    .hero h1 {
-      font-size: clamp(38px, 11vw, 56px);
+    .hero {
+      padding: 48px 0 28px;
+    }
+
+    .hero h1 .brand-line {
+      font-size: clamp(30px, 9vw, 44px);
+    }
+
+    .hero-phones b {
+      font-size: 16.5px;
     }
   }
 </style>
