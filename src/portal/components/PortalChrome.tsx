@@ -95,7 +95,7 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
       <main className="portal-main">{children}</main>
       <footer className="portal-footer">
         <div className="wrap">
-          <span>Demo only — no live HMRC, MailGun, or Supabase connection yet.</span>
+          <span>Demo only - no live HMRC, MailGun, or Supabase connection yet.</span>
           <span>Signed-in as {session.email}</span>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import heroPhoto from '../assets/images/office-consult-1.jpg';
+import heroPhoto from '../assets/images/hero-team.jpg';
 ---
 
 <section class="hero">
@@ -11,22 +11,21 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
         <span class="tagline">Tax Made Easy</span>
       </h1>
       <p class="subhead">Specialists in Tax Returns for the Self Employed for more than 10 years</p>
-      <p class="lead">We prepare and submit your Self Assessment Tax Returns — minimise your tax liability and check your benefit entitlements.</p>
-      <div class="hero-phones">
-        <a href="tel:07799414972"><span>Michael</span><b>07799 414972</b></a>
-        <a href="tel:07366565000"><span>Cathy</span><b>07366 565000</b></a>
-        <a href="tel:02890132083"><span>Office</span><b>02890 132083</b></a>
-      </div>
+      <p class="lead">We prepare and submit your Self Assessment Tax Returns - minimise your tax liability and check your benefit entitlements.</p>
       <div class="hero-cta">
-        <a class="btn btn-y" href="tel:07799414972">Ring Michael</a>
+        <a class="btn btn-y" href="tel:07799414972">Ring Michael &middot; 07799 414972</a>
         <a class="btn btn-ghost" href="/services">See services &amp; fees</a>
       </div>
-      <div class="trust"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Trusted by hundreds of taxi drivers in N.Ireland — ask them.</div>
+      <p class="hero-alt">
+        Or speak to Cathy on <a href="tel:07366565000">07366 565000</a>
+        <span aria-hidden="true">&middot;</span>
+        Office <a href="tel:02890132083">02890 132083</a>
+      </p>
+      <div class="trust"><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Trusted by hundreds of taxi drivers in N.Ireland - ask them.</div>
     </div>
 
     <div class="rv hero-photo">
-      {/* Placeholder until Michael supplies the replacement hero photograph */}
-      <Image src={heroPhoto} alt="Tax for Taxi Drivers team — replacement photograph pending from client" width={1000} height={1250} />
+      <Image src={heroPhoto} alt="The Tax for Taxi Drivers team in their Belfast office" width={1000} height={1250} />
       <div class="hero-badge">
         <div class="hb-row"><span>Returns from</span><b>&pound;45/mo</b></div>
         <div class="hb-row"><span>First consultation</span><b>Free</b></div>
@@ -92,39 +91,6 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
     font-weight: 500;
   }
 
-  .hero-phones {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 24px;
-  }
-
-  .hero-phones a {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    font-weight: 700;
-  }
-
-  .hero-phones span {
-    min-width: 72px;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    font-weight: 800;
-  }
-
-  .hero-phones b {
-    font-size: 18px;
-    color: var(--ink);
-    border-bottom: 1.5px solid var(--yellow-deep);
-  }
-
-  .hero-phones a:hover b {
-    color: var(--yellow-deep);
-  }
-
   .hero-cta {
     display: flex;
     gap: 14px;
@@ -135,6 +101,29 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
   .hero-cta .btn {
     padding: 15px 26px;
     font-size: 16px;
+  }
+
+  .hero-alt {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  .hero-alt a {
+    color: var(--ink-2);
+    border-bottom: 1.5px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .hero-alt a:hover {
+    color: var(--ink);
+    border-bottom-color: var(--yellow-deep);
+  }
+
+  .hero-alt span {
+    margin: 0 6px;
   }
 
   .trust {
@@ -221,8 +210,9 @@ import heroPhoto from '../assets/images/office-consult-1.jpg';
       font-size: clamp(30px, 9vw, 44px);
     }
 
-    .hero-phones b {
-      font-size: 16.5px;
+    .hero-cta .btn {
+      width: 100%;
+      justify-content: center;
     }
   }
 </style>

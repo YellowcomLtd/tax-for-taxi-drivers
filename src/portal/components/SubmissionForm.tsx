@@ -340,7 +340,7 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
       <div style={{ marginTop: 28 }}>
         <h2 style={{ fontSize: 18, marginBottom: 8 }}>Supporting files</h2>
         <p className="portal-muted" style={{ marginBottom: 10 }}>
-          Demo only — filenames recorded locally.
+          Demo only - filenames recorded locally.
         </p>
         {!readOnly && <input type="file" multiple onChange={(e) => onFilePick(e.target.files)} />}
         <ul style={{ marginTop: 12, paddingLeft: 18 }}>

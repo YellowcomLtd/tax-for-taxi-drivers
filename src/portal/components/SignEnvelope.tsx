@@ -88,7 +88,7 @@ export default function SignEnvelope({ mode }: Props) {
       <PortalChrome requireRole="client" active="client">
         <div className="portal-alert portal-alert-info">
           Not ready to sign yet. Status: <StatusBadge status={submission.status} />
-          {submission.status === 'client_signed' && ' — waiting for accountant counter-signature.'}
+          {submission.status === 'client_signed' && ' - waiting for accountant counter-signature.'}
         </div>
       </PortalChrome>
     );
@@ -208,7 +208,7 @@ export default function SignEnvelope({ mode }: Props) {
           id: uid('notice'),
           at: signedAt,
           to: 'admin@taxfortaxidrivers.co.uk',
-          subject: `Client signed — ${client.fullName}`,
+          subject: `Client signed - ${client.fullName}`,
           body: `${client.fullName} signed ${submission.periodLabel}. Awaiting your counter-signature.`,
         });
       });
@@ -251,7 +251,7 @@ export default function SignEnvelope({ mode }: Props) {
             id: uid('notice'),
             at: signedAt,
             to: session.email,
-            subject: `Counter-signed — ${client.fullName}`,
+            subject: `Counter-signed - ${client.fullName}`,
             body: `Document locked. Hash ${sig.documentHash.slice(0, 12)}…`,
           }
         );
@@ -422,7 +422,7 @@ export default function SignEnvelope({ mode }: Props) {
           {step === 'verify' && (
             <form onSubmit={completeSign}>
               <div className="portal-alert portal-alert-info">
-                <strong>Demo verification email</strong> — code for {session.email}:
+                <strong>Demo verification email</strong> - code for {session.email}:
                 <div className="sign-otp-display">{pendingCode}</div>
               </div>
               <div className="portal-form">

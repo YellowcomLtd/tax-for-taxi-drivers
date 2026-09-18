@@ -22,12 +22,12 @@ faqs:
   - question: "Is MTD included in your monthly plans?"
     answer: "Making Tax Digital tax returns are included on Silver and Gold. Setup can also be priced by arrangement if you need help getting systems ready."
   - question: "Do I still need an annual Self Assessment return?"
-    answer: "The rhythm changes under MTD — quarterly updates plus a final declaration. We keep you on the right timetable for your situation and explain what's changing."
+    answer: "The rhythm changes under MTD - quarterly updates plus a final declaration. We keep you on the right timetable for your situation and explain what's changing."
 ---
 
 Making Tax Digital for Income Tax (MTD IT) is one of the biggest changes to self-employed tax in years. Instead of one annual return habit, many drivers will need **digital records**, **quarterly updates**, and a **final declaration**.
 
-We're based in Belfast and help taxi drivers across Northern Ireland prepare early — not in the week before the first mandated quarter.
+We're based in Belfast and help taxi drivers across Northern Ireland prepare early - not in the week before the first mandated quarter.
 
 ## Does MTD apply to you?
 
@@ -43,7 +43,7 @@ If you're unsure, [ring us](/contact) with a recent return or a rough turnover f
 - Keeping your position tidy alongside any remaining [Self Assessment](/services/self-assessment) obligations during the transition
 - Avoiding the penalty traps that come with missed quarterly updates
 
-MTD setup is also available **by arrangement** on our à la carte list — useful if you need systems help before you join a monthly plan.
+MTD setup is also available **by arrangement** on our à la carte list - useful if you need systems help before you join a monthly plan.
 
 ## Why drivers leave this too late
 

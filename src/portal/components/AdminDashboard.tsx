@@ -92,7 +92,7 @@ export default function AdminDashboard() {
                 <tr key={u.id}>
                   <td style={{ fontWeight: 700 }}>{u.fullName}</td>
                   <td>{u.email}</td>
-                  <td>{u.tradeType ? tradeLabel(u.tradeType) : '—'}</td>
+                  <td>{u.tradeType ? tradeLabel(u.tradeType) : ' - '}</td>
                   <td>{subs.filter((s) => s.userId === u.id).length}</td>
                 </tr>
               ))}

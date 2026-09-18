@@ -175,15 +175,15 @@ export default function LoginApp() {
             <p className="portal-muted">Password for all accounts: <strong>{DEMO_PASSWORD}</strong></p>
             <div className="demo-accounts">
               <button type="button" onClick={() => fill('admin@taxfortaxidrivers.co.uk')}>
-                <strong>Admin — Michael</strong>
+                <strong>Admin - Michael</strong>
                 <span>admin@taxfortaxidrivers.co.uk · full contacts &amp; bulk email</span>
               </button>
               <button type="button" onClick={() => fill('james.driver@example.com')}>
-                <strong>Client — James (taxi)</strong>
+                <strong>Client - James (taxi)</strong>
                 <span>james.driver@example.com · ready-to-sign submission seeded</span>
               </button>
               <button type="button" onClick={() => fill('sara.beauty@example.com')}>
-                <strong>Client — Sara (beautician)</strong>
+                <strong>Client - Sara (beautician)</strong>
                 <span>sara.beauty@example.com · draft with beautician categories</span>
               </button>
             </div>

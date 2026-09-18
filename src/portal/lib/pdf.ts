@@ -46,7 +46,7 @@ export function buildSignedDocumentHtml(opts: {
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8" />
-<title>Signed MTD declaration — ${escapeHtml(sub.periodLabel)}</title>
+<title>Signed MTD declaration - ${escapeHtml(sub.periodLabel)}</title>
 <style>
   @media print { body { margin: 0; } .no-print { display: none; } }
   body { font-family: Georgia, serif; color: #141310; max-width: 860px; margin: 40px auto; padding: 0 24px; line-height: 1.5; }
@@ -70,9 +70,9 @@ export function buildSignedDocumentHtml(opts: {
 </style>
 </head>
 <body>
-  <div class="banner no-print"><strong>DEMO DOCUMENT</strong> — Use your browser Print → Save as PDF for a PDF copy.</div>
-  <div class="locked">🔒 LOCKED — Fully signed &amp; counter-signed</div>
-  <h1>Making Tax Digital — signed declaration</h1>
+  <div class="banner no-print"><strong>DEMO DOCUMENT</strong> - Use your browser Print → Save as PDF for a PDF copy.</div>
+  <div class="locked">🔒 LOCKED - Fully signed &amp; counter-signed</div>
+  <h1>Making Tax Digital - signed declaration</h1>
   <p class="meta">
     ${escapeHtml(client.fullName)} · ${escapeHtml(client.email)} · ${tradeLabel(sub.tradeType)}<br/>
     Period: <strong>${escapeHtml(sub.periodLabel)}</strong> · Completed ${formatDate(adminSignature.signedAt)}

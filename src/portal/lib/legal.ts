@@ -1,4 +1,4 @@
-/** Placeholder legal copy — swap when client approves final wording. */
+/** Placeholder legal copy - swap when client approves final wording. */
 
 export const PRIVACY_POLICY = `Tax for Taxi Drivers processes your personal and financial information to prepare Making Tax Digital submissions and related accountancy services.
 
@@ -13,7 +13,7 @@ export const TERMS_CONDITIONS = `By signing electronically you confirm that:
 • You understand this electronic signature is legally equivalent to a handwritten signature when accompanied by a verified audit trail.
 • You have read and accept our privacy policy.
 
-Placeholder terms — final version to be approved by the client before launch.`;
+Placeholder terms - final version to be approved by the client before launch.`;
 
 export const ADMIN_COUNTER_SIGN_TERMS = `By counter-signing you confirm that:
 

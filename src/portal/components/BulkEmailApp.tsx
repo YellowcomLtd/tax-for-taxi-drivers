@@ -45,7 +45,7 @@ export default function BulkEmailApp() {
         });
       });
     });
-    setSentMsg(`Demo send complete — ${recipients.length} clients (MailGun will replace this).`);
+    setSentMsg(`Demo send complete - ${recipients.length} clients (MailGun will replace this).`);
     setSubject('');
     setBody('');
     sync();

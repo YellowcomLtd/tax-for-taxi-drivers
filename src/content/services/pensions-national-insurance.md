@@ -6,7 +6,7 @@ icon: "🏦"
 order: 5
 card: true
 cardText: "State Pension forecasts and National Insurance contribution checks, so there are no gaps and no shocks later."
-heroLead: "State Pension forecasts and National Insurance checks for self-employed taxi drivers — so there are no gaps and no shocks later."
+heroLead: "State Pension forecasts and National Insurance checks for self-employed taxi drivers - so there are no gaps and no shocks later."
 planNote: "Pension forecasts included on Silver and Gold. Also available as a one-off (£150)."
 relatedServices:
   - self-assessment
@@ -17,16 +17,16 @@ relatedInsights:
   - five-tax-mistakes-taxi-drivers-make
 faqs:
   - question: "Do self-employed taxi drivers pay National Insurance?"
-    answer: "Yes — Class 2 and/or Class 4 depending on your profits. Gaps in your NIC record can affect your State Pension. We check where you stand."
+    answer: "Yes - Class 2 and/or Class 4 depending on your profits. Gaps in your NIC record can affect your State Pension. We check where you stand."
   - question: "What's a State Pension forecast?"
     answer: "A forecast shows what you might get based on your National Insurance record so far, and whether you need more qualifying years. We complete this on Silver and Gold, or as a one-off."
   - question: "Can you help drivers across Northern Ireland?"
-    answer: "Yes. We're based in Belfast and work with drivers across NI — and further afield by phone and email."
+    answer: "Yes. We're based in Belfast and work with drivers across NI - and further afield by phone and email."
 ---
 
 Self-employed drivers often focus on the next tax bill and leave the State Pension alone until it's almost too late. National Insurance gaps, years of low profits, or periods off the road can all change what you'll get later.
 
-We complete **State Pension forecasts** and **NIC contribution checks** so taxi drivers in Belfast and Northern Ireland know where they stand — with time to act if needed.
+We complete **State Pension forecasts** and **NIC contribution checks** so taxi drivers in Belfast and Northern Ireland know where they stand - with time to act if needed.
 
 ## Who should get a forecast
 
@@ -39,7 +39,7 @@ Read more in our insight: [State Pension forecasts for self-employed drivers](/i
 
 ## What's included
 
-On **Silver** and **Gold** monthly plans, a pension forecast is part of the package. Prefer a one-off? State Pension forecasts are also available à la carte at **£150** — see [services & fees](/services).
+On **Silver** and **Gold** monthly plans, a pension forecast is part of the package. Prefer a one-off? State Pension forecasts are also available à la carte at **£150** - see [services & fees](/services).
 
 We'll explain the result in plain English: what your record shows, what it means for your pension age, and whether voluntary contributions or other steps are worth discussing.
 

@@ -6,7 +6,7 @@ icon: "📒"
 order: 4
 card: true
 cardText: "A free Income & Expenditure book, plus guidance on what to keep, so logging your daily expenses takes minutes."
-heroLead: "A free income & expenditure recording system and clear guidance on what to keep — so logging daily taxi expenses takes minutes, not evenings."
+heroLead: "A free income & expenditure recording system and clear guidance on what to keep - so logging daily taxi expenses takes minutes, not evenings."
 planNote: "Recording system included on Bronze, Silver and Gold."
 relatedServices:
   - self-assessment
@@ -22,12 +22,12 @@ faqs:
   - question: "Do I need fancy accounting software?"
     answer: "Not for everyone. We start with a practical recording system. If Making Tax Digital applies to you, we'll talk through compatible digital options."
   - question: "Does this help with benefits as well as tax?"
-    answer: "Yes. The same figures often support Universal Credit and other claims — messy books make both tax and benefits harder."
+    answer: "Yes. The same figures often support Universal Credit and other claims - messy books make both tax and benefits harder."
 ---
 
 Good records are the difference between a calm tax year and a scramble in January. For taxi drivers in Belfast and across Northern Ireland, that means capturing mixed income streams and everyday running costs without turning every shift into admin.
 
-We supply an **income & expenditure recording system** on every monthly plan, plus guidance on what to keep — so logging expenses takes minutes.
+We supply an **income & expenditure recording system** on every monthly plan, plus guidance on what to keep - so logging expenses takes minutes.
 
 ## What we help you track
 

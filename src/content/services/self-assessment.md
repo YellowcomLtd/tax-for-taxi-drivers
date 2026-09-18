@@ -6,7 +6,7 @@ icon: "🧾"
 order: 1
 card: true
 cardText: "Registration, preparation and submission, done for you. Income & expenditure account, tax calculation and submission report included."
-heroLead: "From your first HMRC registration to a filed return — handled for self-employed taxi, PHV and private-hire drivers across Belfast and Northern Ireland."
+heroLead: "From your first HMRC registration to a filed return - handled for self-employed taxi, PHV and private-hire drivers across Belfast and Northern Ireland."
 planNote: "Included on Bronze, Silver and Gold monthly plans."
 relatedServices:
   - income-expenditure-records
@@ -18,14 +18,14 @@ relatedInsights:
   - five-tax-mistakes-taxi-drivers-make
 faqs:
   - question: "Do I need Self Assessment if I drive for Uber, Bolt or a Belfast taxi firm?"
-    answer: "If you're self-employed — including most PHV and private-hire drivers — you usually need to register for Self Assessment and file a return each year. We register you with HMRC and prepare the return for you."
+    answer: "If you're self-employed - including most PHV and private-hire drivers - you usually need to register for Self Assessment and file a return each year. We register you with HMRC and prepare the return for you."
   - question: "Can you help if I've never filed a tax return before?"
     answer: "Yes. We register you for Self Assessment, set up your records, and submit your first return. First consultations are free and confidential."
   - question: "Do you work with drivers outside Belfast?"
     answer: "We're based in Belfast and work with drivers across Northern Ireland. We can also help drivers further afield by phone and email."
 ---
 
-Self Assessment is the backbone of tax for self-employed taxi drivers. Whether you drive a Belfast black taxi, a private-hire vehicle, or take jobs through apps, HMRC expects a clear picture of what you earned and what you spent — and a return filed on time.
+Self Assessment is the backbone of tax for self-employed taxi drivers. Whether you drive a Belfast black taxi, a private-hire vehicle, or take jobs through apps, HMRC expects a clear picture of what you earned and what you spent - and a return filed on time.
 
 Tax for Taxi Drivers handles the full process for drivers across Belfast and Northern Ireland: registration, income and expenditure accounts, the tax calculation, and submission to HMRC.
 
@@ -48,11 +48,11 @@ On every monthly plan we:
 - Give you copies of both the return and the account
 - Provide tax-saving recommendations based on how you actually work
 
-Silver and Gold add extras such as [HMRC tax checks](/services/hmrc-tax-check), pension forecasts, MTD returns, and telephone support — see [full pricing](/services).
+Silver and Gold add extras such as [HMRC tax checks](/services/hmrc-tax-check), pension forecasts, MTD returns, and telephone support - see [full pricing](/services).
 
 ## Why local matters
 
-Taxi work in Belfast and across NI has its own patterns: shift work, mixed cash and card, vehicle costs, licensing renewals, and platform income. We build returns around how drivers here actually earn — not a generic self-employment template.
+Taxi work in Belfast and across NI has its own patterns: shift work, mixed cash and card, vehicle costs, licensing renewals, and platform income. We build returns around how drivers here actually earn - not a generic self-employment template.
 
 ## Deadlines that matter
 
