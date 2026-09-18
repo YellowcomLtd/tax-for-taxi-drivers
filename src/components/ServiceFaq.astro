@@ -6,28 +6,45 @@ interface Faq {
 
 interface Props {
   faqs: Faq[];
+  /** When true, render without the full-bleed section wrapper (for page layouts). */
+  embedded?: boolean;
 }
 
-const { faqs } = Astro.props;
+const { faqs, embedded = false } = Astro.props;
 ---
 
-<section class="section faq">
-  <div class="wrap narrow">
-    <span class="eyebrow rv">Common questions</span>
-    <h2 class="rv" style="margin-top: 12px">FAQs</h2>
+{embedded ? (
+  <div class="faq faq-embedded">
+    <span class="eyebrow">Common questions</span>
+    <h2 style="margin-top: 12px">FAQs</h2>
     <div class="list">
       {faqs.map((faq) => (
-        <details class="rv item">
+        <details class="item">
           <summary>{faq.question}</summary>
           <p>{faq.answer}</p>
         </details>
       ))}
     </div>
   </div>
-</section>
+) : (
+  <section class="section faq">
+    <div class="wrap narrow">
+      <span class="eyebrow rv">Common questions</span>
+      <h2 class="rv" style="margin-top: 12px">FAQs</h2>
+      <div class="list">
+        {faqs.map((faq) => (
+          <details class="rv item">
+            <summary>{faq.question}</summary>
+            <p>{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
 
 <style>
-  .faq {
+  .faq:not(.faq-embedded) {
     background: var(--paper-2);
   }
 
@@ -36,7 +53,7 @@ const { faqs } = Astro.props;
   }
 
   h2 {
-    font-size: clamp(28px, 3.6vw, 36px);
+    font-size: clamp(26px, 3.4vw, 34px);
   }
 
   .list {
@@ -73,7 +90,7 @@ const { faqs } = Astro.props;
   }
 
   details[open] summary::after {
-    content: '–';
+    content: '-';
   }
 
   .item p {
