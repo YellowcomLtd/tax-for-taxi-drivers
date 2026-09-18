@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Placeholder image">
+  <rect width="1600" height="900" fill="#f4f1e8"/>
+  <rect x="420" y="140" width="760" height="620" rx="28" fill="#fbfaf5" stroke="#d8d3c6" stroke-width="3"/>
+  <rect x="420" y="140" width="760" height="110" rx="28" fill="#1c1b18"/>
+  <rect x="420" y="220" width="760" height="30" fill="#1c1b18"/>
+  <circle cx="520" cy="195" r="18" fill="#ffc400"/>
+  <circle cx="1080" cy="195" r="18" fill="#ffc400"/>
+  <g fill="#e8e2d4">
+    <rect x="500" y="320" width="90" height="70" rx="10"/>
+    <rect x="620" y="320" width="90" height="70" rx="10"/>
+    <rect x="740" y="320" width="90" height="70" rx="10"/>
+    <rect x="860" y="320" width="90" height="70" rx="10"/>
+    <rect x="980" y="320" width="90" height="70" rx="10"/>
+    <rect x="500" y="420" width="90" height="70" rx="10"/>
+    <rect x="620" y="420" width="90" height="70" rx="10"/>
+    <rect x="860" y="420" width="90" height="70" rx="10"/>
+    <rect x="980" y="420" width="90" height="70" rx="10"/>
+    <rect x="500" y="520" width="90" height="70" rx="10"/>
+    <rect x="620" y="520" width="90" height="70" rx="10"/>
+    <rect x="740" y="520" width="90" height="70" rx="10"/>
+    <rect x="860" y="520" width="90" height="70" rx="10"/>
+  </g>
+  <rect x="740" y="420" width="90" height="70" rx="10" fill="#ffc400"/>
+  <text x="800" y="820" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="800" letter-spacing="4" fill="#6b4e00">PLACEHOLDER — SWAP BEFORE LAUNCH</text>
+</svg>

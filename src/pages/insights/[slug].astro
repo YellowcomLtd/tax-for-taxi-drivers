@@ -1,7 +1,10 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import InsightCover from '../../components/InsightCover.astro';
+import InsightSidebar from '../../components/InsightSidebar.astro';
 import CtaBand from '../../components/CtaBand.astro';
+import { getInsightCover, getInsightRelatedServices } from '../../lib/insightCovers';
 
 export async function getStaticPaths() {
   const posts = await getCollection('insights');
@@ -15,35 +18,131 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const cover = getInsightCover(post.id, post.data.cover);
+const relatedServices = getInsightRelatedServices(post.id, post.data.relatedServices);
+
+const site = Astro.site?.href ?? 'https://www.taxfortaxidrivers.co.uk';
+const pageUrl = new URL(`/insights/${post.id}`, site).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', site).href },
+      { '@type': 'ListItem', position: 2, name: 'Insights', item: new URL('/insights', site).href },
+      { '@type': 'ListItem', position: 3, name: post.data.title, item: pageUrl },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.pubDate.toISOString(),
+    url: pageUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'Tax for Taxi Drivers',
+      url: site,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Tax for Taxi Drivers',
+      url: site,
+    },
+  },
+];
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
-  <article class="section post">
-    <div class="wrap narrow">
-      <a class="back" href="/insights">&larr; All insights</a>
-      {post.data.placeholder && <span class="badge">Coming soon</span>}
-      <time datetime={post.data.pubDate.toISOString()}>{dateFormat.format(post.data.pubDate)}</time>
-      <h1>{post.data.title}</h1>
-      <div class="prose">
-        <Content />
+<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd}>
+  <article>
+    <header class="article-head">
+      <div class="wrap head-inner">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/insights">Insights</a>
+          <span aria-hidden="true">/</span>
+          <span>Article</span>
+        </nav>
+
+        <div class="meta">
+          <time datetime={post.data.pubDate.toISOString()}>{dateFormat.format(post.data.pubDate)}</time>
+          {post.data.placeholder && <span class="badge">Coming soon</span>}
+          <span class="badge placeholder-badge">Placeholder cover</span>
+        </div>
+
+        <h1>{post.data.title}</h1>
+        <p class="standfirst">{post.data.description}</p>
       </div>
+    </header>
+
+    <div class="wrap cover-wrap">
+      <InsightCover src={cover} featured />
     </div>
+
+    <section class="section body">
+      <div class="wrap layout">
+        <div class="main">
+          <div class="prose">
+            <Content />
+          </div>
+        </div>
+
+        <InsightSidebar currentId={post.id} relatedServiceIds={relatedServices} />
+      </div>
+    </section>
   </article>
 
   <CtaBand />
 </BaseLayout>
 
 <style>
-  .narrow {
-    max-width: 720px;
+  .article-head {
+    background:
+      linear-gradient(180deg, var(--paper-2) 0%, var(--paper) 100%);
+    border-bottom: 1px solid var(--line);
+    padding: 40px 0 28px;
   }
 
-  .back {
-    display: inline-block;
+  .head-inner {
+    max-width: min(820px, 92vw);
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
     font-weight: 700;
-    font-size: 14px;
-    color: var(--ink-2);
+    color: var(--ink-3);
     margin-bottom: 18px;
+  }
+
+  .crumbs a {
+    color: var(--ink-2);
+  }
+
+  .crumbs a:hover {
+    color: var(--ink);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  time {
+    font-weight: 800;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   .badge {
@@ -57,22 +156,49 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'lo
     text-transform: uppercase;
     padding: 4px 10px;
     border-radius: 999px;
-    margin-bottom: 10px;
   }
 
-  time {
-    display: block;
-    font-weight: 700;
-    font-size: 12.5px;
+  .placeholder-badge {
+    background: #f4f1ea;
+    border-color: var(--line);
     color: var(--ink-3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 4px;
   }
 
   h1 {
-    font-size: clamp(30px, 4.4vw, 44px);
-    margin: 10px 0 30px;
+    font-size: clamp(30px, 4.6vw, 46px);
+    max-width: 22ch;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+
+  .standfirst {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink-2);
+    max-width: 52ch;
+    line-height: 1.55;
+    border-left: 3px solid var(--yellow);
+    padding-left: 16px;
+  }
+
+  .cover-wrap {
+    margin-top: -8px;
+    padding-bottom: 8px;
+    max-width: min(980px, 92vw);
+  }
+
+  .body {
+    padding-top: 40px;
+    padding-bottom: 72px;
+    background: var(--paper);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 48px;
+    align-items: start;
   }
 
   .prose {
@@ -80,6 +206,7 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'lo
     font-size: 17px;
     font-weight: 500;
     line-height: 1.75;
+    max-width: 68ch;
   }
 
   .prose :global(p) {
@@ -90,6 +217,7 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'lo
     color: var(--ink);
     font-size: 26px;
     margin: 40px 0 16px;
+    letter-spacing: -0.015em;
   }
 
   .prose :global(h3) {
@@ -127,5 +255,16 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'lo
     margin: 24px 0;
     color: var(--ink);
     font-weight: 600;
+  }
+
+  @media (max-width: 980px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .cover-wrap {
+      max-width: min(1180px, 92vw);
+    }
   }
 </style>

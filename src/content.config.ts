@@ -22,6 +22,9 @@ const insights = defineCollection({
     pubDate: z.coerce.date(),
     draft: z.boolean().default(false),
     placeholder: z.boolean().default(false),
+    /** Placeholder cover variant until real photography is supplied */
+    cover: z.enum(['desk', 'forms', 'calendar', 'notes', 'laptop']).optional(),
+    relatedServices: z.array(z.string()).default([]),
   }),
 });
 

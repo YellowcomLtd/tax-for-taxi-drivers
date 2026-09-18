@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { PLACEHOLDER_IMAGE_ALT } from '../lib/insightCovers';
+
+interface Props {
+  src: ImageMetadata;
+  alt?: string;
+  /** Larger featured treatment on article pages */
+  featured?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  alt = PLACEHOLDER_IMAGE_ALT,
+  featured = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<figure class:list={['insight-cover', featured && 'featured', className]} data-placeholder="true">
+  <Image
+    src={src}
+    alt={alt}
+    width={featured ? 1400 : 800}
+    height={featured ? 788 : 450}
+    class="cover-img"
+  />
+  <figcaption class="placeholder-flag">
+    <span class="dot" aria-hidden="true"></span>
+    Placeholder image — swap before launch
+  </figcaption>
+</figure>
+
+<style>
+  .insight-cover {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+  }
+
+  .insight-cover.featured {
+    border-radius: 20px;
+  }
+
+  .cover-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .placeholder-flag {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(28, 27, 24, 0.88);
+    color: #f3ead0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 196, 0, 0.35);
+    pointer-events: none;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--yellow);
+    flex: none;
+  }
+</style>
