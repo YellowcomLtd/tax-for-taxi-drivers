@@ -8,13 +8,14 @@ import ServiceFaq from '../../components/ServiceFaq.astro';
 import ReferBand from '../../components/ReferBand.astro';
 import CtaBand from '../../components/CtaBand.astro';
 
-import consult1 from '../../assets/images/office-consult-1.jpg';
-import consult2 from '../../assets/images/office-consult-2.jpg';
-import consult3 from '../../assets/images/office-consult-3.jpg';
-import consult4 from '../../assets/images/office-consult-4.jpg';
-import team from '../../assets/images/office-team-1.jpg';
-import shopfront from '../../assets/images/shopfront.jpg';
-import heroTeam from '../../assets/images/hero-team.jpg';
+import peopleConsult from '../../assets/images/heroes/people-consult.jpg';
+import peopleMichael from '../../assets/images/heroes/people-michael-notes.jpg';
+import peopleCouple from '../../assets/images/heroes/people-couple.jpg';
+import peopleDeskMeeting from '../../assets/images/heroes/people-desk-meeting.jpg';
+import peopleTeamWomen from '../../assets/images/heroes/people-team-women.jpg';
+import peopleTeamThree from '../../assets/images/heroes/people-team-three.jpg';
+import deskPaperwork from '../../assets/images/heroes/desk-paperwork.jpg';
+import deskForms from '../../assets/images/heroes/desk-forms.jpg';
 
 export async function getStaticPaths() {
   const services = await getCollection('services');
@@ -24,21 +25,62 @@ export async function getStaticPaths() {
   }));
 }
 
-const heroMap: Record<string, ImageMetadata> = {
-  'self-assessment': consult1,
-  'benefit-claims': consult3,
-  'hmrc-penalty-appeals': consult2,
-  'income-expenditure-records': consult4,
-  'pensions-national-insurance': team,
-  'hmrc-investigations': shopfront,
-  'making-tax-digital': consult1,
-  'hmrc-tax-check': consult2,
-  'loss-of-earnings': heroTeam,
+/** Prefer face-forward people crops; use desk/paperwork where that reads better for the topic. */
+const heroMap: Record<string, { image: ImageMetadata; alt: string; position?: string }> = {
+  'self-assessment': {
+    image: peopleConsult,
+    alt: 'A client consultation at the Tax for Taxi Drivers office',
+    position: 'center center',
+  },
+  'benefit-claims': {
+    image: peopleCouple,
+    alt: 'Michael with a client after reviewing their figures',
+    position: 'center 40%',
+  },
+  'hmrc-penalty-appeals': {
+    image: peopleMichael,
+    alt: 'Michael reviewing tax figures in the office',
+    position: 'center 35%',
+  },
+  'income-expenditure-records': {
+    image: deskForms,
+    alt: 'Office desk with forms, phone and laptop',
+    position: 'center center',
+  },
+  'pensions-national-insurance': {
+    image: peopleTeamWomen,
+    alt: 'Members of the Tax for Taxi Drivers team',
+    position: 'center 30%',
+  },
+  'hmrc-investigations': {
+    image: peopleDeskMeeting,
+    alt: 'Face-to-face meeting over tax paperwork',
+    position: 'center 35%',
+  },
+  'making-tax-digital': {
+    image: deskPaperwork,
+    alt: 'Laptop, keyboard and tax paperwork on a desk',
+    position: 'right center',
+  },
+  'hmrc-tax-check': {
+    image: peopleTeamThree,
+    alt: 'The Tax for Taxi Drivers team in the Belfast office',
+    position: 'center 40%',
+  },
+  'loss-of-earnings': {
+    image: deskForms,
+    alt: 'Close-up of an office desk during a consultation',
+    position: 'center center',
+  },
 };
 
 const { service } = Astro.props;
 const { Content } = await render(service);
-const heroImage = heroMap[service.id] ?? consult3;
+const hero = heroMap[service.id] ?? {
+  image: peopleConsult,
+  alt: 'Tax for Taxi Drivers office',
+  position: 'center center',
+};
 const site = Astro.site?.href ?? 'https://www.taxfortaxidrivers.co.uk';
 const pageUrl = new URL(`/services/${service.id}`, site).href;
 
@@ -98,11 +140,12 @@ const jsonLd = [breadcrumbLd, serviceLd, ...(faqLd ? [faqLd] : [])];
     <header class="service-hero">
       <div class="hero-media">
         <Image
-          src={heroImage}
-          alt=""
+          src={hero.image}
+          alt={hero.alt}
           width={1800}
           height={900}
           class="hero-img"
+          style={`object-position: ${hero.position ?? 'center center'};`}
         />
         <div class="hero-shade" aria-hidden="true"></div>
       </div>
@@ -172,7 +215,6 @@ const jsonLd = [breadcrumbLd, serviceLd, ...(faqLd ? [faqLd] : [])];
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 30%;
   }
 
   .hero-shade {
