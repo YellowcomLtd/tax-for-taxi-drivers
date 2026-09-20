@@ -89,3 +89,8 @@ export function getMailgunConfig() {
     apiBase: readEnv('MAILGUN_API_BASE') || 'https://api.mailgun.net',
   };
 }
+
+/** Inbox for website contact-form enquiries (test inbox until go-live). */
+export function contactEnquiryTo(): string {
+  return readEnv('CONTACT_ENQUIRY_TO') || 'smcc239@gmail.com';
+}

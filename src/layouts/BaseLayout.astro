@@ -3,6 +3,7 @@ import '@fontsource-variable/hanken-grotesk';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 
 interface Props {
   title: string;
@@ -43,6 +44,7 @@ const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
       <slot />
     </main>
     <Footer />
+    <CookieConsent />
 
     <script>
       const els = Array.from(document.querySelectorAll<HTMLElement>('.rv'));

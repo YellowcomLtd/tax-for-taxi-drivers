@@ -22,6 +22,7 @@ const year = 2026;
         <a href="/reviews">Reviews</a>
         <a href="/insights">Insights</a>
         <a href="/contact">Contact</a>
+        <a href="/privacy">Privacy</a>
         <a href="/portal">Client portal</a>
       </div>
       <div>
@@ -45,10 +46,20 @@ const year = 2026;
     </div>
     <div class="foot-bar">
       <span>&copy; {year} Tax for Taxi Drivers. All rights reserved. Belfast, Northern Ireland.</span>
-      <span class="credit">Built by <b>Yellowcom</b></span>
+      <span class="foot-legal">
+        <a href="/privacy">Privacy Policy</a>
+        <button type="button" class="cookie-prefs-link" id="open-cookie-prefs">Cookie preferences</button>
+        <span class="credit">Built by <b>Yellowcom</b></span>
+      </span>
     </div>
   </div>
 </footer>
+
+<script>
+  document.getElementById('open-cookie-prefs')?.addEventListener('click', () => {
+    document.dispatchEvent(new Event('tft-open-cookie-prefs'));
+  });
+</script>
 
 <style>
   .foot {
@@ -139,6 +150,39 @@ const year = 2026;
     gap: 16px;
     flex-wrap: wrap;
     font-size: 13px;
+  }
+
+  .foot-legal {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .foot-legal a {
+    display: inline;
+    padding: 0;
+    color: #8f897d;
+    font-size: 13px;
+  }
+
+  .foot-legal a:hover {
+    color: var(--yellow);
+  }
+
+  .cookie-prefs-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #8f897d;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .cookie-prefs-link:hover {
+    color: var(--yellow);
   }
 
   .credit {

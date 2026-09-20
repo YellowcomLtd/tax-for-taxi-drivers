@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly MAILGUN_DOMAIN?: string;
   readonly MAILGUN_FROM?: string;
   readonly MAILGUN_API_BASE?: string;
+  readonly CONTACT_ENQUIRY_TO?: string;
 }
 
 interface ImportMeta {

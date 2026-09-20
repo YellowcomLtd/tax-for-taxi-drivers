@@ -112,6 +112,44 @@ export function otpEmailContent(opts: { fullName: string; code: string }) {
   return { subject, text, html };
 }
 
+export function enquiryEmailContent(opts: {
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  gdprConsent: boolean;
+}) {
+  const subject = `Website enquiry from ${opts.name}`;
+  const text = [
+    'New general enquiry from the Tax for Taxi Drivers website.',
+    '',
+    `Name: ${opts.name}`,
+    `Email: ${opts.email}`,
+    `Phone: ${opts.phone || 'Not provided'}`,
+    `GDPR consent: ${opts.gdprConsent ? 'Yes' : 'No'}`,
+    '',
+    'Message:',
+    opts.message,
+    '',
+    `Sent from ${siteUrl()}/contact`,
+  ].join('\n');
+
+  const html = `
+    <p><strong>New general enquiry</strong> from the Tax for Taxi Drivers website.</p>
+    <p>
+      <strong>Name:</strong> ${escapeHtml(opts.name)}<br/>
+      <strong>Email:</strong> <a href="mailto:${escapeHtml(opts.email)}">${escapeHtml(opts.email)}</a><br/>
+      <strong>Phone:</strong> ${escapeHtml(opts.phone || 'Not provided')}<br/>
+      <strong>GDPR consent:</strong> ${opts.gdprConsent ? 'Yes' : 'No'}
+    </p>
+    <p><strong>Message:</strong></p>
+    <p>${escapeHtml(opts.message).replace(/\n/g, '<br/>')}</p>
+    <p style="color:#8f897d;font-size:13px">Sent from <a href="${siteUrl()}/contact">${siteUrl()}/contact</a></p>
+  `;
+
+  return { subject, text, html };
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, '&amp;')
