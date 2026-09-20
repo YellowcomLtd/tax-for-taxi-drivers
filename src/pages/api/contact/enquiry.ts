@@ -44,6 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
       subject: mail.subject,
       text: mail.text,
       html: mail.html,
+      replyTo: `${name} <${email}>`,
     });
 
     if (!sent.ok) {

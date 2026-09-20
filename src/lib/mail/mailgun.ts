@@ -5,6 +5,7 @@ interface SendEmailInput {
   subject: string;
   text: string;
   html?: string;
+  replyTo?: string;
 }
 
 export async function sendEmail(input: SendEmailInput): Promise<{ ok: boolean; id?: string; error?: string }> {
@@ -24,6 +25,7 @@ export async function sendEmail(input: SendEmailInput): Promise<{ ok: boolean; i
   body.set('subject', input.subject);
   body.set('text', input.text);
   if (input.html) body.set('html', input.html);
+  if (input.replyTo) body.set('h:Reply-To', input.replyTo);
 
   const auth = Buffer.from(`api:${apiKey}`).toString('base64');
 
@@ -120,32 +122,122 @@ export function enquiryEmailContent(opts: {
   gdprConsent: boolean;
 }) {
   const subject = `Website enquiry from ${opts.name}`;
+  const contactUrl = `${siteUrl()}/contact`;
+  const phoneDisplay = opts.phone?.trim() ? opts.phone.trim() : 'Not provided';
+  const phoneCell = opts.phone?.trim()
+    ? `<a href="tel:${escapeHtml(opts.phone.replace(/\s+/g, ''))}" style="color:#141310;text-decoration:none;font-weight:700;">${escapeHtml(phoneDisplay)}</a>`
+    : `<span style="color:#8f897d;">Not provided</span>`;
+  const messageHtml = escapeHtml(opts.message).replace(/\n/g, '<br/>');
+  const consentLabel = opts.gdprConsent ? 'Yes — privacy policy accepted' : 'No';
+  const consentColor = opts.gdprConsent ? '#1d5c32' : '#8a1f11';
+  const consentBg = opts.gdprConsent ? '#eaf7ee' : '#fdecea';
+
   const text = [
     'New general enquiry from the Tax for Taxi Drivers website.',
     '',
     `Name: ${opts.name}`,
     `Email: ${opts.email}`,
-    `Phone: ${opts.phone || 'Not provided'}`,
+    `Phone: ${phoneDisplay}`,
     `GDPR consent: ${opts.gdprConsent ? 'Yes' : 'No'}`,
     '',
     'Message:',
     opts.message,
     '',
-    `Sent from ${siteUrl()}/contact`,
+    `Sent from ${contactUrl}`,
   ].join('\n');
 
-  const html = `
-    <p><strong>New general enquiry</strong> from the Tax for Taxi Drivers website.</p>
-    <p>
-      <strong>Name:</strong> ${escapeHtml(opts.name)}<br/>
-      <strong>Email:</strong> <a href="mailto:${escapeHtml(opts.email)}">${escapeHtml(opts.email)}</a><br/>
-      <strong>Phone:</strong> ${escapeHtml(opts.phone || 'Not provided')}<br/>
-      <strong>GDPR consent:</strong> ${opts.gdprConsent ? 'Yes' : 'No'}
-    </p>
-    <p><strong>Message:</strong></p>
-    <p>${escapeHtml(opts.message).replace(/\n/g, '<br/>')}</p>
-    <p style="color:#8f897d;font-size:13px">Sent from <a href="${siteUrl()}/contact">${siteUrl()}/contact</a></p>
-  `;
+  const html = `<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(subject)}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1efe6;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1efe6;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#ffffff;border:1px solid #e4e0d4;border-radius:16px;overflow:hidden;">
+          <tr>
+            <td style="background-color:#141310;padding:22px 28px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <div style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:#ffc400;margin-right:10px;"></div>
+                    <span style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#ffc400;">Tax for Taxi Drivers</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top:10px;">
+                    <h1 style="margin:0;font-size:22px;line-height:1.25;font-weight:800;color:#ffffff;letter-spacing:-0.01em;">New website enquiry</h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px;">
+              <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#57544c;">
+                Someone submitted the general enquiry form on the website. Reply directly to their email below.
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fbfaf5;border:1px solid #e4e0d4;border-radius:12px;margin-bottom:20px;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8f897d;">Name</p>
+                    <p style="margin:0 0 16px;font-size:17px;font-weight:800;color:#141310;">${escapeHtml(opts.name)}</p>
+
+                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8f897d;">Email</p>
+                    <p style="margin:0 0 16px;font-size:16px;font-weight:700;">
+                      <a href="mailto:${escapeHtml(opts.email)}" style="color:#141310;text-decoration:underline;text-decoration-color:#f0a500;text-underline-offset:3px;">${escapeHtml(opts.email)}</a>
+                    </p>
+
+                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8f897d;">Phone</p>
+                    <p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#141310;">${phoneCell}</p>
+
+                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8f897d;">GDPR consent</p>
+                    <p style="margin:0;">
+                      <span style="display:inline-block;padding:6px 10px;border-radius:999px;background-color:${consentBg};color:${consentColor};font-size:13px;font-weight:700;">${escapeHtml(consentLabel)}</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8f897d;">Message</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-left:4px solid #ffc400;background-color:#fffdf5;border-radius:0 12px 12px 0;">
+                <tr>
+                  <td style="padding:16px 18px;font-size:15px;line-height:1.6;color:#141310;font-weight:500;">
+                    ${messageHtml}
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+                <tr>
+                  <td style="border-radius:999px;background-color:#ffc400;">
+                    <a href="mailto:${escapeHtml(opts.email)}?subject=${encodeURIComponent(`Re: Your enquiry to Tax for Taxi Drivers`)}"
+                       style="display:inline-block;padding:12px 22px;font-size:14px;font-weight:800;color:#141310;text-decoration:none;">
+                      Reply to ${escapeHtml(opts.name.split(' ')[0] || 'enquirer')}
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 22px;border-top:1px solid #e4e0d4;background-color:#fbfaf5;">
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#8f897d;">
+                Sent from the contact form at
+                <a href="${contactUrl}" style="color:#57544c;font-weight:700;">${escapeHtml(contactUrl)}</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   return { subject, text, html };
 }
