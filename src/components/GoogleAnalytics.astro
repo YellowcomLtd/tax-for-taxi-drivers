@@ -1,0 +1,44 @@
+---
+/**
+ * Google Analytics (gtag.js) — loads only after analytics cookie consent.
+ * Measurement ID: G-EH1T3K7PTX
+ */
+---
+
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  window.gtag = window.gtag || gtag;
+
+  // Consent Mode defaults — denied until the visitor opts in
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500,
+  });
+
+  window.__tftLoadGoogleAnalytics = function loadGoogleAnalytics() {
+    if (window.__tftGaLoaded) {
+      gtag('consent', 'update', { analytics_storage: 'granted' });
+      return;
+    }
+    window.__tftGaLoaded = true;
+    gtag('consent', 'update', { analytics_storage: 'granted' });
+
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-EH1T3K7PTX';
+    document.head.appendChild(s);
+
+    gtag('js', new Date());
+    gtag('config', 'G-EH1T3K7PTX', { anonymize_ip: true });
+  };
+
+  window.__tftDisableGoogleAnalytics = function disableGoogleAnalytics() {
+    gtag('consent', 'update', { analytics_storage: 'denied' });
+  };
+</script>

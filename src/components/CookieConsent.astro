@@ -222,6 +222,15 @@
     }
   }
 
+  function applyAnalytics(analytics) {
+    document.documentElement.dataset.cookieAnalytics = analytics ? '1' : '0';
+    if (analytics) {
+      window.__tftLoadGoogleAnalytics?.();
+    } else {
+      window.__tftDisableGoogleAnalytics?.();
+    }
+  }
+
   function writeConsent(analytics) {
     const state = {
       essential: true,
@@ -229,7 +238,7 @@
       decidedAt: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    document.documentElement.dataset.cookieAnalytics = state.analytics ? '1' : '0';
+    applyAnalytics(state.analytics);
     document.dispatchEvent(new CustomEvent('tft-cookie-consent', { detail: state }));
   }
 
@@ -253,7 +262,7 @@
       showBanner(true);
       return;
     }
-    document.documentElement.dataset.cookieAnalytics = current.analytics ? '1' : '0';
+    applyAnalytics(Boolean(current.analytics));
     showBanner(false);
   }
 

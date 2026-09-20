@@ -24,6 +24,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -33,6 +35,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  min-width: 0;
 }
 
 h1,
@@ -50,13 +53,16 @@ a {
   text-decoration: none;
 }
 
-img {
+img,
+video,
+svg {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 .wrap {
-  width: min(1180px, 92vw);
+  width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
 }
 
@@ -106,16 +112,19 @@ img {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-weight: 800;
   font-size: 14.5px;
   padding: 12px 20px;
+  min-height: 44px;
   border-radius: 999px;
   border: none;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   white-space: nowrap;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-y {
@@ -170,11 +179,37 @@ img {
 }
 
 @media (max-width: 640px) {
+  .wrap {
+    width: min(1180px, calc(100% - 28px));
+  }
+
   .section {
-    padding: 60px 0;
+    padding: 56px 0;
   }
 
   .head-row {
     align-items: flex-start;
+  }
+
+  .head-row h2 {
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .btn {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
+}
+
+/* Safe areas for notched phones */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .cookie-root .cookie-banner {
+    margin-bottom: max(10px, env(safe-area-inset-bottom));
   }
 }
