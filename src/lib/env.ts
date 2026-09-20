@@ -1,11 +1,25 @@
-function readEnv(name: string): string | undefined {
-  const fromImport = import.meta.env[name];
-  if (typeof fromImport === 'string' && fromImport.length > 0) return fromImport;
-  if (typeof process !== 'undefined') {
-    const fromProcess = process.env[name];
-    if (typeof fromProcess === 'string' && fromProcess.length > 0) return fromProcess;
+/** Runtime process.env first — Vite must not tree-shake Vercel serverless secrets. */
+function readProcessEnv(name: string): string | undefined {
+  if (typeof process === 'undefined' || !process.env) return undefined;
+  // Dynamic key access avoids build-time inlining of secret names.
+  const value = process.env[name];
+  if (typeof value === 'string' && value.length > 0) return value;
+  return undefined;
+}
+
+function readImportMetaEnv(name: string): string | undefined {
+  try {
+    const env = import.meta.env as Record<string, unknown>;
+    const value = env[name];
+    if (typeof value === 'string' && value.length > 0) return value;
+  } catch {
+    /* ignore */
   }
   return undefined;
+}
+
+function readEnv(name: string): string | undefined {
+  return readProcessEnv(name) ?? readImportMetaEnv(name);
 }
 
 /** Prefer project names; fall back to common Supabase/Vercel integration aliases. */
@@ -39,7 +53,6 @@ export function getSupabaseServiceRoleKey(): string | undefined {
 }
 
 export function requireEnv(name: string): string {
-  // Map canonical names to aliases used by the Vercel Supabase integration
   if (name === 'PUBLIC_SUPABASE_URL') {
     const value = getSupabaseUrl();
     if (value) return value;
@@ -63,7 +76,16 @@ export function requireEnv(name: string): string {
 export function siteUrl(): string {
   return (
     readEnvAlias('PUBLIC_SITE_URL', 'SITE_URL', 'VERCEL_PROJECT_PRODUCTION_URL') ||
-    import.meta.env.SITE ||
+    readImportMetaEnv('SITE') ||
     'https://www.taxfortaxidrivers.co.uk'
   ).replace(/\/$/, '');
+}
+
+export function getMailgunConfig() {
+  return {
+    apiKey: readEnv('MAILGUN_API_KEY'),
+    domain: readEnv('MAILGUN_DOMAIN'),
+    from: readEnv('MAILGUN_FROM'),
+    apiBase: readEnv('MAILGUN_API_BASE') || 'https://api.mailgun.net',
+  };
 }

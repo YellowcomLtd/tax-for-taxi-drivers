@@ -33,17 +33,24 @@ export default function LoginApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error || 'Sign in failed');
+        setError((data as { error?: string }).error || `Sign in failed (${res.status})`);
         return;
       }
-      setInfo(
-        data.mailSent
-          ? `A one-time code was emailed to ${data.email}.`
-          : 'Could not send the email code. Check Mailgun configuration or try again.'
-      );
+      const payload = data as { email?: string; mailSent?: boolean; mailError?: string };
+      if (payload.mailSent) {
+        setInfo(`Check your email for a 6-digit code sent to ${payload.email}. It expires in 10 minutes.`);
+      } else {
+        setError(
+          payload.mailError
+            ? `Password accepted, but the verification email failed: ${payload.mailError}. Check Mailgun (EU domain/API key) and try again.`
+            : 'Password accepted, but the verification email could not be sent. Check Mailgun and try again.'
+        );
+      }
       setStep('otp');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign in failed');
     } finally {
       setBusy(false);
     }
@@ -60,13 +67,16 @@ export default function LoginApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: otp.trim() }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error || 'Verification failed');
+        setError((data as { error?: string }).error || `Verification failed (${res.status})`);
         return;
       }
       await hydrateLiveStore();
-      window.location.href = data.session.role === 'admin' ? '/portal/admin' : '/portal/client';
+      const session = (data as { session?: { role?: string } }).session;
+      window.location.href = session?.role === 'admin' ? '/portal/admin' : '/portal/client';
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Verification failed');
     } finally {
       setBusy(false);
     }
@@ -161,6 +171,10 @@ export default function LoginApp() {
               </form>
             ) : (
               <form className="portal-form" onSubmit={verifyOtp}>
+                <h2 style={{ fontSize: 22, marginBottom: 8 }}>Enter your email code</h2>
+                <p className="portal-muted" style={{ marginBottom: 16 }}>
+                  Password accepted. Enter the 6-digit code from your email to finish signing in.
+                </p>
                 <div className="field">
                   <label htmlFor="otp">Six-digit code</label>
                   <div className="otp-box">
@@ -169,6 +183,8 @@ export default function LoginApp() {
                       inputMode="numeric"
                       pattern="[0-9]{6}"
                       maxLength={6}
+                      autoComplete="one-time-code"
+                      autoFocus
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       required

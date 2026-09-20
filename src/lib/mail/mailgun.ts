@@ -1,4 +1,4 @@
-import { siteUrl } from '../env';
+import { getMailgunConfig, siteUrl } from '../env';
 
 interface SendEmailInput {
   to: string | string[];
@@ -7,20 +7,15 @@ interface SendEmailInput {
   html?: string;
 }
 
-function mailgunConfigured(): boolean {
-  return Boolean(process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN);
-}
-
 export async function sendEmail(input: SendEmailInput): Promise<{ ok: boolean; id?: string; error?: string }> {
-  if (!mailgunConfigured()) {
+  const { apiKey, domain, from: fromEnv, apiBase } = getMailgunConfig();
+  if (!apiKey || !domain) {
     console.warn('[mailgun] Not configured — email skipped:', input.subject, '→', input.to);
     return { ok: false, error: 'Mailgun is not configured' };
   }
 
-  const apiKey = process.env.MAILGUN_API_KEY!;
-  const domain = process.env.MAILGUN_DOMAIN!;
-  const from = process.env.MAILGUN_FROM || `Tax for Taxi Drivers <noreply@${domain}>`;
-  const base = (process.env.MAILGUN_API_BASE || 'https://api.mailgun.net').replace(/\/$/, '');
+  const from = fromEnv || `Tax for Taxi Drivers <noreply@${domain}>`;
+  const base = apiBase.replace(/\/$/, '');
 
   const recipients = Array.isArray(input.to) ? input.to : [input.to];
   const body = new URLSearchParams();
@@ -31,23 +26,31 @@ export async function sendEmail(input: SendEmailInput): Promise<{ ok: boolean; i
   if (input.html) body.set('html', input.html);
 
   const auth = Buffer.from(`api:${apiKey}`).toString('base64');
-  const res = await fetch(`${base}/v3/${domain}/messages`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body,
-  });
 
-  if (!res.ok) {
-    const detail = await res.text();
-    console.error('[mailgun] send failed', res.status, detail);
-    return { ok: false, error: `Mailgun error ${res.status}` };
+  try {
+    const res = await fetch(`${base}/v3/${domain}/messages`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body,
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!res.ok) {
+      const detail = await res.text();
+      console.error('[mailgun] send failed', res.status, detail);
+      return { ok: false, error: `Mailgun error ${res.status}` };
+    }
+
+    const data = (await res.json()) as { id?: string };
+    return { ok: true, id: data.id };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Mailgun request failed';
+    console.error('[mailgun] send exception', message);
+    return { ok: false, error: message };
   }
-
-  const data = (await res.json()) as { id?: string };
-  return { ok: true, id: data.id };
 }
 
 export function inviteEmailContent(opts: {

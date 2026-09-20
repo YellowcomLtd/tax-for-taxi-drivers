@@ -6,6 +6,15 @@ import { requireEnv } from '../env';
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
+function sanitizeCookieOptions(options?: CookieOptions): Record<string, unknown> {
+  if (!options) return {};
+  const clean: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(options)) {
+    if (value !== undefined) clean[key] = value;
+  }
+  return clean;
+}
+
 export function createSupabaseServer(cookies: AstroCookies) {
   const url = requireEnv('PUBLIC_SUPABASE_URL');
   const key = requireEnv('PUBLIC_SUPABASE_ANON_KEY');
@@ -16,9 +25,13 @@ export function createSupabaseServer(cookies: AstroCookies) {
         return cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
       },
       setAll(cookiesToSet: CookieToSet[]) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          cookies.set(name, value, options);
-        });
+        for (const { name, value, options } of cookiesToSet) {
+          try {
+            cookies.set(name, value, sanitizeCookieOptions(options));
+          } catch (err) {
+            console.error('[supabase] Failed to set cookie', name, err);
+          }
+        }
       },
     },
   });
