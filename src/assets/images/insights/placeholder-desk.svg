@@ -15,5 +15,4 @@
   <rect x="1100" y="220" width="360" height="260" rx="16" fill="#1c1b18" opacity="0.9"/>
   <rect x="1130" y="250" width="300" height="160" rx="8" fill="#2a2824"/>
   <circle cx="1280" cy="560" r="70" fill="#ffc400"/>
-  <text x="800" y="820" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="800" letter-spacing="4" fill="#6b4e00">PLACEHOLDER — SWAP BEFORE LAUNCH</text>
 </svg>

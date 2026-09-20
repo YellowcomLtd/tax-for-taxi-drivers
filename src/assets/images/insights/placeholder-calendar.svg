@@ -21,5 +21,4 @@
     <rect x="860" y="520" width="90" height="70" rx="10"/>
   </g>
   <rect x="740" y="420" width="90" height="70" rx="10" fill="#ffc400"/>
-  <text x="800" y="820" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="800" letter-spacing="4" fill="#6b4e00">PLACEHOLDER — SWAP BEFORE LAUNCH</text>
 </svg>
