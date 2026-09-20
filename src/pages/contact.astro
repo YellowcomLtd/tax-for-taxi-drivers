@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBand from '../components/CtaBand.astro';
 import ContactEnquiryForm from '../components/ContactEnquiryForm';
 import shopfrontPhoto from '../assets/images/contact-shopfront.jpg';
+import { SITE_URL } from '../lib/seo';
 
 const contacts = [
   { label: 'Michael', value: '07799 414972', href: 'tel:07799414972' },
@@ -12,11 +13,22 @@ const contacts = [
   { label: 'Office', value: '02890 132083', href: 'tel:02890132083' },
   { label: 'Email', value: 'info@taxfortaxidrivers.co.uk', href: 'mailto:info@taxfortaxidrivers.co.uk' },
 ];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact Tax for Taxi Drivers',
+  url: `${SITE_URL}/contact`,
+  description:
+    'Contact Tax for Taxi Drivers in Belfast for Self Assessment, Making Tax Digital and HMRC help.',
+  mainEntity: { '@id': `${SITE_URL}/#business` },
+};
 ---
 
 <BaseLayout
   title="Contact us — Belfast office"
   description="Contact Tax for Taxi Drivers in Belfast. Call, email or visit Unit 4, North City Business Centre, 2 Duncairn Gardens, BT15 2GG. Self Assessment and tax help for taxi drivers."
+  jsonLd={jsonLd}
 >
   <section class="section intro">
     <div class="wrap intro-grid">

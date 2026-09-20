@@ -47,12 +47,14 @@ const jsonLd = [
     image: [new URL('/og-default.jpg', site).href],
     inLanguage: 'en-GB',
     author: {
-      '@type': 'Organization',
-      name: 'Tax for Taxi Drivers',
-      url: site,
+      '@type': 'Person',
+      name: 'Michael',
+      jobTitle: 'Founder',
+      worksFor: { '@id': `${new URL('/', site).href.replace(/\/$/, '')}/#business` },
     },
     publisher: {
       '@type': 'Organization',
+      '@id': `${new URL('/', site).href.replace(/\/$/, '')}/#business`,
       name: 'Tax for Taxi Drivers',
       url: site,
       logo: {

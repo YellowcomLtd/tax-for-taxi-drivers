@@ -107,12 +107,7 @@ const serviceLd = {
     { '@type': 'Country', name: 'United Kingdom' },
   ],
   provider: {
-    '@type': 'AccountingService',
-    name: 'Tax for Taxi Drivers',
-    url: site,
-    telephone: '+447799414972',
-    email: 'info@taxfortaxidrivers.co.uk',
-    areaServed: 'Northern Ireland',
+    '@id': `${site.replace(/\/$/, '')}/#business`,
   },
   audience: {
     '@type': 'Audience',
@@ -120,20 +115,7 @@ const serviceLd = {
   },
 };
 
-const faqLd =
-  service.data.faqs.length > 0
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: service.data.faqs.map((faq) => ({
-          '@type': 'Question',
-          name: faq.question,
-          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-        })),
-      }
-    : null;
-
-const jsonLd = [breadcrumbLd, serviceLd, ...(faqLd ? [faqLd] : [])];
+const jsonLd = [breadcrumbLd, serviceLd];
 ---
 
 <BaseLayout title={service.data.title} description={service.data.description} jsonLd={jsonLd}>

@@ -46,6 +46,6 @@ We've helped clients appeal more than **£100,000** in HMRC penalties. We take t
 
 ## Don't ignore it
 
-Penalties and interest grow. A free confidential chat is cheaper than another month of hoping the letter goes away. [Get in touch](/contact) with the notice to hand - Michael on **07799 414972**, or the office on **07366 565000**.
+Penalties and interest grow. A free confidential chat is cheaper than another month of hoping the letter goes away. [Get in touch](/contact) with the notice to hand - Michael on **07799 414972**, Cathy on **07366 565000**, or the office on **02890 132083**.
 
 If a mate is in the same boat, [send them our way](/#refer) - you get £50 when they join.

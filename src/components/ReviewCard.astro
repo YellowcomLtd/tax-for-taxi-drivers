@@ -5,12 +5,12 @@ interface Props {
   rating?: number;
 }
 
-const { quote, attribution, rating = 5 } = Astro.props;
-const stars = '&#9733;'.repeat(rating);
+const { quote, attribution, rating } = Astro.props;
+const stars = typeof rating === 'number' ? '&#9733;'.repeat(rating) : '';
 ---
 
 <div class="rv quote">
-  <span class="stars" set:html={stars} />
+  {stars && <span class="stars" set:html={stars} />}
   <p>&ldquo;{quote}&rdquo;</p>
   <div class="who">&mdash; {attribution}</div>
 </div>

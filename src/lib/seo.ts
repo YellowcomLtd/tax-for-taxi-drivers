@@ -45,7 +45,7 @@ export function organizationSchema() {
   };
 }
 
-export function localBusinessSchema(opts?: { aggregateRating?: { ratingValue: number; reviewCount: number } }) {
+export function localBusinessSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': ['AccountingService', 'LocalBusiness'],
@@ -62,17 +62,6 @@ export function localBusinessSchema(opts?: { aggregateRating?: { ratingValue: nu
     areaServed: BUSINESS.areaServed.map((name) => ({ '@type': 'AdministrativeArea', name })),
     priceRange: '££',
     sameAs: BUSINESS.sameAs,
-    ...(opts?.aggregateRating
-      ? {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: opts.aggregateRating.ratingValue,
-            reviewCount: opts.aggregateRating.reviewCount,
-            bestRating: 5,
-            worstRating: 1,
-          },
-        }
-      : {}),
   };
 }
 

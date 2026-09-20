@@ -1,6 +1,5 @@
 ---
 export const prerender = true;
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Promise from '../components/Promise.astro';
@@ -12,23 +11,7 @@ import UcBand from '../components/UcBand.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { localBusinessSchema, websiteSchema } from '../lib/seo';
 
-const reviews = await getCollection('reviews');
-const reviewCount = reviews.length;
-const ratingValue =
-  reviewCount > 0
-    ? Math.round(
-        (reviews.reduce((sum, r) => sum + (r.data.rating ?? 5), 0) / reviewCount) * 10
-      ) / 10
-    : undefined;
-
-const jsonLd = [
-  localBusinessSchema(
-    ratingValue && reviewCount
-      ? { aggregateRating: { ratingValue, reviewCount } }
-      : undefined
-  ),
-  websiteSchema(),
-];
+const jsonLd = [localBusinessSchema(), websiteSchema()];
 ---
 
 <BaseLayout

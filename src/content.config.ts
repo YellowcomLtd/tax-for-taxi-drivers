@@ -7,7 +7,7 @@ const reviews = defineCollection({
   schema: z.object({
     quote: z.string(),
     attribution: z.string(),
-    rating: z.number().min(1).max(5).default(5),
+    rating: z.number().min(1).max(5).optional(),
     date: z.coerce.date().optional(),
     source: z.enum(['concept-site', 'whiteboard']).default('concept-site'),
     featured: z.boolean().default(false),

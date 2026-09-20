@@ -19,14 +19,6 @@ const reviews = allReviews.map((review, index) => ({
   delay: (index % 8) * 70,
 }));
 
-const reviewCount = allReviews.length;
-const ratingValue =
-  reviewCount > 0
-    ? Math.round(
-        (allReviews.reduce((sum, r) => sum + (r.data.rating ?? 5), 0) / reviewCount) * 10
-      ) / 10
-    : 5;
-
 const site = Astro.site?.href ?? 'https://www.taxfortaxidrivers.co.uk';
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -35,18 +27,7 @@ const jsonLd = {
   description:
     'Real reviews from Tax for Taxi Drivers clients across Belfast and Northern Ireland.',
   url: new URL('/reviews', site).href,
-  about: {
-    '@type': 'AccountingService',
-    name: 'Tax for Taxi Drivers',
-    url: site,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue,
-      reviewCount,
-      bestRating: 5,
-      worstRating: 1,
-    },
-  },
+  about: { '@id': `${site.replace(/\/$/, '')}/#business` },
 };
 ---
 
@@ -68,7 +49,9 @@ const jsonLd = {
       <div class="cloud">
         {reviews.map((review) => (
           <div class={`rv word tier-${review.tier}`} style={`--delay: ${review.delay}ms`}>
-            <span class="stars" set:html={'&#9733;'.repeat(review.rating)} />
+            {typeof review.rating === 'number' && (
+              <span class="stars" set:html={'&#9733;'.repeat(review.rating)} />
+            )}
             <p>&ldquo;{review.quote}&rdquo;</p>
             <span class="who">&mdash; {review.attribution}</span>
           </div>
@@ -81,13 +64,17 @@ const jsonLd = {
 </BaseLayout>
 
 <style>
+  .intro {
+    padding-bottom: 24px;
+  }
+
   .intro h1 {
     font-size: clamp(34px, 5vw, 54px);
-    margin: 14px 0 12px;
+    margin: 14px 0 14px;
     max-width: 20ch;
   }
 
-  .intro .lead {
+  .lead {
     font-size: 18px;
     color: var(--ink-2);
     max-width: 60ch;
@@ -101,134 +88,74 @@ const jsonLd = {
   .cloud {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    gap: 14px 18px;
+    align-items: center;
     justify-content: center;
-    gap: 30px 44px;
+    max-width: 980px;
+    margin: 0 auto;
   }
 
   .word {
-    transition-delay: var(--delay);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px 18px;
     max-width: 46ch;
-    text-align: left;
   }
 
   .word .stars {
     display: block;
     color: var(--yellow-deep);
     letter-spacing: 2px;
+    font-size: 13px;
     margin-bottom: 8px;
   }
 
   .word p {
-    font-weight: 700;
-    line-height: 1.3;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.45;
   }
 
   .word .who {
     display: block;
     margin-top: 10px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-
-  .tier-sm {
-    max-width: 30ch;
-  }
-
-  .tier-sm p {
-    font-size: 16px;
-    color: var(--ink-2);
-    opacity: 0.92;
-  }
-
-  .tier-sm .stars {
-    font-size: 12px;
-  }
-
-  .tier-sm .who {
-    font-size: 12px;
-    color: var(--ink-3);
-  }
-
-  .tier-md p {
-    font-size: 20px;
-    color: var(--ink-2);
-  }
-
-  .tier-md .stars {
     font-size: 13px;
-  }
-
-  .tier-md .who {
-    font-size: 12.5px;
-    color: var(--ink-3);
-  }
-
-  .tier-lg {
-    max-width: 40ch;
-  }
-
-  .tier-lg p {
-    font-size: 26px;
-    color: var(--ink);
-  }
-
-  .tier-lg .stars {
-    font-size: 14px;
-  }
-
-  .tier-lg .who {
-    font-size: 13.5px;
+    font-weight: 800;
     color: var(--ink-2);
   }
 
   .tier-xl {
-    max-width: 48ch;
+    font-size: 20px;
+    max-width: 30ch;
+    opacity: 1;
   }
 
-  .tier-xl p {
-    font-size: 32px;
-    color: var(--ink);
-    font-weight: 800;
-    letter-spacing: -0.01em;
+  .tier-lg {
+    font-size: 17px;
+    max-width: 40ch;
+    opacity: 0.95;
   }
 
-  .tier-xl .stars {
-    font-size: 15px;
+  .tier-md {
+    font-size: 15.5px;
+    max-width: 36ch;
+    opacity: 0.9;
   }
 
-  .tier-xl .who {
-    font-size: 14px;
-    color: var(--ink-2);
+  .tier-sm {
+    font-size: 14.5px;
+    max-width: 28ch;
+    opacity: 0.85;
   }
 
   @media (max-width: 640px) {
     .cloud {
-      gap: 26px;
+      gap: 12px;
     }
 
-    .word,
-    .tier-sm,
-    .tier-md,
-    .tier-lg,
-    .tier-xl {
+    .word {
       max-width: 100%;
-    }
-
-    .tier-xl p {
-      font-size: 24px;
-    }
-
-    .tier-lg p {
-      font-size: 20px;
-    }
-
-    .tier-md p {
-      font-size: 17px;
-    }
-
-    .tier-sm p {
-      font-size: 15px;
     }
   }
 </style>
