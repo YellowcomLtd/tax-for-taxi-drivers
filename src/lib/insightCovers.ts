@@ -70,4 +70,4 @@ export function getInsightRelatedServices(postId: string, fromFrontmatter: strin
 }
 
 export const PLACEHOLDER_IMAGE_ALT =
-  'Placeholder image - replace with final photography before launch';
+  'Illustration for a Tax for Taxi Drivers insights article';

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /portal
+Disallow: /api/
+
+Sitemap: https://www.taxfortaxidrivers.co.uk/sitemap-index.xml

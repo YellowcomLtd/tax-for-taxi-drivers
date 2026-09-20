@@ -10,7 +10,12 @@ export default defineConfig({
   trailingSlash: 'never',
   output: 'server',
   adapter: vercel(),
-  integrations: [sitemap(), react()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/portal'),
+    }),
+    react(),
+  ],
   prefetch: {
     defaultStrategy: 'viewport',
   },

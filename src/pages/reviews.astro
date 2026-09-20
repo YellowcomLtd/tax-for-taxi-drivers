@@ -18,11 +18,42 @@ const reviews = allReviews.map((review, index) => ({
   tier: tierFor(review.data.quote, review.data.featured),
   delay: (index % 8) * 70,
 }));
+
+const reviewCount = allReviews.length;
+const ratingValue =
+  reviewCount > 0
+    ? Math.round(
+        (allReviews.reduce((sum, r) => sum + (r.data.rating ?? 5), 0) / reviewCount) * 10
+      ) / 10
+    : 5;
+
+const site = Astro.site?.href ?? 'https://www.taxfortaxidrivers.co.uk';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Client reviews',
+  description:
+    'Real reviews from Tax for Taxi Drivers clients across Belfast and Northern Ireland.',
+  url: new URL('/reviews', site).href,
+  about: {
+    '@type': 'AccountingService',
+    name: 'Tax for Taxi Drivers',
+    url: site,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue,
+      reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  },
+};
 ---
 
 <BaseLayout
-  title="Reviews"
-  description="Real reviews from real Tax for Taxi Drivers clients across Belfast and Northern Ireland."
+  title="Client reviews — Belfast taxi drivers"
+  description="Real reviews from Tax for Taxi Drivers clients across Belfast and Northern Ireland. Honest feedback from drivers we help with Self Assessment and HMRC."
+  jsonLd={jsonLd}
 >
   <section class="section intro">
     <div class="wrap">

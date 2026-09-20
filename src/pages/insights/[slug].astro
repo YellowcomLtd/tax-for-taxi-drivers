@@ -41,7 +41,11 @@ const jsonLd = [
     headline: post.data.title,
     description: post.data.description,
     datePublished: post.data.pubDate.toISOString(),
+    dateModified: post.data.pubDate.toISOString(),
+    mainEntityOfPage: pageUrl,
     url: pageUrl,
+    image: [new URL('/og-default.jpg', site).href],
+    inLanguage: 'en-GB',
     author: {
       '@type': 'Organization',
       name: 'Tax for Taxi Drivers',
@@ -51,6 +55,10 @@ const jsonLd = [
       '@type': 'Organization',
       name: 'Tax for Taxi Drivers',
       url: site,
+      logo: {
+        '@type': 'ImageObject',
+        url: new URL('/favicon.png', site).href,
+      },
     },
   },
 ];
@@ -71,7 +79,6 @@ const jsonLd = [
         <div class="meta">
           <time datetime={post.data.pubDate.toISOString()}>{dateFormat.format(post.data.pubDate)}</time>
           {post.data.placeholder && <span class="badge">Coming soon</span>}
-          <span class="badge placeholder-badge">Placeholder cover</span>
         </div>
 
         <h1>{post.data.title}</h1>
@@ -157,12 +164,6 @@ const jsonLd = [
     text-transform: uppercase;
     padding: 4px 10px;
     border-radius: 999px;
-  }
-
-  .placeholder-badge {
-    background: #f4f1ea;
-    border-color: var(--line);
-    color: var(--ink-3);
   }
 
   h1 {

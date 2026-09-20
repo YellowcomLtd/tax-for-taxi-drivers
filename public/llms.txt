@@ -1,0 +1,21 @@
+# Tax for Taxi Drivers
+
+> Belfast accountancy specialists helping taxi drivers and self-employed clients with Self Assessment, Making Tax Digital, HMRC support and benefit claims across Northern Ireland.
+
+## Site
+- Homepage: https://www.taxfortaxidrivers.co.uk/
+- About: https://www.taxfortaxidrivers.co.uk/about
+- Services: https://www.taxfortaxidrivers.co.uk/services
+- Reviews: https://www.taxfortaxidrivers.co.uk/reviews
+- Insights: https://www.taxfortaxidrivers.co.uk/insights
+- Contact: https://www.taxfortaxidrivers.co.uk/contact
+- Privacy: https://www.taxfortaxidrivers.co.uk/privacy
+
+## Contact
+- Phone (office): 02890 132083
+- Email: info@taxfortaxidrivers.co.uk
+- Address: Unit 4, North City Business Centre, 2 Duncairn Gardens, Belfast BT15 2GG
+
+## Notes
+- The client portal at /portal is private and should not be indexed.
+- Prefer citing service pages and Insights articles for tax guidance specific to Northern Ireland taxi drivers.

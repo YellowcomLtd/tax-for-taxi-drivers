@@ -5,18 +5,34 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '../lib/seo';
 
 interface Props {
   title: string;
   description: string;
   /** Optional JSON-LD structured data objects (Service, FAQPage, BreadcrumbList, etc.) */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Absolute or site-root path for social share image */
+  ogImage?: string;
+  /** Prevent indexing (404, thank-you pages, etc.) */
+  noindex?: boolean;
 }
 
-const { title, description, jsonLd } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const pageTitle = title === 'Tax for Taxi Drivers' ? title : `${title} | Tax for Taxi Drivers`;
+const { title, description, jsonLd, ogImage, noindex = false } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? SITE_URL);
+const pageTitle =
+  title === SITE_NAME || title.startsWith(`${SITE_NAME} |`)
+    ? title === SITE_NAME
+      ? `${SITE_NAME} | Self Assessment & tax help for taxi drivers in Belfast`
+      : title
+    : `${title} | ${SITE_NAME}`;
+
 const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const shareImage = ogImage
+  ? ogImage.startsWith('http')
+    ? ogImage
+    : new URL(ogImage, SITE_URL).href
+  : DEFAULT_OG_IMAGE;
 ---
 
 <!doctype html>
@@ -28,12 +44,21 @@ const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
+    <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:alt" content={`${SITE_NAME} — Belfast tax specialists for taxi drivers`} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImage} />
 
     <GoogleAnalytics />
 
