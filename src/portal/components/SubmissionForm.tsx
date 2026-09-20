@@ -13,7 +13,7 @@ import {
   uid,
 } from '../lib/calc';
 import { monthsFromPeriodLabel, nextMonthLabel, periodLabelFromMonths } from '../lib/months';
-import { loadStore, updateStore } from '../lib/store';
+import { loadStore, persistSubmissionLive } from '../lib/store';
 
 interface Props {
   mode: 'create' | 'edit';
@@ -141,7 +141,11 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
     setFiles((prev) => [...prev, ...added]);
   }
 
-  function persist(status: Submission['status']) {
+  async function persist(status: Submission['status']) {
+    if (!session) {
+      setMessage('You need to be signed in.');
+      return;
+    }
     if (!editable && status !== existing?.status) {
       setMessage('This submission is locked. Only admin can edit signed records.');
       return;
@@ -149,46 +153,41 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
     const now = new Date().toISOString();
     const label = periodLabelFromMonths(months);
 
-    updateStore((s) => {
-      if (mode === 'create') {
-        const sub: Submission = {
-          id: uid('sub'),
-          userId: session.userId,
-          periodLabel: label,
-          tradeType: trade,
-          status,
-          months,
-          income,
-          lines,
-          files,
-          createdAt: now,
-          updatedAt: now,
-        };
-        s.submissions.unshift(sub);
-        window.location.href = adminEdit ? `/portal/admin/submission?id=${sub.id}` : `/portal/client/submission?id=${sub.id}`;
-        return;
-      }
-      const idx = s.submissions.findIndex((x) => x.id === submissionId);
-      if (idx >= 0) {
-        const keepStatus = !editable ? s.submissions[idx].status : status;
-        s.submissions[idx] = {
-          ...s.submissions[idx],
-          periodLabel: label,
-          months,
-          income,
-          lines,
-          files,
-          status: adminEdit && editable ? keepStatus : lockedForClient ? s.submissions[idx].status : status,
-          updatedAt: now,
-        };
-      }
-    });
-    setMessage(adminEdit ? 'Records saved.' : status === 'draft' ? 'Draft saved.' : 'Submitted for review.');
-    if (!adminEdit && mode === 'edit' && status === 'submitted') {
-      setTimeout(() => {
-        window.location.href = '/portal/client';
-      }, 600);
+    const base: Submission =
+      mode === 'create'
+        ? {
+            id: crypto.randomUUID(),
+            userId: session.userId,
+            periodLabel: label,
+            tradeType: trade,
+            status,
+            months,
+            income,
+            lines,
+            files,
+            createdAt: now,
+            updatedAt: now,
+          }
+        : {
+            ...(existing as Submission),
+            periodLabel: label,
+            months,
+            income,
+            lines,
+            files,
+            status: editable ? status : existing!.status,
+            updatedAt: now,
+          };
+
+    const saved = await persistSubmissionLive(base);
+    if (!saved) {
+      setMessage('Could not save submission. Try again.');
+      return;
     }
+    setMessage(status === 'submitted' ? 'Submitted.' : 'Saved.');
+    window.location.href = adminEdit
+      ? `/portal/admin/submission?id=${saved.id}`
+      : `/portal/client/submission?id=${saved.id}`;
   }
 
   const back = backHref || (adminEdit ? '/portal/admin' : '/portal/client');
@@ -340,7 +339,7 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
       <div style={{ marginTop: 28 }}>
         <h2 style={{ fontSize: 18, marginBottom: 8 }}>Supporting files</h2>
         <p className="portal-muted" style={{ marginBottom: 10 }}>
-          Demo only - filenames recorded locally.
+          Supporting files are attached to this submission.
         </p>
         {!readOnly && <input type="file" multiple onChange={(e) => onFilePick(e.target.files)} />}
         <ul style={{ marginTop: 12, paddingLeft: 18 }}>

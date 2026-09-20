@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { loadStore, resetStore } from '../lib/store';
+import { apiLogout, hydrateLiveStore } from '../lib/store';
 import type { Session } from '../lib/types';
 
 interface Props {
@@ -13,10 +13,13 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const sync = () => {
-      const store = loadStore();
-      const s = store.session;
-      if (!s || s.pending2fa) {
+    let cancelled = false;
+
+    const sync = async () => {
+      const store = await hydrateLiveStore();
+      if (cancelled) return;
+      const s = store?.session;
+      if (!s) {
         window.location.href = '/portal';
         return;
       }
@@ -27,23 +30,21 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
       setSession(s);
       setReady(true);
     };
-    sync();
-    window.addEventListener('tft-portal-updated', sync);
-    return () => window.removeEventListener('tft-portal-updated', sync);
+
+    void sync();
+    const onUpdate = () => {
+      void sync();
+    };
+    window.addEventListener('tft-portal-updated', onUpdate);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('tft-portal-updated', onUpdate);
+    };
   }, [requireRole]);
 
-  function logout() {
-    const store = loadStore();
-    store.session = null;
-    localStorage.setItem('tft-portal-demo-v2', JSON.stringify(store));
+  async function logout() {
+    await apiLogout();
     window.location.href = '/portal';
-  }
-
-  function resetDemo() {
-    if (confirm('Reset demo data to the seeded example clients and submissions?')) {
-      resetStore();
-      window.location.href = '/portal';
-    }
   }
 
   if (!ready || !session) {
@@ -58,6 +59,7 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
     session.role === 'admin'
       ? [
           { href: '/portal/admin', label: 'Dashboard', key: 'admin' },
+          { href: '/portal/admin/users', label: 'Users', key: 'users' },
           { href: '/portal/admin/email', label: 'Bulk email', key: 'email' },
         ]
       : [
@@ -75,7 +77,6 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
               <small>Client portal · {session.fullName}</small>
             </span>
           </a>
-          <span className="portal-demo-pill">Static demo</span>
           <nav className="portal-nav" aria-label="Portal">
             {links.map((link) => (
               <a key={link.key} href={link.href} aria-current={active === link.key ? 'page' : undefined}>
@@ -83,10 +84,7 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
               </a>
             ))}
             <a href="/">Marketing site</a>
-            <button type="button" className="linkish" onClick={resetDemo}>
-              Reset demo
-            </button>
-            <button type="button" className="linkish" onClick={logout}>
+            <button type="button" className="linkish" onClick={() => void logout()}>
               Log out
             </button>
           </nav>
@@ -95,8 +93,10 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
       <main className="portal-main">{children}</main>
       <footer className="portal-footer">
         <div className="wrap">
-          <span>Demo only - no live HMRC, MailGun, or Supabase connection yet.</span>
-          <span>Signed-in as {session.email}</span>
+          <span>Secured portal · signed-in as {session.email}</span>
+          <span>
+            <a href="mailto:info@taxfortaxidrivers.co.uk">info@taxfortaxidrivers.co.uk</a>
+          </span>
         </div>
       </footer>
     </>

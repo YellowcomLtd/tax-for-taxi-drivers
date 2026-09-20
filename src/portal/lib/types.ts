@@ -15,6 +15,7 @@ export interface User {
   fullName: string;
   role: Role;
   tradeType?: TradeType;
+  active?: boolean;
 }
 
 export interface PeriodMonth {
@@ -72,7 +73,6 @@ export interface Submission {
   signedAt?: string;
   clientSignature?: SignatureRecord;
   adminSignature?: SignatureRecord;
-  /** Locked final document (demo: print-ready HTML) */
   signedDocumentHtml?: string;
 }
 
@@ -92,8 +92,6 @@ export interface Session {
   fullName: string;
   role: Role;
   tradeType?: TradeType;
-  pending2fa?: boolean;
-  demoOtp?: string;
 }
 
 export interface PortalStore {

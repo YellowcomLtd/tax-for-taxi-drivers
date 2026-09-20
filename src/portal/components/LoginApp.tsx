@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { DEMO_PASSWORD, loadStore, saveStore, updateStore } from '../lib/store';
-import { demoOtp } from '../lib/calc';
+import { apiLogout, hydrateLiveStore } from '../lib/store';
 
-type Step = 'credentials' | 'otp';
+type Step = 'credentials' | 'otp' | 'forgot';
 
 export default function LoginApp() {
   const [step, setStep] = useState<Step>('credentials');
@@ -10,76 +9,90 @@ export default function LoginApp() {
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [pendingCode, setPendingCode] = useState('');
+  const [info, setInfo] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const store = loadStore();
-    if (store.session && !store.session.pending2fa) {
-      window.location.href = store.session.role === 'admin' ? '/portal/admin' : '/portal/client';
-    } else if (store.session?.pending2fa) {
-      setStep('otp');
-      setPendingCode(store.session.demoOtp || '');
-      setEmail(store.session.email);
-    }
+    void (async () => {
+      const store = await hydrateLiveStore();
+      if (store?.session) {
+        window.location.href = store.session.role === 'admin' ? '/portal/admin' : '/portal/client';
+      }
+    })();
   }, []);
 
-  function fill(demoEmail: string) {
-    setEmail(demoEmail);
-    setPassword(DEMO_PASSWORD);
-    setError('');
-  }
-
-  function startLogin(e: React.FormEvent) {
+  async function startLogin(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    const store = loadStore();
-    const user = store.users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
-    if (!user || user.password !== password) {
-      setError('Email or password not recognised. Use a demo account below.');
-      return;
-    }
-    const code = demoOtp();
-    store.session = {
-      userId: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      tradeType: user.tradeType,
-      pending2fa: true,
-      demoOtp: code,
-    };
-    store.notices.unshift({
-      id: `notice_${Date.now()}`,
-      at: new Date().toISOString(),
-      to: user.email,
-      subject: 'Your login code',
-      body: `Demo email OTP: ${code}`,
-    });
-    saveStore(store);
-    setPendingCode(code);
-    setStep('otp');
-  }
-
-  function verifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    const store = loadStore();
-    if (!store.session?.pending2fa || !store.session.demoOtp) {
-      setError('Session expired. Sign in again.');
-      setStep('credentials');
-      return;
-    }
-    if (otp.trim() !== store.session.demoOtp) {
-      setError('That code is incorrect. Use the demo code shown above.');
-      return;
-    }
-    updateStore((s) => {
-      if (s.session) {
-        s.session.pending2fa = false;
-        delete s.session.demoOtp;
+    setInfo('');
+    setBusy(true);
+    try {
+      const res = await fetch('/api/portal/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Sign in failed');
+        return;
       }
-    });
-    const role = store.session.role;
-    window.location.href = role === 'admin' ? '/portal/admin' : '/portal/client';
+      setInfo(
+        data.mailSent
+          ? `A one-time code was emailed to ${data.email}.`
+          : 'Could not send the email code. Check Mailgun configuration or try again.'
+      );
+      setStep('otp');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function verifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    try {
+      const res = await fetch('/api/portal/auth/verify-otp', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: otp.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Verification failed');
+        return;
+      }
+      await hydrateLiveStore();
+      window.location.href = data.session.role === 'admin' ? '/portal/admin' : '/portal/client';
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function requestReset(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setInfo('');
+    setBusy(true);
+    try {
+      const res = await fetch('/api/portal/auth/forgot-password', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not request reset');
+        return;
+      }
+      setInfo(data.message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -89,10 +102,9 @@ export default function LoginApp() {
           <a className="portal-brand" href="/">
             <span>
               Tax for Taxi Drivers
-              <small>Client portal demo</small>
+              <small>Client portal</small>
             </span>
           </a>
-          <span className="portal-demo-pill">Static demo · no live integrations</span>
           <nav className="portal-nav">
             <a href="/">Back to site</a>
           </nav>
@@ -104,12 +116,26 @@ export default function LoginApp() {
           <section className="portal-card">
             <h1 style={{ fontSize: 32, marginBottom: 8 }}>Sign in</h1>
             <p className="portal-muted" style={{ marginBottom: 20 }}>
-              Demo login with email + one-time code (MailGun / Supabase Auth will replace this after approval).
+              Sign in with your email and password, then enter the one-time code emailed to you.
             </p>
 
             {error && <div className="portal-alert portal-alert-error">{error}</div>}
+            {info && <div className="portal-alert portal-alert-info">{info}</div>}
 
-            {step === 'credentials' ? (
+            {step === 'forgot' ? (
+              <form className="portal-form" onSubmit={requestReset}>
+                <div className="field">
+                  <label htmlFor="email">Email</label>
+                  <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+                <button className="btn btn-y" type="submit" disabled={busy}>
+                  Send reset link
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => setStep('credentials')}>
+                  Back to sign in
+                </button>
+              </form>
+            ) : step === 'credentials' ? (
               <form className="portal-form" onSubmit={startLogin}>
                 <div className="field">
                   <label htmlFor="email">Email</label>
@@ -126,16 +152,15 @@ export default function LoginApp() {
                     required
                   />
                 </div>
-                <button className="btn btn-y" type="submit">
+                <button className="btn btn-y" type="submit" disabled={busy}>
                   Continue
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => setStep('forgot')}>
+                  Forgot password?
                 </button>
               </form>
             ) : (
               <form className="portal-form" onSubmit={verifyOtp}>
-                <div className="portal-alert portal-info portal-alert-info">
-                  <strong>Demo email sent</strong> to {email}. For this static build the code is shown here instead of MailGun:
-                  <div style={{ fontSize: 28, letterSpacing: '0.2em', fontWeight: 800, marginTop: 8 }}>{pendingCode}</div>
-                </div>
                 <div className="field">
                   <label htmlFor="otp">Six-digit code</label>
                   <div className="otp-box">
@@ -148,7 +173,7 @@ export default function LoginApp() {
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       required
                     />
-                    <button className="btn btn-y" type="submit">
+                    <button className="btn btn-y" type="submit" disabled={busy}>
                       Verify &amp; enter
                     </button>
                   </div>
@@ -156,10 +181,8 @@ export default function LoginApp() {
                 <button
                   type="button"
                   className="btn btn-ghost"
-                  onClick={() => {
-                    updateStore((s) => {
-                      s.session = null;
-                    });
+                  onClick={async () => {
+                    await apiLogout();
                     setStep('credentials');
                     setOtp('');
                   }}
@@ -171,24 +194,11 @@ export default function LoginApp() {
           </section>
 
           <aside className="portal-card">
-            <h2 style={{ fontSize: 20, marginBottom: 8 }}>Demo accounts</h2>
-            <p className="portal-muted">Password for all accounts: <strong>{DEMO_PASSWORD}</strong></p>
-            <div className="demo-accounts">
-              <button type="button" onClick={() => fill('admin@taxfortaxidrivers.co.uk')}>
-                <strong>Admin - Michael</strong>
-                <span>admin@taxfortaxidrivers.co.uk · full contacts &amp; bulk email</span>
-              </button>
-              <button type="button" onClick={() => fill('james.driver@example.com')}>
-                <strong>Client - James (taxi)</strong>
-                <span>james.driver@example.com · ready-to-sign submission seeded</span>
-              </button>
-              <button type="button" onClick={() => fill('sara.beauty@example.com')}>
-                <strong>Client - Sara (beautician)</strong>
-                <span>sara.beauty@example.com · draft with beautician categories</span>
-              </button>
-            </div>
-            <p className="portal-muted" style={{ marginTop: 18, fontSize: 13 }}>
-              Spreadsheet categories match the client’s taxi &amp; beautician MTD workbooks in <code>reference/portal-brief/</code>.
+            <h2 style={{ fontSize: 20, marginBottom: 8 }}>Need an account?</h2>
+            <p className="portal-muted">
+              Driver and staff accounts are created by an administrator. If you need access, ring the office on{' '}
+              <strong>02890 132083</strong> or email{' '}
+              <a href="mailto:info@taxfortaxidrivers.co.uk">info@taxfortaxidrivers.co.uk</a>.
             </p>
           </aside>
         </div>

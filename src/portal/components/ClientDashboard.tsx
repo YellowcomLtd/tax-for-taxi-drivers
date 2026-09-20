@@ -2,21 +2,23 @@ import { useEffect, useState } from 'react';
 import PortalChrome from './PortalChrome';
 import StatusBadge from './StatusBadge';
 import { formatDate, formatMoney, totalProfit } from '../lib/calc';
-import { loadStore } from '../lib/store';
+import { hydrateLiveStore } from '../lib/store';
 import type { Submission } from '../lib/types';
 
 export default function ClientDashboard() {
   const [subs, setSubs] = useState<Submission[]>([]);
 
   useEffect(() => {
-    const sync = () => {
-      const store = loadStore();
-      const uid = store.session?.userId;
+    const sync = async () => {
+      const store = await hydrateLiveStore();
+      if (!store?.session) return;
+      const uid = store.session.userId;
       setSubs(store.submissions.filter((s) => s.userId === uid).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
     };
-    sync();
-    window.addEventListener('tft-portal-updated', sync);
-    return () => window.removeEventListener('tft-portal-updated', sync);
+    void sync();
+    const handler = () => void sync();
+    window.addEventListener('tft-portal-updated', handler);
+    return () => window.removeEventListener('tft-portal-updated', handler);
   }, []);
 
   const ready = subs.filter((s) => s.status === 'ready_to_sign').length;
@@ -28,7 +30,9 @@ export default function ClientDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 22 }}>
         <div>
           <h1 style={{ fontSize: 34 }}>My submissions</h1>
-          <p className="portal-muted" style={{ marginTop: 6 }}>Enter income &amp; expenditure by month (usually a quarter), then sign when your accountant marks it ready.</p>
+          <p className="portal-muted" style={{ marginTop: 6 }}>
+            Enter income &amp; expenditure by month (usually a quarter), then sign when your accountant marks it ready.
+          </p>
         </div>
         <a className="btn btn-y" href="/portal/client/new">
           New submission
@@ -36,10 +40,22 @@ export default function ClientDashboard() {
       </div>
 
       <div className="portal-grid-3" style={{ marginBottom: 22, gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        <div className="stat"><div className="label">Total</div><div className="value">{subs.length}</div></div>
-        <div className="stat"><div className="label">Ready to sign</div><div className="value">{ready}</div></div>
-        <div className="stat"><div className="label">Awaiting counter-sign</div><div className="value">{awaiting}</div></div>
-        <div className="stat"><div className="label">Fully signed</div><div className="value">{signed}</div></div>
+        <div className="stat">
+          <div className="label">Total</div>
+          <div className="value">{subs.length}</div>
+        </div>
+        <div className="stat">
+          <div className="label">Ready to sign</div>
+          <div className="value">{ready}</div>
+        </div>
+        <div className="stat">
+          <div className="label">Awaiting counter-sign</div>
+          <div className="value">{awaiting}</div>
+        </div>
+        <div className="stat">
+          <div className="label">Signed</div>
+          <div className="value">{signed}</div>
+        </div>
       </div>
 
       <div className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -57,20 +73,28 @@ export default function ClientDashboard() {
             <tbody>
               {subs.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="portal-muted">No submissions yet. Create your first three-month return.</td>
+                  <td colSpan={5} className="portal-muted">
+                    No submissions yet. Create your first return.
+                  </td>
                 </tr>
               )}
               {subs.map((sub) => (
                 <tr key={sub.id}>
                   <td style={{ fontWeight: 700 }}>{sub.periodLabel}</td>
-                  <td><StatusBadge status={sub.status} /></td>
+                  <td>
+                    <StatusBadge status={sub.status} />
+                  </td>
                   <td className="num">{formatMoney(totalProfit(sub, sub.lines))}</td>
                   <td>{formatDate(sub.updatedAt)}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="portal-actions" style={{ justifyContent: 'flex-end' }}>
-                      <a className="btn btn-ghost" href={`/portal/client/submission?id=${sub.id}`}>Open</a>
+                      <a className="btn btn-ghost" href={`/portal/client/submission?id=${sub.id}`}>
+                        Open
+                      </a>
                       {sub.status === 'ready_to_sign' && (
-                        <a className="btn btn-y" href={`/portal/client/sign?id=${sub.id}`}>Sign</a>
+                        <a className="btn btn-y" href={`/portal/client/sign?id=${sub.id}`}>
+                          Sign
+                        </a>
                       )}
                     </div>
                   </td>

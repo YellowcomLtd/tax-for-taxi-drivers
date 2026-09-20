@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PortalChrome from './PortalChrome';
-import { formatDate, uid } from '../lib/calc';
-import { loadStore, updateStore } from '../lib/store';
+import { formatDate } from '../lib/calc';
+import { hydrateLiveStore } from '../lib/store';
 import type { EmailCampaign } from '../lib/types';
 
 export default function BulkEmailApp() {
@@ -9,55 +9,57 @@ export default function BulkEmailApp() {
   const [body, setBody] = useState('');
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
   const [sentMsg, setSentMsg] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  function sync() {
-    setCampaigns(loadStore().campaigns);
+  async function sync() {
+    const store = await hydrateLiveStore();
+    setCampaigns(store?.campaigns || []);
   }
 
   useEffect(() => {
-    sync();
-    window.addEventListener('tft-portal-updated', sync);
-    return () => window.removeEventListener('tft-portal-updated', sync);
+    void sync();
+    const handler = () => void sync();
+    window.addEventListener('tft-portal-updated', handler);
+    return () => window.removeEventListener('tft-portal-updated', handler);
   }, []);
 
-  function send(e: React.FormEvent) {
+  async function send(e: React.FormEvent) {
     e.preventDefault();
-    const store = loadStore();
-    const recipients = store.users.filter((u) => u.role === 'client');
-    const campaign: EmailCampaign = {
-      id: uid('camp'),
-      subject: subject.trim(),
-      body: body.trim(),
-      sentBy: store.session?.email || 'admin',
-      sentAt: new Date().toISOString(),
-      recipientCount: recipients.length,
-      recipients: recipients.map((r) => r.email),
-    };
-    updateStore((s) => {
-      s.campaigns.unshift(campaign);
-      recipients.forEach((r) => {
-        s.notices.unshift({
-          id: uid('notice'),
-          at: campaign.sentAt,
-          to: r.email,
-          subject: campaign.subject,
-          body: campaign.body,
-        });
+    setError('');
+    setSentMsg('');
+    setBusy(true);
+    try {
+      const res = await fetch('/api/portal/email/bulk', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: subject.trim(), body: body.trim() }),
       });
-    });
-    setSentMsg(`Demo send complete - ${recipients.length} clients (MailGun will replace this).`);
-    setSubject('');
-    setBody('');
-    sync();
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Send failed');
+        return;
+      }
+      setSentMsg(`Sent to ${data.sentCount} of ${data.recipientCount} clients.`);
+      setSubject('');
+      setBody('');
+      await sync();
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <PortalChrome requireRole="admin" active="email">
       <h1 style={{ fontSize: 34, marginBottom: 8 }}>Bulk email</h1>
-      <p className="portal-muted" style={{ marginBottom: 22 }}>Compose one message for every client. Static demo records the campaign locally instead of calling MailGun.</p>
+      <p className="portal-muted" style={{ marginBottom: 22 }}>
+        Compose one message for every active client. Messages are sent through Mailgun and logged in the portal.
+      </p>
 
       <div className="portal-grid-2">
-        <form className="portal-card portal-form" onSubmit={send}>
+        <form className="portal-card portal-form" onSubmit={(e) => void send(e)}>
+          {error && <div className="portal-alert portal-alert-error">{error}</div>}
           {sentMsg && <div className="portal-alert portal-alert-success">{sentMsg}</div>}
           <div className="field">
             <label htmlFor="subject">Subject</label>
@@ -67,7 +69,9 @@ export default function BulkEmailApp() {
             <label htmlFor="body">Message</label>
             <textarea id="body" rows={8} value={body} onChange={(e) => setBody(e.target.value)} required />
           </div>
-          <button className="btn btn-y" type="submit">Send to all clients</button>
+          <button className="btn btn-y" type="submit" disabled={busy}>
+            Send to all clients
+          </button>
         </form>
 
         <section className="portal-card">

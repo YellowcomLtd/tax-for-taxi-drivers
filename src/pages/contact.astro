@@ -1,6 +1,9 @@
 ---
+export const prerender = true;
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBand from '../components/CtaBand.astro';
+import shopfrontPhoto from '../assets/images/contact-shopfront.jpg';
 
 const contacts = [
   { label: 'Michael', value: '07799 414972', href: 'tel:07799414972' },
@@ -15,12 +18,22 @@ const contacts = [
   description="We minimise your tax and maximise your benefits. Contact Tax for Taxi Drivers in Belfast - Unit 4, North City Business Centre, 2 Duncairn Gardens, BT15 2GG."
 >
   <section class="section intro">
-    <div class="wrap">
-      <span class="eyebrow rv">Get in touch</span>
-      <h1 class="rv">We minimise your tax and maximise your benefits.</h1>
-      <p class="rv lead">
-        Ring, email, or drop by the office. We'll talk through what we can do for you and give you a clear idea of the fees.
-      </p>
+    <div class="wrap intro-grid">
+      <div class="rv">
+        <span class="eyebrow">Get in touch</span>
+        <h1>We minimise your tax and maximise your benefits.</h1>
+        <p class="lead">
+          Ring, email, or drop by the office. We'll talk through what we can do for you and give you a clear idea of the fees.
+        </p>
+      </div>
+      <div class="rv photo-frame">
+        <Image
+          src={shopfrontPhoto}
+          alt="The Tax for Taxi Drivers shopfront at Unit 4, North City Business Centre, Belfast"
+          width={768}
+          height={1024}
+        />
+      </div>
     </div>
   </section>
 
@@ -62,6 +75,13 @@ const contacts = [
 </BaseLayout>
 
 <style>
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    align-items: center;
+  }
+
   .intro h1 {
     font-size: clamp(34px, 5vw, 54px);
     margin: 14px 0 12px;
@@ -71,8 +91,19 @@ const contacts = [
   .intro .lead {
     font-size: 18px;
     color: var(--ink-2);
-    max-width: 55ch;
+    max-width: 42ch;
     font-weight: 500;
+  }
+
+  .photo-frame :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
   }
 
   .details {
@@ -148,6 +179,18 @@ const contacts = [
     color: var(--ink);
     border-bottom: 1.5px solid var(--yellow-deep);
     align-self: start;
+  }
+
+  @media (max-width: 860px) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .photo-frame :global(img) {
+      aspect-ratio: 4 / 3;
+      object-position: center 35%;
+    }
   }
 
   @media (max-width: 720px) {

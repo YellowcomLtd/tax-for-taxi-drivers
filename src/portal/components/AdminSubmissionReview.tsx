@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PortalChrome from './PortalChrome';
 import SubmissionForm from './SubmissionForm';
 import StatusBadge from './StatusBadge';
 import { downloadLockedDocument, printLockedDocument } from '../lib/pdf';
-import { loadStore, updateStore } from '../lib/store';
+import { hydrateLiveStore, loadStore, persistSubmissionLive } from '../lib/store';
+import type { Submission, User } from '../lib/types';
 
 function getId() {
   return new URLSearchParams(window.location.search).get('id') || '';
@@ -12,9 +13,28 @@ function getId() {
 export default function AdminSubmissionReview() {
   const id = useMemo(() => (typeof window !== 'undefined' ? getId() : ''), []);
   const [editing, setEditing] = useState(false);
-  const store = loadStore();
-  const sub = store.submissions.find((s) => s.id === id);
-  const client = store.users.find((u) => u.id === sub?.userId);
+  const [sub, setSub] = useState<Submission | null>(null);
+  const [client, setClient] = useState<User | undefined>();
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const store = await hydrateLiveStore();
+      if (!store) return;
+      const found = store.submissions.find((s) => s.id === id) || null;
+      setSub(found);
+      setClient(store.users.find((u) => u.id === found?.userId));
+      setReady(true);
+    })();
+  }, [id]);
+
+  if (!ready) {
+    return (
+      <PortalChrome requireRole="admin" active="admin">
+        <p className="portal-muted">Loading…</p>
+      </PortalChrome>
+    );
+  }
 
   if (!sub) {
     return (
@@ -24,20 +44,17 @@ export default function AdminSubmissionReview() {
     );
   }
 
-  function markReady() {
-    updateStore((s) => {
-      const item = s.submissions.find((x) => x.id === id);
-      const person = s.users.find((u) => u.id === item?.userId);
-      if (!item || item.status !== 'submitted') return;
-      item.status = 'ready_to_sign';
-      item.updatedAt = new Date().toISOString();
-      s.notices.unshift({
-        id: `notice_${Date.now()}`,
-        at: new Date().toISOString(),
-        to: person?.email || '',
-        subject: 'Your declaration is ready to sign',
-        body: `Please sign your ${item.periodLabel} submission in the portal.`,
-      });
+  async function markReady() {
+    const current = loadStore().submissions.find((x) => x.id === id);
+    if (!current || current.status !== 'submitted') return;
+    const updated = { ...current, status: 'ready_to_sign' as const, updatedAt: new Date().toISOString() };
+    const saved = await persistSubmissionLive(updated);
+    if (!saved) return;
+    await fetch('/api/portal/email/notify', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ submissionId: id }),
     });
     window.location.reload();
   }
@@ -67,7 +84,7 @@ export default function AdminSubmissionReview() {
           </button>
         )}
         {sub.status === 'submitted' && (
-          <button type="button" className="btn btn-y" onClick={markReady}>
+          <button type="button" className="btn btn-y" onClick={() => void markReady()}>
             Mark ready to sign
           </button>
         )}
@@ -78,10 +95,10 @@ export default function AdminSubmissionReview() {
         )}
         {sub.status === 'signed' && sub.signedDocumentHtml && (
           <>
-            <button type="button" className="btn btn-y" onClick={() => downloadLockedDocument(sub.signedDocumentHtml!, `signed-${sub.id}.html`)}>
+            <button type="button" className="btn btn-ghost" onClick={() => downloadLockedDocument(sub.signedDocumentHtml!, `signed-${sub.id}.html`)}>
               Download
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => printLockedDocument(sub.signedDocumentHtml!)}>
+            <button type="button" className="btn btn-y" onClick={() => printLockedDocument(sub.signedDocumentHtml!)}>
               Print / PDF
             </button>
           </>
@@ -91,26 +108,16 @@ export default function AdminSubmissionReview() {
       <div className="portal-card" style={{ marginBottom: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div>
-            <h1 style={{ fontSize: 28 }}>{client?.fullName || 'Client'}</h1>
+            <h1 style={{ fontSize: 28 }}>{sub.periodLabel}</h1>
             <p className="portal-muted" style={{ marginTop: 6 }}>
-              {client?.email} · {sub.periodLabel}
+              {client?.fullName || sub.userId} · {client?.email}
             </p>
           </div>
           <StatusBadge status={sub.status} />
         </div>
-        {sub.clientSignature && (
-          <div className="portal-alert portal-alert-info" style={{ marginTop: 16 }}>
-            Client signed by {sub.clientSignature.signerName} · {sub.clientSignature.signedAt && new Date(sub.clientSignature.signedAt).toLocaleString('en-GB')}
-          </div>
-        )}
-        {sub.adminSignature && (
-          <div className="portal-alert portal-alert-success" style={{ marginTop: 8 }}>
-            Counter-signed by {sub.adminSignature.signerName} · hash {sub.adminSignature.documentHash.slice(0, 16)}…
-          </div>
-        )}
       </div>
 
-      <SubmissionForm mode="edit" submissionId={id} viewOnly backHref="/portal/admin" />
+      <SubmissionForm mode="edit" submissionId={id} adminEdit viewOnly backHref={`/portal/admin/submission?id=${id}`} />
     </PortalChrome>
   );
 }

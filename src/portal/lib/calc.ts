@@ -74,9 +74,6 @@ export async function sha256(text: string) {
     .join('');
 }
 
-export function demoOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
 
 export function tradeLabel(trade: TradeType) {
   return trade === 'taxi' ? 'Taxi driver' : 'Beautician';

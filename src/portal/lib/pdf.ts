@@ -70,7 +70,7 @@ export function buildSignedDocumentHtml(opts: {
 </style>
 </head>
 <body>
-  <div class="banner no-print"><strong>DEMO DOCUMENT</strong> - Use your browser Print → Save as PDF for a PDF copy.</div>
+  <div class="banner no-print"><strong>SIGNED DOCUMENT</strong> - Use your browser Print → Save as PDF for a PDF copy.</div>
   <div class="locked">🔒 LOCKED - Fully signed &amp; counter-signed</div>
   <h1>Making Tax Digital - signed declaration</h1>
   <p class="meta">

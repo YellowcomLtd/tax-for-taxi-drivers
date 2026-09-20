@@ -1,0 +1,10 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import UserManagementApp from '../../../portal/components/UserManagementApp';
+
+export const prerender = false;
+---
+
+<PortalLayout title="User management">
+  <UserManagementApp client:load />
+</PortalLayout>
