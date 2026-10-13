@@ -94,3 +94,8 @@ export function getMailgunConfig() {
 export function contactEnquiryTo(): string {
   return readEnv('CONTACT_ENQUIRY_TO') || 'smcc239@gmail.com';
 }
+
+/** reCAPTCHA v2 secret for verifying contact-form tokens (server-only). */
+export function getRecaptchaSecretKey(): string | undefined {
+  return readEnv('RECAPTCHA_SECRET_KEY');
+}
