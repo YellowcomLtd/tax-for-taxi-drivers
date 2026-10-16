@@ -4,9 +4,9 @@ import { json, portalIsLive } from '../../../../lib/portal/api';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ cookies }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   if (portalIsLive()) {
-    const supabase = createSupabaseServer(cookies);
+    const supabase = createSupabaseServer({ request, cookies });
     await supabase.auth.signOut();
   }
   cookies.delete('tft_mfa_ok', { path: '/' });

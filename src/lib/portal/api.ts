@@ -31,7 +31,7 @@ export async function requireUser(context: APIContext) {
     return { error: error('Complete sign-in verification first', 401) as Response };
   }
 
-  const supabase = createSupabaseServer(context.cookies);
+  const supabase = createSupabaseServer({ request: context.request, cookies: context.cookies });
   const {
     data: { user },
     error: userError,

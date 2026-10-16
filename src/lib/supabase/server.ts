@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient, parseCookieHeader, type CookieOptions } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import type { AstroCookies } from 'astro';
 import type { Database } from './database.types';
@@ -15,14 +15,22 @@ function sanitizeCookieOptions(options?: CookieOptions): Record<string, unknown>
   return clean;
 }
 
-export function createSupabaseServer(cookies: AstroCookies) {
+/**
+ * AstroCookies has no getAll() — parse the request Cookie header instead
+ * (see https://supabase.com/docs/guides/auth/server-side/creating-a-client).
+ */
+export function createSupabaseServer(opts: { request: Request; cookies: AstroCookies }) {
+  const { request, cookies } = opts;
   const url = requireEnv('PUBLIC_SUPABASE_URL');
   const key = requireEnv('PUBLIC_SUPABASE_ANON_KEY');
 
   return createServerClient<Database>(url, key, {
     cookies: {
       getAll() {
-        return cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
+        return parseCookieHeader(request.headers.get('Cookie') ?? '').map(({ name, value }) => ({
+          name,
+          value: value ?? '',
+        }));
       },
       setAll(cookiesToSet: CookieToSet[]) {
         for (const { name, value, options } of cookiesToSet) {

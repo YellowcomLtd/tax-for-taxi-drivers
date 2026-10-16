@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return error('Password must be at least 10 characters');
   }
 
-  const supabase = createSupabaseServer(cookies);
+  const supabase = createSupabaseServer({ request, cookies });
   const { error: upError } = await supabase.auth.updateUser({ password });
   if (upError) return error(upError.message, 400);
 

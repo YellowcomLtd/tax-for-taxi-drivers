@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     if (!email || !password) return error('Email and password are required');
 
-    const supabase = createSupabaseServer(cookies);
+    const supabase = createSupabaseServer({ request, cookies });
     const { data, error: signError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (signError || !data.user) {

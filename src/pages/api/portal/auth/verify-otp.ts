@@ -20,7 +20,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return error('Invalid or expired code', 400);
   }
 
-  const supabase = createSupabaseServer(cookies);
+  const supabase = createSupabaseServer({ request, cookies });
   const {
     data: { user },
   } = await supabase.auth.getUser();
