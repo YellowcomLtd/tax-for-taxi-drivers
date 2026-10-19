@@ -1074,6 +1074,21 @@
   background: #f4fbf6;
 }
 
+.engagement-doc-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: none;
+}
+
+.engagement-doc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 @media (max-width: 900px) {
   .users-toolbar {
     grid-template-columns: 1fr 1fr;

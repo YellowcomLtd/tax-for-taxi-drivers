@@ -157,6 +157,14 @@ export function downloadLockedDocument(html: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+export function viewLockedDocument(html: string) {
+  const w = window.open('', '_blank');
+  if (!w) return;
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+}
+
 export function printLockedDocument(html: string) {
   const w = window.open('', '_blank');
   if (!w) return;

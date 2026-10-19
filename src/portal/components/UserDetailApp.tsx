@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import PortalChrome from './PortalChrome';
 import StatusBadge from './StatusBadge';
 import { formatDate, tradeLabel } from '../lib/calc';
+import { downloadLockedDocument, viewLockedDocument } from '../lib/pdf';
 import type { ClientDocument, Submission, User } from '../lib/types';
+
+function docFileName(doc: ClientDocument) {
+  return `${doc.title.replace(/\s+/g, '-').toLowerCase()}-signed.html`;
+}
 
 function getId() {
   if (typeof window === 'undefined') return '';
@@ -306,6 +311,7 @@ export default function UserDetailApp() {
             ] as const
           ).map((item) => {
             const status = docStatusLabel(item.doc);
+            const signedHtml = item.doc?.signedDocumentHtml;
             return (
               <li key={item.key} className={`engagement-doc engagement-doc-${status.tone}`}>
                 <div>
@@ -317,7 +323,27 @@ export default function UserDetailApp() {
                     <span className="portal-muted">Sent {formatDate(item.doc.sentAt)}</span>
                   )}
                 </div>
-                <span className={`engagement-pill engagement-pill-${status.tone}`}>{status.label}</span>
+                <div className="engagement-doc-right">
+                  <span className={`engagement-pill engagement-pill-${status.tone}`}>{status.label}</span>
+                  {signedHtml && item.doc && (
+                    <div className="engagement-doc-actions">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-compact"
+                        onClick={() => viewLockedDocument(signedHtml)}
+                      >
+                        View
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-compact"
+                        onClick={() => downloadLockedDocument(signedHtml, docFileName(item.doc!))}
+                      >
+                        Download
+                      </button>
+                    </div>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -528,7 +554,7 @@ export default function UserDetailApp() {
 
       <section className="portal-card portal-card-flush">
         <div className="portal-card-head">
-          <h2>All documents</h2>
+          <h2>Documents</h2>
         </div>
         <div className="portal-table-wrap portal-table-flush">
           <table className="portal-table">
@@ -538,12 +564,13 @@ export default function UserDetailApp() {
                 <th>Status</th>
                 <th>Sent</th>
                 <th>Signed</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {docs.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="portal-muted">
+                  <td colSpan={5} className="portal-muted">
                     No engagement documents yet.
                   </td>
                 </tr>
@@ -560,6 +587,30 @@ export default function UserDetailApp() {
                   </td>
                   <td data-label="Sent">{formatDate(d.sentAt)}</td>
                   <td data-label="Signed">{d.signedAt ? formatDate(d.signedAt) : '—'}</td>
+                  <td data-label="" className="portal-row-action">
+                    {d.status === 'signed' && d.signedDocumentHtml ? (
+                      <div className="engagement-doc-actions">
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-compact"
+                          onClick={() => viewLockedDocument(d.signedDocumentHtml!)}
+                        >
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-y btn-compact"
+                          onClick={() => downloadLockedDocument(d.signedDocumentHtml!, docFileName(d))}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    ) : d.status === 'signed' ? (
+                      <span className="portal-muted">No file stored</span>
+                    ) : (
+                      <span className="portal-muted">—</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
