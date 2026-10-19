@@ -42,6 +42,8 @@ export const POST: APIRoute = async (context) => {
   const body = await context.request.json().catch(() => null);
   const userId = String(body?.userId || '');
   const feeAmount = body?.feeAmount != null ? String(body.feeAmount).trim() : '';
+  // Never email on document create unless the admin explicitly opts in.
+  const notifyClient = body?.notifyClient === true;
   if (!userId) return error('userId is required');
 
   const { admin, profile: actor } = auth;
@@ -80,18 +82,22 @@ export const POST: APIRoute = async (context) => {
     created.push(mapClientDocument(row as Record<string, unknown>));
   }
 
-  const mail = onboardingPackEmailContent({ fullName: client.full_name });
-  const sent = await sendEmail({ to: client.email, ...mail });
-  await admin.from('email_notices').insert({
-    to_email: client.email,
-    subject: mail.subject,
-    body: mail.text,
-    kind: 'onboarding_pack',
-    created_by: actor.id,
-    meta: { mailgunOk: sent.ok, documentIds: created.map((d) => d.id) },
-  });
+  let mailSent = false;
+  if (notifyClient) {
+    const mail = onboardingPackEmailContent({ fullName: client.full_name });
+    const sent = await sendEmail({ to: client.email, ...mail });
+    mailSent = sent.ok;
+    await admin.from('email_notices').insert({
+      to_email: client.email,
+      subject: mail.subject,
+      body: mail.text,
+      kind: 'onboarding_pack',
+      created_by: actor.id,
+      meta: { mailgunOk: sent.ok, documentIds: created.map((d) => d.id) },
+    });
+  }
 
-  return json({ ok: true, documents: created, mailSent: sent.ok }, 201);
+  return json({ ok: true, documents: created, mailSent }, 201);
 };
 
 /** Client (or admin): sign a document. */

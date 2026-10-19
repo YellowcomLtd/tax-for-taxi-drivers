@@ -14,7 +14,8 @@ export default function UserManagementApp() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'client' | 'admin'>('client');
   const [tradeType, setTradeType] = useState<'taxi' | 'beautician'>('taxi');
-  const [sendPack, setSendPack] = useState(true);
+  const [sendInvite, setSendInvite] = useState(false);
+  const [sendPack, setSendPack] = useState(false);
   const [feeAmount, setFeeAmount] = useState('');
 
   async function refresh() {
@@ -26,12 +27,12 @@ export default function UserManagementApp() {
     void refresh();
   }, []);
 
-  async function sendEngagementPack(userId: string, fee?: string) {
+  async function sendEngagementPack(userId: string, fee?: string, notifyClient = true) {
     const res = await fetch('/api/portal/documents', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, feeAmount: fee || feeAmount }),
+      body: JSON.stringify({ userId, feeAmount: fee || feeAmount, notifyClient }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not send engagement pack');
@@ -48,7 +49,13 @@ export default function UserManagementApp() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email, role, tradeType: role === 'client' ? tradeType : null }),
+        body: JSON.stringify({
+          fullName,
+          email,
+          role,
+          tradeType: role === 'client' ? tradeType : null,
+          sendInvite,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -59,23 +66,26 @@ export default function UserManagementApp() {
       let packNote = '';
       if (role === 'client' && sendPack && data.user?.id) {
         try {
-          const pack = await sendEngagementPack(data.user.id, feeAmount);
+          const pack = await sendEngagementPack(data.user.id, feeAmount, true);
           packNote = pack.mailSent
-            ? ' Engagement pack (Letter of Engagement + Contract) emailed.'
+            ? ' Engagement pack emailed.'
             : ' Engagement pack created; email failed — check Mailgun.';
         } catch (err) {
           packNote = ` Engagement pack failed: ${err instanceof Error ? err.message : 'unknown error'}`;
         }
       }
 
-      setMessage(
-        (data.inviteSent
-          ? `Account created and invite emailed to ${email}.`
-          : `Account created for ${email}. Invite email could not be sent — check Mailgun.`) + packNote
-      );
+      const base = data.inviteSent
+        ? `Account created and invite emailed to ${email}.`
+        : sendInvite
+          ? `Account created for ${email}. Invite email failed — check Mailgun.`
+          : `Account created for ${email}. No invite email sent (opt-in was off).`;
+      setMessage(base + packNote);
       setFullName('');
       setEmail('');
       setFeeAmount('');
+      setSendInvite(false);
+      setSendPack(false);
       await refresh();
     } finally {
       setBusy(false);
@@ -194,24 +204,33 @@ export default function UserManagementApp() {
                   placeholder="e.g. 540"
                 />
               </div>
-              <label style={{ display: 'flex', gap: 10, marginBottom: 12, fontWeight: 600 }}>
-                <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} />
-                Send Letter of Engagement + Contract to sign
-              </label>
             </>
           )}
+          <p className="portal-muted" style={{ marginBottom: 10, fontSize: 13 }}>
+            Emails are off by default. Nothing is sent unless you tick a box below or use a Send button later.
+          </p>
+          <label style={{ display: 'flex', gap: 10, marginBottom: 10, fontWeight: 600 }}>
+            <input type="checkbox" checked={sendInvite} onChange={(e) => setSendInvite(e.target.checked)} />
+            Also email portal invite (set password link)
+          </label>
+          {role === 'client' && (
+            <label style={{ display: 'flex', gap: 10, marginBottom: 14, fontWeight: 600 }}>
+              <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} />
+              Also email Letter of Engagement + Contract to sign
+            </label>
+          )}
           <button className="btn btn-y" type="submit" disabled={busy}>
-            Create &amp; email invite
+            Create account
           </button>
         </form>
 
         <section className="portal-card">
-          <h2 style={{ fontSize: 20, marginBottom: 12 }}>Onboarding documents</h2>
+          <h2 style={{ fontSize: 20, marginBottom: 12 }}>Email policy</h2>
           <ul style={{ marginLeft: 18, color: 'var(--ink-2)', fontWeight: 500, lineHeight: 1.55 }}>
-            <li>Letter of Engagement — basis of instruction for accounts / tax returns.</li>
-            <li>Contract for Tax Returns — fee, Direct Debit, renewal and liabilities.</li>
-            <li>Clients sign both under Portal → Documents.</li>
-            <li>Submission sign-off uses the Client Approval Certificate wording.</li>
+            <li>Creating or importing users never emails clients by itself.</li>
+            <li>Invites, engagement packs, bulk mail and “ready to sign” only send when you choose to.</li>
+            <li>Sign-in codes still email when someone logs in (required for 2FA).</li>
+            <li>Engagement docs: Letter of Engagement + Contract — clients sign under Documents.</li>
           </ul>
         </section>
       </div>

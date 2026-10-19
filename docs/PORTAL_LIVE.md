@@ -53,9 +53,20 @@ the per-client button on the dashboard / Users list).
 Run `supabase/migrations/20261019120000_client_documents.sql` in the SQL editor.
 
 Admins send a **Letter of Engagement** + **Contract for Tax Returns** from
-**Portal → Users** (on create, or **Send engagement pack**). Clients sign under
+**Portal → Users** (opt-in on create, or **Send engagement pack**). Clients sign under
 **Portal → Documents**. Submission sign-off uses the Client Approval Certificate
 wording from Michael’s paper pack.
+
+### External email policy
+
+Outbound client emails are **manual / opt-in only**:
+
+- Creating a user does **not** send mail unless `sendInvite: true`.
+- Creating an engagement pack does **not** email unless `notifyClient: true`.
+- Bulk email and “ready to sign” only run from explicit admin actions.
+- Future bulk imports must create records without sending invites.
+
+Exception: login OTP codes (user-initiated sign-in).
 
 ## Security
 

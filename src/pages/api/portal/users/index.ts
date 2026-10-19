@@ -30,6 +30,8 @@ export const POST: APIRoute = async (context) => {
   const fullName = String(body?.fullName || '').trim();
   const role = body?.role === 'admin' ? 'admin' : 'client';
   const tradeType = role === 'client' ? (body?.tradeType === 'beautician' ? 'beautician' : 'taxi') : null;
+  // External mail is opt-in only — never send on create/import unless explicitly requested.
+  const sendInvite = body?.sendInvite === true;
 
   if (!email || !fullName) return error('Name and email are required');
 
@@ -62,38 +64,42 @@ export const POST: APIRoute = async (context) => {
     active: true,
   });
 
-  const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-    type: 'recovery',
-    email,
-    options: { redirectTo: portalResetPasswordPath() },
-  });
+  let inviteSent = false;
+  if (sendInvite) {
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: 'recovery',
+      email,
+      options: { redirectTo: portalResetPasswordPath() },
+    });
 
-  const resetUrl = passwordSetUrlFromGenerateLink(linkData?.properties || {});
-  if (linkError || !resetUrl) {
-    return error(linkError?.message || 'User created but invite link failed', 500);
+    const resetUrl = passwordSetUrlFromGenerateLink(linkData?.properties || {});
+    if (linkError || !resetUrl) {
+      return error(linkError?.message || 'User created but invite link failed', 500);
+    }
+
+    const mail = inviteEmailContent({
+      fullName,
+      email,
+      role: role === 'admin' ? 'admin staff' : 'driver / client',
+      resetUrl,
+    });
+    const sent = await sendEmail({ to: email, ...mail });
+    inviteSent = sent.ok;
+    await admin.from('email_notices').insert({
+      to_email: email,
+      subject: mail.subject,
+      body: mail.text,
+      kind: 'invite',
+      created_by: actor.id,
+      meta: { mailgunOk: sent.ok },
+    });
   }
-
-  const mail = inviteEmailContent({
-    fullName,
-    email,
-    role: role === 'admin' ? 'admin staff' : 'driver / client',
-    resetUrl,
-  });
-  const sent = await sendEmail({ to: email, ...mail });
-  await admin.from('email_notices').insert({
-    to_email: email,
-    subject: mail.subject,
-    body: mail.text,
-    kind: 'invite',
-    created_by: actor.id,
-    meta: { mailgunOk: sent.ok },
-  });
 
   const { data: profile } = await admin.from('profiles').select('*').eq('id', created.user.id).single();
   return json({
     ok: true,
     user: profile ? mapProfile(profile) : null,
-    inviteSent: sent.ok,
+    inviteSent,
   });
 };
 
