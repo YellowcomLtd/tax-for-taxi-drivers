@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { sendEmail } from '../../../../lib/mail/mailgun';
+import { bulkEmailContent, sendEmail } from '../../../../lib/mail/mailgun';
 import { error, json, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -45,17 +45,22 @@ export const POST: APIRoute = async (context) => {
     .eq('role', 'client')
     .eq('active', true);
 
-  const recipients = (clients || []).map((c) => c.email).filter(Boolean);
+  const recipients = (clients || []).filter((c) => Boolean(c.email));
   if (recipients.length === 0) return error('No active clients to email', 400);
 
   let sentCount = 0;
-  for (const to of recipients) {
-    const result = await sendEmail({ to, subject, text });
-    if (result.ok) sentCount += 1;
-    await admin.from('email_notices').insert({
-      to_email: to,
+  for (const client of recipients) {
+    const mail = bulkEmailContent({
       subject,
       body: text,
+      fullName: client.full_name || undefined,
+    });
+    const result = await sendEmail({ to: client.email, ...mail });
+    if (result.ok) sentCount += 1;
+    await admin.from('email_notices').insert({
+      to_email: client.email,
+      subject: mail.subject,
+      body: mail.text,
       kind: 'bulk',
       created_by: profile.id,
       meta: { mailgunOk: result.ok },
@@ -69,7 +74,7 @@ export const POST: APIRoute = async (context) => {
       body: text,
       sent_by: profile.id,
       recipient_count: recipients.length,
-      recipients,
+      recipients: recipients.map((c) => c.email),
     })
     .select('*')
     .single();

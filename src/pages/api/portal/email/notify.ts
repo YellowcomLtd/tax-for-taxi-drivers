@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
-import { sendEmail } from '../../../../lib/mail/mailgun';
-import { portalPublicUrl } from '../../../../lib/portal/authLinks';
+import { readyToSignEmailContent, sendEmail } from '../../../../lib/mail/mailgun';
 import { error, json, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -21,21 +20,16 @@ export const POST: APIRoute = async (context) => {
   const { data: client } = await supabase.from('profiles').select('*').eq('id', sub.user_id).maybeSingle();
   if (!client) return error('Client not found', 404);
 
-  const subject = 'Your declaration is ready to sign';
-  const text = [
-    `Hi ${client.full_name},`,
-    '',
-    `Your ${sub.period_label} submission is ready to sign.`,
-    `Open the portal: ${portalPublicUrl()}/portal/client`,
-    '',
-    'Tax for Taxi Drivers',
-  ].join('\n');
+  const mail = readyToSignEmailContent({
+    fullName: client.full_name,
+    periodLabel: sub.period_label,
+  });
 
-  const sent = await sendEmail({ to: client.email, subject, text });
+  const sent = await sendEmail({ to: client.email, ...mail });
   await admin.from('email_notices').insert({
     to_email: client.email,
-    subject,
-    body: text,
+    subject: mail.subject,
+    body: mail.text,
     kind: 'ready_to_sign',
     created_by: profile.id,
     meta: { submissionId, mailgunOk: sent.ok },
