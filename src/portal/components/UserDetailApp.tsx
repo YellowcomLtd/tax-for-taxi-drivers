@@ -191,9 +191,28 @@ export default function UserDetailApp() {
     .filter(Boolean)
     .join(', ');
 
+  const letter = docs.find((d) => d.docType === 'letter_of_engagement');
+  const contract = docs.find((d) => d.docType === 'contract_tax_returns');
+  const packDocs = [letter, contract].filter(Boolean) as ClientDocument[];
+  const signedCount = packDocs.filter((d) => d.status === 'signed').length;
+  const packState =
+    packDocs.length === 0
+      ? 'none'
+      : signedCount === packDocs.length
+        ? 'approved'
+        : signedCount > 0
+          ? 'partial'
+          : 'awaiting';
+
+  function docStatusLabel(doc?: ClientDocument) {
+    if (!doc) return { label: 'Not sent', tone: 'muted' as const };
+    if (doc.status === 'signed') return { label: 'Approved', tone: 'ok' as const };
+    return { label: 'Awaiting signature', tone: 'warn' as const };
+  }
+
   return (
     <PortalChrome requireRole="admin" active="users">
-      <div className="portal-actions" style={{ marginBottom: 16 }}>
+      <div className="portal-actions user-detail-actions">
         <a className="btn btn-ghost" href="/portal/admin/users">
           ← All users
         </a>
@@ -214,8 +233,8 @@ export default function UserDetailApp() {
         )}
       </div>
 
-      <h1 style={{ fontSize: 34, marginBottom: 6 }}>{user.fullName.replace(/\\+'/g, "'")}</h1>
-      <p className="portal-muted" style={{ marginBottom: 18 }}>
+      <h1 className="user-detail-title">{user.fullName.replace(/\\+'/g, "'")}</h1>
+      <p className="portal-muted user-detail-sub">
         {user.email}
         {user.tradeType ? ` · ${tradeLabel(user.tradeType)}` : ''}
         {user.active === false ? ' · Inactive' : ''}
@@ -224,9 +243,53 @@ export default function UserDetailApp() {
       {error && <div className="portal-alert portal-alert-error">{error}</div>}
       {message && <div className="portal-alert portal-alert-success">{message}</div>}
 
-      <div className="portal-grid-2" style={{ marginBottom: 22 }}>
+      <section className={`portal-card engagement-status engagement-${packState}`}>
+        <div className="engagement-status-head">
+          <div>
+            <h2>Engagement pack</h2>
+            <p className="portal-muted">
+              {packState === 'approved' && 'Client has signed and approved both documents.'}
+              {packState === 'partial' && 'Partially signed — one document still waiting.'}
+              {packState === 'awaiting' && 'Sent — waiting for the client to sign.'}
+              {packState === 'none' && 'No engagement pack sent yet.'}
+            </p>
+          </div>
+          <span className={`engagement-badge engagement-badge-${packState}`}>
+            {packState === 'approved' && 'Fully approved'}
+            {packState === 'partial' && 'Partially approved'}
+            {packState === 'awaiting' && 'Awaiting signature'}
+            {packState === 'none' && 'Not sent'}
+          </span>
+        </div>
+        <ul className="engagement-doc-list">
+          {(
+            [
+              { key: 'letter', title: 'Letter of Engagement', doc: letter },
+              { key: 'contract', title: 'Contract for Tax Returns', doc: contract },
+            ] as const
+          ).map((item) => {
+            const status = docStatusLabel(item.doc);
+            return (
+              <li key={item.key} className={`engagement-doc engagement-doc-${status.tone}`}>
+                <div>
+                  <strong>{item.title}</strong>
+                  {item.doc?.signedAt && (
+                    <span className="portal-muted">Signed {formatDate(item.doc.signedAt)}</span>
+                  )}
+                  {!item.doc?.signedAt && item.doc?.sentAt && (
+                    <span className="portal-muted">Sent {formatDate(item.doc.sentAt)}</span>
+                  )}
+                </div>
+                <span className={`engagement-pill engagement-pill-${status.tone}`}>{status.label}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <div className="portal-grid-2 user-detail-grid">
         <section className="portal-card">
-          <h2 style={{ fontSize: 18, marginBottom: 12 }}>At a glance</h2>
+          <h2>At a glance</h2>
           <dl className="crm-dl">
             <div>
               <dt>Email</dt>
@@ -258,11 +321,11 @@ export default function UserDetailApp() {
         </section>
 
         <section className="portal-card">
-          <h2 style={{ fontSize: 18, marginBottom: 12 }}>Engagement pack</h2>
-          <p className="portal-muted" style={{ marginBottom: 12, fontSize: 13 }}>
+          <h2>Send / re-send pack</h2>
+          <p className="portal-muted pack-help">
             Creates Letter of Engagement + Contract. Email only if you choose “Create &amp; email”.
           </p>
-          <div className="field" style={{ marginBottom: 12 }}>
+          <div className="field">
             <label htmlFor="packFee">Annual fee (£)</label>
             <input id="packFee" value={packFee} onChange={(e) => setPackFee(e.target.value)} placeholder="Optional" />
           </div>
@@ -277,8 +340,8 @@ export default function UserDetailApp() {
         </section>
       </div>
 
-      <form className="portal-card portal-form" onSubmit={save} style={{ marginBottom: 22 }}>
-        <h2 style={{ fontSize: 18, marginBottom: 14 }}>Edit details</h2>
+      <form className="portal-card portal-form user-detail-form" onSubmit={save}>
+        <h2>Edit details</h2>
         <div className="portal-grid-2">
           <div className="field">
             <label htmlFor="fullName">Full name</label>
@@ -383,11 +446,11 @@ export default function UserDetailApp() {
         </button>
       </form>
 
-      <section className="portal-card" style={{ marginBottom: 22, padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 22px' }}>
-          <h2 style={{ fontSize: 18 }}>Submissions</h2>
+      <section className="portal-card portal-card-flush user-detail-block">
+        <div className="portal-card-head">
+          <h2>Submissions</h2>
         </div>
-        <div className="portal-table-wrap" style={{ border: 'none', borderRadius: 0 }}>
+        <div className="portal-table-wrap portal-table-flush">
           <table className="portal-table">
             <thead>
               <tr>
@@ -407,13 +470,15 @@ export default function UserDetailApp() {
               )}
               {subs.map((s) => (
                 <tr key={s.id}>
-                  <td style={{ fontWeight: 700 }}>{s.periodLabel}</td>
-                  <td>
+                  <td data-label="Period" style={{ fontWeight: 700 }}>
+                    {s.periodLabel}
+                  </td>
+                  <td data-label="Status">
                     <StatusBadge status={s.status} />
                   </td>
-                  <td>{formatDate(s.updatedAt)}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <a className="btn btn-ghost" href={`/portal/admin/submission?id=${s.id}`}>
+                  <td data-label="Updated">{formatDate(s.updatedAt)}</td>
+                  <td data-label="" className="portal-row-action">
+                    <a className="btn btn-ghost btn-compact" href={`/portal/admin/submission?id=${s.id}`}>
                       Review
                     </a>
                   </td>
@@ -424,32 +489,40 @@ export default function UserDetailApp() {
         </div>
       </section>
 
-      <section className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 22px' }}>
-          <h2 style={{ fontSize: 18 }}>Documents</h2>
+      <section className="portal-card portal-card-flush">
+        <div className="portal-card-head">
+          <h2>All documents</h2>
         </div>
-        <div className="portal-table-wrap" style={{ border: 'none', borderRadius: 0 }}>
+        <div className="portal-table-wrap portal-table-flush">
           <table className="portal-table">
             <thead>
               <tr>
                 <th>Document</th>
                 <th>Status</th>
                 <th>Sent</th>
+                <th>Signed</th>
               </tr>
             </thead>
             <tbody>
               {docs.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="portal-muted">
+                  <td colSpan={4} className="portal-muted">
                     No engagement documents yet.
                   </td>
                 </tr>
               )}
               {docs.map((d) => (
                 <tr key={d.id}>
-                  <td style={{ fontWeight: 700 }}>{d.title}</td>
-                  <td>{d.status === 'signed' ? 'Signed' : 'Awaiting signature'}</td>
-                  <td>{formatDate(d.sentAt)}</td>
+                  <td data-label="Document" style={{ fontWeight: 700 }}>
+                    {d.title}
+                  </td>
+                  <td data-label="Status">
+                    <span className={`engagement-pill engagement-pill-${d.status === 'signed' ? 'ok' : 'warn'}`}>
+                      {d.status === 'signed' ? 'Approved' : 'Awaiting signature'}
+                    </span>
+                  </td>
+                  <td data-label="Sent">{formatDate(d.sentAt)}</td>
+                  <td data-label="Signed">{d.signedAt ? formatDate(d.signedAt) : '—'}</td>
                 </tr>
               ))}
             </tbody>

@@ -385,7 +385,7 @@ export default function UserManagementApp() {
         Showing {filtered.length} of {users.length}
       </p>
 
-      <section className="portal-card users-table-card">
+      <section className="portal-card users-table-card users-desktop">
         <div className="portal-table-wrap users-table-wrap">
           <table className="portal-table users-table">
             <thead>
@@ -451,6 +451,56 @@ export default function UserManagementApp() {
           </table>
         </div>
       </section>
+
+      <div className="users-mobile-list">
+        {filtered.length === 0 && <p className="portal-muted">No users match these filters.</p>}
+        {filtered.map((u) => (
+          <article key={u.id} className="users-mobile-card">
+            <div className="users-mobile-top">
+              <a className="users-name" href={`/portal/admin/users/${u.id}`}>
+                {cleanName(u.fullName)}
+              </a>
+              <div className="users-mobile-pills">
+                <span className={`users-pill ${u.role === 'admin' ? 'admin' : 'client'}`}>{u.role}</span>
+                <span className={`users-pill ${u.active === false ? 'inactive' : 'active'}`}>
+                  {u.active === false ? 'Inactive' : 'Active'}
+                </span>
+              </div>
+            </div>
+            <p className="users-email">{u.email}</p>
+            <dl className="users-mobile-meta">
+              <div>
+                <dt>City</dt>
+                <dd>{titleCaseCity(u.city)}</dd>
+              </div>
+              <div>
+                <dt>UTR</dt>
+                <dd className="users-utr">{u.utr || '—'}</dd>
+              </div>
+            </dl>
+            <div className="users-mobile-actions">
+              <a className="btn btn-y btn-compact" href={`/portal/admin/users/${u.id}`}>
+                Open profile
+              </a>
+              {u.role === 'client' && u.active !== false && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-compact"
+                  disabled={busy}
+                  onClick={() => {
+                    setPackFor(u);
+                    setPackFee(feeAmount);
+                    setPackEmail(false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  Pack
+                </button>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
     </PortalChrome>
   );
 }
