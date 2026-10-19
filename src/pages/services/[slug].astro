@@ -145,13 +145,21 @@ const jsonLd = [breadcrumbLd, serviceLd];
         <p class="lead">{service.data.heroLead}</p>
         {service.data.planNote && <p class="plan-note">{service.data.planNote}</p>}
         <div class="actions">
-          <a class="btn btn-y" href="/contact">Contact us</a>
-          <a class="read-more" href="#service-detail">Read more</a>
+          <a class="btn btn-y" href="tel:02890132083">
+            <svg class="phone-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M6.6 10.8c1.5 3 3.6 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8Z"
+                fill="currentColor"
+              />
+            </svg>
+            Phone us
+          </a>
+          <a class="btn btn-ghost-light" href="/contact">Contact us</a>
         </div>
       </div>
     </header>
 
-    <section class="section body" id="service-detail">
+    <section class="section body">
       <div class="wrap layout">
         <div class="main">
           <div class="prose">
@@ -277,28 +285,36 @@ const jsonLd = [breadcrumbLd, serviceLd];
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 18px;
+    gap: 12px;
     margin-top: 26px;
   }
 
-  .read-more {
-    color: #e8e2d4;
-    font-weight: 700;
-    font-size: 15px;
-    border-bottom: 1.5px solid rgba(255, 196, 0, 0.55);
-    padding-bottom: 2px;
+  .actions .btn-y {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .read-more:hover {
-    color: var(--yellow);
-    border-bottom-color: var(--yellow);
+  .phone-ico {
+    flex: none;
+  }
+
+  .btn-ghost-light {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+  }
+
+  .btn-ghost-light:hover {
+    background: #fff;
+    color: var(--ink);
+    border-color: #fff;
   }
 
   .body {
     padding-top: 56px;
     padding-bottom: 72px;
     background: var(--paper);
-    scroll-margin-top: 88px;
   }
 
   .layout {
