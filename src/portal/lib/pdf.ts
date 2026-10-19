@@ -1,5 +1,5 @@
 import type { SignatureRecord, Submission, User } from './types';
-import { DECLARATION_TEXT } from './types';
+import { CLIENT_APPROVAL_DECLARATION } from './legal';
 import {
   formatDate,
   formatMoney,
@@ -46,7 +46,7 @@ export function buildSignedDocumentHtml(opts: {
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8" />
-<title>Signed MTD declaration - ${escapeHtml(sub.periodLabel)}</title>
+<title>Client Approval Certificate - ${escapeHtml(sub.periodLabel)}</title>
 <style>
   @media print { body { margin: 0; } .no-print { display: none; } }
   body { font-family: Georgia, serif; color: #141310; max-width: 860px; margin: 40px auto; padding: 0 24px; line-height: 1.5; }
@@ -72,8 +72,10 @@ export function buildSignedDocumentHtml(opts: {
 <body>
   <div class="banner no-print"><strong>SIGNED DOCUMENT</strong> - Use your browser Print → Save as PDF for a PDF copy.</div>
   <div class="locked">🔒 LOCKED - Fully signed &amp; counter-signed</div>
-  <h1>Making Tax Digital - signed declaration</h1>
+  <h1>Client Approval Certificate</h1>
   <p class="meta">
+    Tax Return and Income and Expenditure Account<br/>
+    Tax for Taxi Drivers Ltd · Unit 4, North City Business Centre, Belfast BT15 2GG<br/>
     ${escapeHtml(client.fullName)} · ${escapeHtml(client.email)} · ${tradeLabel(sub.tradeType)}<br/>
     Period: <strong>${escapeHtml(sub.periodLabel)}</strong> · Completed ${formatDate(adminSignature.signedAt)}
   </p>
@@ -108,7 +110,7 @@ export function buildSignedDocumentHtml(opts: {
     </tbody>
   </table>
 
-  <div class="decl"><p>${escapeHtml(DECLARATION_TEXT)}</p></div>
+  <div class="decl"><p style="white-space:pre-line">${escapeHtml(CLIENT_APPROVAL_DECLARATION)}</p></div>
 
   <div class="sig-grid">
     <div class="sig-box">

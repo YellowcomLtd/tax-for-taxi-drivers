@@ -2,11 +2,15 @@ import { useMemo, useState } from 'react';
 import PortalChrome from './PortalChrome';
 import SignaturePad from './SignaturePad';
 import StatusBadge from './StatusBadge';
-import { ADMIN_COUNTER_SIGN_TERMS, PRIVACY_POLICY, TERMS_CONDITIONS } from '../lib/legal';
+import {
+  ADMIN_COUNTER_SIGN_TERMS,
+  CLIENT_APPROVAL_DECLARATION,
+  PRIVACY_POLICY,
+  TERMS_CONDITIONS,
+} from '../lib/legal';
 import {
   formatMoney,
   lineTotal,
-  monthExpenseTotal,
   monthProfit,
   sha256,
   totalExpenditure,
@@ -16,7 +20,6 @@ import {
 import { buildSignedDocumentHtml, downloadLockedDocument, printLockedDocument } from '../lib/pdf';
 import { loadStore, persistSubmissionLive } from '../lib/store';
 import type { SignatureRecord, Submission } from '../lib/types';
-import { DECLARATION_TEXT } from '../lib/types';
 
 function getId() {
   return new URLSearchParams(window.location.search).get('id') || '';
@@ -235,7 +238,7 @@ export default function SignEnvelope({ mode }: Props) {
       <div className="sign-envelope">
         <aside className="sign-sidebar">
           <p className="sign-sidebar-label">Sign document</p>
-          <h1>{mode === 'client' ? 'Sign your declaration' : 'Counter-sign & approve'}</h1>
+          <h1>{mode === 'client' ? 'Client Approval Certificate' : 'Counter-sign & approve'}</h1>
           <p className="portal-muted">{submission.periodLabel} · {client.fullName}</p>
           <ol className="sign-steps">
             {steps.map((s, i) => (
@@ -338,22 +341,26 @@ export default function SignEnvelope({ mode }: Props) {
                       </label>
                     </section>
                     <section>
-                      <h2>Terms &amp; declaration</h2>
-                      <p>{TERMS_CONDITIONS}</p>
-                      <blockquote>{DECLARATION_TEXT}</blockquote>
+                      <h2>Client Approval Certificate</h2>
+                      <p className="portal-muted" style={{ marginBottom: 12 }}>
+                        Tax for Taxi Drivers Ltd · Accounting, Bookkeeping and Tax Services · Unit 4, North City
+                        Business Centre, Belfast BT15 2GG
+                      </p>
+                      <blockquote style={{ whiteSpace: 'pre-line' }}>{CLIENT_APPROVAL_DECLARATION}</blockquote>
+                      <p style={{ marginTop: 16 }}>{TERMS_CONDITIONS}</p>
                       <label className="sign-check">
                         <input type="checkbox" checked={termsOk} onChange={(e) => setTermsOk(e.target.checked)} />
-                        I agree to the terms and confirm the figures are accurate
+                        I approve this Tax Return and Income and Expenditure Account and authorise submission to HMRC
                       </label>
                     </section>
                   </>
                 ) : (
                   <section>
-                    <h2>Accountant approval</h2>
-                    <p>{ADMIN_COUNTER_SIGN_TERMS}</p>
+                    <h2>Firm approval (Client Approval Certificate)</h2>
+                    <p style={{ whiteSpace: 'pre-line' }}>{ADMIN_COUNTER_SIGN_TERMS}</p>
                     <label className="sign-check">
                       <input type="checkbox" checked={termsOk} onChange={(e) => setTermsOk(e.target.checked)} />
-                      I approve this submission and am ready to counter-sign
+                      I confirm the client approved these figures and instructed us to submit to HMRC
                     </label>
                   </section>
                 )}

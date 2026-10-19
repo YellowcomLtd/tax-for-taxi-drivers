@@ -110,6 +110,41 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['email_notices']['Insert']>;
       };
+      client_documents: {
+        Row: {
+          id: string;
+          user_id: string;
+          doc_type: 'letter_of_engagement' | 'contract_tax_returns';
+          title: string;
+          body_html: string;
+          status: 'sent' | 'signed';
+          fee_amount: string | null;
+          client_signature: unknown | null;
+          signed_document_html: string | null;
+          signed_at: string | null;
+          sent_at: string;
+          sent_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          doc_type: 'letter_of_engagement' | 'contract_tax_returns';
+          title: string;
+          body_html: string;
+          status?: 'sent' | 'signed';
+          fee_amount?: string | null;
+          client_signature?: unknown | null;
+          signed_document_html?: string | null;
+          signed_at?: string | null;
+          sent_at?: string;
+          sent_by?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['client_documents']['Insert']> & {
+          updated_at?: string;
+        };
+      };
     };
   };
 }

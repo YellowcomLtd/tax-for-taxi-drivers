@@ -65,6 +65,7 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
         ]
       : [
           { href: '/portal/client', label: 'My submissions', key: 'client' },
+          { href: '/portal/client/documents', label: 'Documents', key: 'documents' },
           { href: '/portal/client/new', label: 'New submission', key: 'new' },
         ];
 

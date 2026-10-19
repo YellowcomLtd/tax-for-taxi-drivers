@@ -89,6 +89,26 @@ export interface EmailCampaign {
   recipients: string[];
 }
 
+export type ClientDocType = 'letter_of_engagement' | 'contract_tax_returns';
+export type ClientDocStatus = 'sent' | 'signed';
+
+export interface ClientDocument {
+  id: string;
+  userId: string;
+  docType: ClientDocType;
+  title: string;
+  bodyHtml: string;
+  status: ClientDocStatus;
+  feeAmount?: string;
+  clientSignature?: SignatureRecord;
+  signedDocumentHtml?: string;
+  signedAt?: string;
+  sentAt: string;
+  sentBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Session {
   userId: string;
   email: string;
@@ -101,6 +121,7 @@ export interface PortalStore {
   users: User[];
   submissions: Submission[];
   campaigns: EmailCampaign[];
+  documents: ClientDocument[];
   session: Session | null;
   notices: { id: string; at: string; to: string; subject: string; body: string }[];
 }
@@ -131,8 +152,8 @@ export const BEAUTICIAN_CATEGORIES = [
   'Accountancy',
 ] as const;
 
-export const DECLARATION_TEXT =
-  'I confirm that the income and expenditure figures in this submission are accurate and complete to the best of my knowledge, and I authorise Tax for Taxi Drivers to use them in preparing my Making Tax Digital submission to HMRC.';
+/** @deprecated Prefer importing from legal.ts — kept for existing imports. */
+export { DECLARATION_TEXT } from './legal';
 
 export const STATUS_LABEL: Record<SubmissionStatus, string> = {
   draft: 'Draft',

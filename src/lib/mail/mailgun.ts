@@ -298,6 +298,36 @@ export function bulkEmailContent(opts: { subject: string; body: string; fullName
   return { subject: opts.subject, text, html };
 }
 
+export function onboardingPackEmailContent(opts: { fullName: string }) {
+  const subject = 'Please sign your engagement documents';
+  const portal = `${portalPublicUrl()}/portal/client/documents`;
+  const text = [
+    `Hi ${opts.fullName},`,
+    '',
+    'Tax for Taxi Drivers has sent your Letter of Engagement and Contract for Tax Returns.',
+    'Please sign in to the portal and sign both documents.',
+    '',
+    `Open documents: ${portal}`,
+    '',
+    'Tax for Taxi Drivers',
+  ].join('\n');
+
+  const html = brandedEmailHtml({
+    title: 'Documents ready to sign',
+    preheader: 'Please sign your Letter of Engagement and Contract for Tax Returns.',
+    bodyHtml: [
+      p(`Hi <strong style="color:#141310;">${escapeHtml(opts.fullName)}</strong>,`),
+      p(
+        'We have prepared your <strong style="color:#141310;">Letter of Engagement</strong> and <strong style="color:#141310;">Contract for Tax Returns</strong>. Please review and sign both in the client portal.'
+      ),
+      primaryButton(portal, 'Sign documents'),
+      p('If you have any questions, call the office on 02890 132083.', 'margin:0;font-size:13px;line-height:1.5;color:#8f897d;'),
+    ].join(''),
+  });
+
+  return { subject, text, html };
+}
+
 export function enquiryEmailContent(opts: {
   name: string;
   email: string;

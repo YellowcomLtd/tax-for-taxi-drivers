@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { error, json, mapProfile, mapSubmission, requireUser } from '../../../lib/portal/api';
+import { error, json, mapClientDocument, mapProfile, mapSubmission, requireUser } from '../../../lib/portal/api';
 
 export const prerender = false;
 
@@ -9,7 +9,7 @@ export const GET: APIRoute = async (context) => {
 
   const { supabase, profile } = auth;
 
-  const [{ data: profiles }, { data: submissions }, { data: campaigns }] = await Promise.all([
+  const [{ data: profiles }, { data: submissions }, { data: campaigns }, docsResult] = await Promise.all([
     profile.role === 'admin'
       ? supabase.from('profiles').select('*').order('full_name')
       : supabase.from('profiles').select('*').eq('id', profile.id),
@@ -19,7 +19,19 @@ export const GET: APIRoute = async (context) => {
     profile.role === 'admin'
       ? supabase.from('email_campaigns').select('*').order('sent_at', { ascending: false }).limit(50)
       : Promise.resolve({ data: [] as unknown[] }),
+    profile.role === 'admin'
+      ? supabase.from('client_documents').select('*').order('created_at', { ascending: false })
+      : supabase.from('client_documents').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
   ]);
+
+  let documents: ReturnType<typeof mapClientDocument>[] = [];
+  if (docsResult.error) {
+    if (!(docsResult.error.message?.includes('client_documents') || docsResult.error.code === '42P01')) {
+      console.error('[bootstrap] documents', docsResult.error);
+    }
+  } else {
+    documents = (docsResult.data || []).map((row) => mapClientDocument(row as Record<string, unknown>));
+  }
 
   return json({
     session: {
@@ -40,6 +52,7 @@ export const GET: APIRoute = async (context) => {
       recipientCount: (c as { recipient_count: number }).recipient_count,
       recipients: (c as { recipients: string[] }).recipients,
     })),
+    documents,
   });
 };
 

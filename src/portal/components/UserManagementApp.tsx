@@ -14,6 +14,8 @@ export default function UserManagementApp() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'client' | 'admin'>('client');
   const [tradeType, setTradeType] = useState<'taxi' | 'beautician'>('taxi');
+  const [sendPack, setSendPack] = useState(true);
+  const [feeAmount, setFeeAmount] = useState('');
 
   async function refresh() {
     const store = await hydrateLiveStore();
@@ -23,6 +25,18 @@ export default function UserManagementApp() {
   useEffect(() => {
     void refresh();
   }, []);
+
+  async function sendEngagementPack(userId: string, fee?: string) {
+    const res = await fetch('/api/portal/documents', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, feeAmount: fee || feeAmount }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not send engagement pack');
+    return data as { mailSent?: boolean };
+  }
 
   async function createUser(e: React.FormEvent) {
     e.preventDefault();
@@ -41,13 +55,27 @@ export default function UserManagementApp() {
         setError(data.error || 'Could not create user');
         return;
       }
+
+      let packNote = '';
+      if (role === 'client' && sendPack && data.user?.id) {
+        try {
+          const pack = await sendEngagementPack(data.user.id, feeAmount);
+          packNote = pack.mailSent
+            ? ' Engagement pack (Letter of Engagement + Contract) emailed.'
+            : ' Engagement pack created; email failed — check Mailgun.';
+        } catch (err) {
+          packNote = ` Engagement pack failed: ${err instanceof Error ? err.message : 'unknown error'}`;
+        }
+      }
+
       setMessage(
-        data.inviteSent
+        (data.inviteSent
           ? `Account created and invite emailed to ${email}.`
-          : `Account created for ${email}. Invite email could not be sent — check Mailgun.`
+          : `Account created for ${email}. Invite email could not be sent — check Mailgun.`) + packNote
       );
       setFullName('');
       setEmail('');
+      setFeeAmount('');
       await refresh();
     } finally {
       setBusy(false);
@@ -71,6 +99,26 @@ export default function UserManagementApp() {
         return;
       }
       setMessage(data.resetSent ? 'Password reset email sent.' : 'Reset link created but email failed — check Mailgun.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function sendPackForUser(user: User) {
+    const fee = window.prompt('Annual fee for Contract (£ amount, optional — leave blank if not set):', feeAmount) ?? '';
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const pack = await sendEngagementPack(user.id, fee);
+      setMessage(
+        pack.mailSent
+          ? `Engagement pack sent to ${user.fullName}.`
+          : `Engagement pack created for ${user.fullName}; email failed — check Mailgun.`
+      );
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send pack');
     } finally {
       setBusy(false);
     }
@@ -100,7 +148,7 @@ export default function UserManagementApp() {
     <PortalChrome requireRole="admin" active="users">
       <h1 style={{ fontSize: 34, marginBottom: 8 }}>User management</h1>
       <p className="portal-muted" style={{ marginBottom: 22 }}>
-        Add drivers and admin staff, send password resets, and deactivate accounts. Invites and resets are sent via Mailgun.
+        Add drivers, send engagement packs (Letter of Engagement + Contract), and manage access.
       </p>
 
       {error && <div className="portal-alert portal-alert-error">{error}</div>}
@@ -125,13 +173,32 @@ export default function UserManagementApp() {
             </select>
           </div>
           {role === 'client' && (
-            <div className="field">
-              <label htmlFor="trade">Trade</label>
-              <select id="trade" value={tradeType} onChange={(e) => setTradeType(e.target.value as 'taxi' | 'beautician')}>
-                <option value="taxi">Taxi</option>
-                <option value="beautician">Beautician</option>
-              </select>
-            </div>
+            <>
+              <div className="field">
+                <label htmlFor="trade">Trade</label>
+                <select
+                  id="trade"
+                  value={tradeType}
+                  onChange={(e) => setTradeType(e.target.value as 'taxi' | 'beautician')}
+                >
+                  <option value="taxi">Taxi</option>
+                  <option value="beautician">Beautician</option>
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor="fee">Annual contract fee (£)</label>
+                <input
+                  id="fee"
+                  value={feeAmount}
+                  onChange={(e) => setFeeAmount(e.target.value)}
+                  placeholder="e.g. 540"
+                />
+              </div>
+              <label style={{ display: 'flex', gap: 10, marginBottom: 12, fontWeight: 600 }}>
+                <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} />
+                Send Letter of Engagement + Contract to sign
+              </label>
+            </>
           )}
           <button className="btn btn-y" type="submit" disabled={busy}>
             Create &amp; email invite
@@ -139,11 +206,12 @@ export default function UserManagementApp() {
         </form>
 
         <section className="portal-card">
-          <h2 style={{ fontSize: 20, marginBottom: 12 }}>Security</h2>
+          <h2 style={{ fontSize: 20, marginBottom: 12 }}>Onboarding documents</h2>
           <ul style={{ marginLeft: 18, color: 'var(--ink-2)', fontWeight: 500, lineHeight: 1.55 }}>
-            <li>Roles are stored in Supabase app metadata (not editable by users).</li>
-            <li>Each driver can only access their own submissions.</li>
-            <li>Password resets use single-use recovery links emailed via Mailgun.</li>
+            <li>Letter of Engagement — basis of instruction for accounts / tax returns.</li>
+            <li>Contract for Tax Returns — fee, Direct Debit, renewal and liabilities.</li>
+            <li>Clients sign both under Portal → Documents.</li>
+            <li>Submission sign-off uses the Client Approval Certificate wording.</li>
           </ul>
         </section>
       </div>
@@ -170,11 +238,21 @@ export default function UserManagementApp() {
                   <td>{u.tradeType ? tradeLabel(u.tradeType) : ' - '}</td>
                   <td>{u.active === false ? 'Inactive' : 'Active'}</td>
                   <td style={{ textAlign: 'right' }}>
-                    <div className="portal-actions" style={{ justifyContent: 'flex-end' }}>
+                    <div className="portal-actions" style={{ justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                       {u.role === 'client' && u.active !== false && (
-                        <a className="btn btn-y" href={`/portal/admin/new?client=${u.id}`}>
-                          New submission
-                        </a>
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-y"
+                            disabled={busy}
+                            onClick={() => void sendPackForUser(u)}
+                          >
+                            Send engagement pack
+                          </button>
+                          <a className="btn btn-ghost" href={`/portal/admin/new?client=${u.id}`}>
+                            New submission
+                          </a>
+                        </>
                       )}
                       <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void sendReset(u.id)}>
                         Reset password

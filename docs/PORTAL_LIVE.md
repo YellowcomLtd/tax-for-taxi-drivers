@@ -48,6 +48,15 @@ Also set Vercel env `PUBLIC_SITE_URL=https://www.taxfortaxidrivers.co.uk`
 Admins create submissions for a client from **Portal → New submission** (or
 the per-client button on the dashboard / Users list).
 
+### Client documents (engagement pack)
+
+Run `supabase/migrations/20261019120000_client_documents.sql` in the SQL editor.
+
+Admins send a **Letter of Engagement** + **Contract for Tax Returns** from
+**Portal → Users** (on create, or **Send engagement pack**). Clients sign under
+**Portal → Documents**. Submission sign-off uses the Client Approval Certificate
+wording from Michael’s paper pack.
+
 ## Security
 
 - Password + emailed OTP at sign-in

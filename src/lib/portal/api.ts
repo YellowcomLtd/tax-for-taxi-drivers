@@ -124,3 +124,22 @@ export function submissionToRow(sub: Record<string, unknown>) {
     signed_at: sub.signedAt ?? null,
   };
 }
+
+export function mapClientDocument(row: Record<string, unknown>) {
+  return {
+    id: row.id as string,
+    userId: row.user_id as string,
+    docType: row.doc_type as 'letter_of_engagement' | 'contract_tax_returns',
+    title: row.title as string,
+    bodyHtml: row.body_html as string,
+    status: row.status as 'sent' | 'signed',
+    feeAmount: (row.fee_amount as string) || undefined,
+    clientSignature: row.client_signature ?? undefined,
+    signedDocumentHtml: (row.signed_document_html as string) || undefined,
+    signedAt: (row.signed_at as string) || undefined,
+    sentAt: row.sent_at as string,
+    sentBy: (row.sent_by as string) || undefined,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}

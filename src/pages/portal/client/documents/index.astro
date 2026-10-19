@@ -1,0 +1,10 @@
+---
+import PortalLayout from '../../../../portal/PortalLayout.astro';
+import ClientDocumentsApp from '../../../../portal/components/ClientDocumentsApp';
+
+export const prerender = false;
+---
+
+<PortalLayout title="My documents">
+  <ClientDocumentsApp client:only="react" />
+</PortalLayout>

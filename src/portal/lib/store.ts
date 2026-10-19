@@ -7,6 +7,7 @@ function emptyStore(): PortalStore {
     users: [],
     submissions: [],
     campaigns: [],
+    documents: [],
     session: null,
     notices: [],
   };
@@ -57,6 +58,7 @@ export async function hydrateLiveStore(): Promise<PortalStore | null> {
     users: data.users as User[],
     submissions: data.submissions as Submission[],
     campaigns: data.campaigns as EmailCampaign[],
+    documents: (data.documents as PortalStore['documents']) || [],
     session: data.session as Session,
     notices: [],
   };

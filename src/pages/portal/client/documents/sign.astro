@@ -1,0 +1,10 @@
+---
+import PortalLayout from '../../../../portal/PortalLayout.astro';
+import OnboardingDocSign from '../../../../portal/components/OnboardingDocSign';
+
+export const prerender = false;
+---
+
+<PortalLayout title="Sign document">
+  <OnboardingDocSign client:only="react" />
+</PortalLayout>

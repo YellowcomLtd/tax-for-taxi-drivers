@@ -3,10 +3,11 @@ import PortalChrome from './PortalChrome';
 import StatusBadge from './StatusBadge';
 import { formatDate, formatMoney, totalProfit } from '../lib/calc';
 import { hydrateLiveStore } from '../lib/store';
-import type { Submission } from '../lib/types';
+import type { ClientDocument, Submission } from '../lib/types';
 
 export default function ClientDashboard() {
   const [subs, setSubs] = useState<Submission[]>([]);
+  const [pendingDocs, setPendingDocs] = useState<ClientDocument[]>([]);
 
   useEffect(() => {
     const sync = async () => {
@@ -14,6 +15,7 @@ export default function ClientDashboard() {
       if (!store?.session) return;
       const uid = store.session.userId;
       setSubs(store.submissions.filter((s) => s.userId === uid).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
+      setPendingDocs(store.documents.filter((d) => d.userId === uid && d.status === 'sent'));
     };
     void sync();
     const handler = () => void sync();
@@ -34,10 +36,27 @@ export default function ClientDashboard() {
             Enter income &amp; expenditure by month (usually a quarter), then sign when your accountant marks it ready.
           </p>
         </div>
-        <a className="btn btn-y" href="/portal/client/new">
-          New submission
-        </a>
+        <div className="portal-actions">
+          {pendingDocs.length > 0 && (
+            <a className="btn btn-ghost" href="/portal/client/documents">
+              Sign documents ({pendingDocs.length})
+            </a>
+          )}
+          <a className="btn btn-y" href="/portal/client/new">
+            New submission
+          </a>
+        </div>
       </div>
+
+      {pendingDocs.length > 0 && (
+        <div className="portal-alert portal-alert-info" style={{ marginBottom: 18 }}>
+          You have {pendingDocs.length} engagement document{pendingDocs.length === 1 ? '' : 's'} ready to sign
+          (Letter of Engagement / Contract).{' '}
+          <a href="/portal/client/documents" style={{ fontWeight: 800 }}>
+            Open documents →
+          </a>
+        </div>
+      )}
 
       <div className="portal-grid-3" style={{ marginBottom: 22, gridTemplateColumns: 'repeat(4, 1fr)' }}>
         <div className="stat">
