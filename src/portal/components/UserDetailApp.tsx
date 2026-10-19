@@ -115,6 +115,59 @@ export default function UserDetailApp() {
     }
   }
 
+  async function setActive(active: boolean) {
+    if (!user) return;
+    const label = active ? 'reactivate' : 'deactivate';
+    if (!window.confirm(`${label[0].toUpperCase()}${label.slice(1)} ${user.fullName}?`)) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch('/api/portal/users', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, active }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || `Could not ${label}`);
+        return;
+      }
+      setUser(data.user);
+      setDraft(data.user);
+      setMessage(active ? 'Account reactivated.' : 'Account deactivated.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function sendReset() {
+    if (!user) return;
+    if (!window.confirm(`Email a password reset link to ${user.email}?`)) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch('/api/portal/users', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, sendPasswordReset: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not send reset email');
+        return;
+      }
+      setMessage(data.resetSent ? 'Password reset email sent.' : 'Reset link created but email failed — check Mailgun.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!ready) {
     return (
       <PortalChrome requireRole="admin" active="users">
@@ -147,9 +200,21 @@ export default function UserDetailApp() {
         <a className="btn btn-ghost" href={`/portal/admin/new?client=${user.id}`}>
           New submission
         </a>
+        <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void sendReset()}>
+          Reset password
+        </button>
+        {user.active === false ? (
+          <button type="button" className="btn btn-y" disabled={busy} onClick={() => void setActive(true)}>
+            Reactivate
+          </button>
+        ) : (
+          <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void setActive(false)}>
+            Deactivate
+          </button>
+        )}
       </div>
 
-      <h1 style={{ fontSize: 34, marginBottom: 6 }}>{user.fullName}</h1>
+      <h1 style={{ fontSize: 34, marginBottom: 6 }}>{user.fullName.replace(/\\+'/g, "'")}</h1>
       <p className="portal-muted" style={{ marginBottom: 18 }}>
         {user.email}
         {user.tradeType ? ` · ${tradeLabel(user.tradeType)}` : ''}

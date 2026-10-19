@@ -67,11 +67,21 @@ export function roleFromProfile(role: string): AppRole {
   return role === 'admin' ? 'admin' : 'client';
 }
 
+function cleanEscapedName(value: string) {
+  let out = value || '';
+  for (let i = 0; i < 6; i++) {
+    const next = out.replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+    if (next === out) break;
+    out = next;
+  }
+  return out;
+}
+
 export function mapProfile(row: Record<string, unknown>) {
   return {
     id: row.id as string,
     email: row.email as string,
-    fullName: row.full_name as string,
+    fullName: cleanEscapedName(row.full_name as string),
     role: roleFromProfile(String(row.role || 'client')),
     tradeType: (row.trade_type as 'taxi' | 'beautician' | null) || undefined,
     active: row.active !== false,
