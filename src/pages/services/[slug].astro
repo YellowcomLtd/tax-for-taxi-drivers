@@ -145,13 +145,13 @@ const jsonLd = [breadcrumbLd, serviceLd];
         <p class="lead">{service.data.heroLead}</p>
         {service.data.planNote && <p class="plan-note">{service.data.planNote}</p>}
         <div class="actions">
-          <a class="btn btn-y" href="tel:02890132083">Contact us</a>
-          <a class="btn btn-ghost-light" href="/contact">Contact us</a>
+          <a class="btn btn-y" href="/contact">Contact us</a>
+          <a class="read-more" href="#service-detail">Read more</a>
         </div>
       </div>
     </header>
 
-    <section class="section body">
+    <section class="section body" id="service-detail">
       <div class="wrap layout">
         <div class="main">
           <div class="prose">
@@ -276,26 +276,29 @@ const jsonLd = [breadcrumbLd, serviceLd];
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    align-items: center;
+    gap: 18px;
     margin-top: 26px;
   }
 
-  .btn-ghost-light {
-    background: transparent;
-    color: #fff;
-    border: 1.5px solid rgba(255, 255, 255, 0.45);
+  .read-more {
+    color: #e8e2d4;
+    font-weight: 700;
+    font-size: 15px;
+    border-bottom: 1.5px solid rgba(255, 196, 0, 0.55);
+    padding-bottom: 2px;
   }
 
-  .btn-ghost-light:hover {
-    background: #fff;
-    color: var(--ink);
-    border-color: #fff;
+  .read-more:hover {
+    color: var(--yellow);
+    border-bottom-color: var(--yellow);
   }
 
   .body {
     padding-top: 56px;
     padding-bottom: 72px;
     background: var(--paper);
+    scroll-margin-top: 88px;
   }
 
   .layout {
