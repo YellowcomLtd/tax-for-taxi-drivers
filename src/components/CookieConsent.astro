@@ -191,16 +191,29 @@
 
   @media (max-width: 640px) {
     .cookie-banner {
-      margin: 10px;
-      padding: 16px;
+      margin: 8px;
+      padding: 14px;
+      max-height: min(70vh, 420px);
+      overflow-y: auto;
     }
 
     .cookie-actions {
       width: 100%;
+      flex-direction: column;
     }
 
     .cookie-actions .btn {
-      flex: 1 1 auto;
+      width: 100%;
+      flex: none;
+      justify-content: center;
+    }
+
+    .cookie-prefs-actions {
+      flex-direction: column;
+    }
+
+    .cookie-prefs-actions .btn {
+      width: 100%;
       justify-content: center;
     }
   }

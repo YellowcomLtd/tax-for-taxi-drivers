@@ -17,9 +17,8 @@ import heroPhoto from '../assets/images/hero-team.jpg';
         <a class="btn btn-ghost" href="/services">See services &amp; fees</a>
       </div>
       <p class="hero-alt">
-        Or speak to Cathy on <a href="tel:07366565000">07366 565000</a>
-        <span aria-hidden="true">&middot;</span>
-        Office <a href="tel:02890132083">02890 132083</a>
+        <span>Or speak to Cathy on <a href="tel:07366565000">07366 565000</a></span>
+        <span>Office <a href="tel:02890132083">02890 132083</a></span>
       </p>
       <div class="trust">Trusted by taxi drivers across Northern Ireland — ask them.</div>
     </div>
@@ -108,6 +107,9 @@ import heroPhoto from '../assets/images/hero-team.jpg';
     font-weight: 600;
     color: var(--ink-3);
     line-height: 1.5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
   }
 
   .hero-alt a {
@@ -119,10 +121,6 @@ import heroPhoto from '../assets/images/hero-team.jpg';
   .hero-alt a:hover {
     color: var(--ink);
     border-bottom-color: var(--yellow-deep);
-  }
-
-  .hero-alt span {
-    margin: 0 6px;
   }
 
   .trust {
@@ -192,7 +190,7 @@ import heroPhoto from '../assets/images/hero-team.jpg';
   @media (max-width: 960px) {
     .hero-grid {
       grid-template-columns: 1fr;
-      gap: 36px;
+      gap: 28px;
     }
 
     .hero-photo :global(img) {
@@ -202,16 +200,71 @@ import heroPhoto from '../assets/images/hero-team.jpg';
 
   @media (max-width: 640px) {
     .hero {
-      padding: 48px 0 28px;
+      padding: 28px 0 20px;
+    }
+
+    .hero h1 {
+      gap: 8px;
     }
 
     .hero h1 .brand-line {
-      font-size: clamp(30px, 9vw, 44px);
+      font-size: clamp(26px, 7.6vw, 34px);
+      line-height: 1.08;
+      max-width: 14ch;
+    }
+
+    .hero h1 .tagline {
+      font-size: clamp(18px, 5.2vw, 24px);
+    }
+
+    .subhead {
+      margin-top: 14px;
+      font-size: 14px;
+      max-width: none;
+    }
+
+    .hero p.lead {
+      font-size: 16px;
+      max-width: none;
+      margin-top: 10px;
+    }
+
+    .hero-cta {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
     }
 
     .hero-cta .btn {
       width: 100%;
       justify-content: center;
+      padding: 14px 18px;
+      font-size: 15px;
+    }
+
+    .hero-alt {
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 13.5px;
+    }
+
+    .trust {
+      margin-top: 18px;
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+
+    .hero-badge {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      padding: 12px 14px;
+    }
+
+    .hb-row {
+      font-size: 12.5px;
+      padding: 5px 0;
     }
   }
 </style>

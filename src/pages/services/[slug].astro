@@ -377,15 +377,76 @@ const jsonLd = [breadcrumbLd, serviceLd];
   @media (max-width: 980px) {
     .layout {
       grid-template-columns: 1fr;
-      gap: 36px;
+      gap: 28px;
     }
 
     .service-hero {
-      min-height: 380px;
+      min-height: 0;
     }
 
     .hero-copy {
-      padding: 44px 0 36px;
+      padding: 40px 0 32px;
+    }
+
+    h1 {
+      max-width: none;
+      font-size: clamp(26px, 7vw, 36px);
+    }
+
+    .lead {
+      font-size: 16px;
+      max-width: none;
+    }
+
+    .body {
+      padding-top: 36px;
+      padding-bottom: 48px;
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .prose {
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .prose :global(h2) {
+      font-size: 22px;
+      margin: 28px 0 12px;
+    }
+
+    .faq-block {
+      margin-top: 36px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .crumbs {
+      font-size: 12px;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .hero-copy {
+      padding: 32px 0 28px;
+    }
+
+    .plan-note {
+      font-size: 12.5px;
+      padding: 7px 12px;
+      white-space: normal;
+      line-height: 1.35;
+      border-radius: 12px;
     }
   }
 </style>

@@ -102,4 +102,35 @@
     color: #c3bdb1;
     text-decoration: underline;
   }
+
+  @media (max-width: 640px) {
+    .cta h2 {
+      font-size: clamp(26px, 7.5vw, 34px);
+    }
+
+    .cta p {
+      font-size: 15.5px;
+      max-width: none;
+    }
+
+    .phones {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .phone-btn {
+      width: 100%;
+      padding: 14px 18px;
+    }
+
+    .phone-btn b {
+      font-size: 19px;
+    }
+
+    .contact-alt {
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+  }
 </style>

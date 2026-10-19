@@ -84,12 +84,29 @@ const items = compact ? all.slice(0, 3) : all;
   @media (max-width: 960px) {
     .cards {
       grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
   }
 
   @media (max-width: 640px) {
     .cards {
       grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .card {
+      padding: 20px 18px;
+      border-radius: 16px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin: 14px 0 6px;
+    }
+
+    .card p {
+      font-size: 14.5px;
     }
   }
 </style>

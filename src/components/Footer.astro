@@ -206,12 +206,38 @@ const year = 2026;
   @media (max-width: 900px) {
     .foot-grid {
       grid-template-columns: 1fr 1fr;
+      gap: 28px;
     }
   }
 
   @media (max-width: 480px) {
+    .foot {
+      padding: 44px 0 22px;
+    }
+
     .foot-grid {
       grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .foot p {
+      max-width: none;
+    }
+
+    .foot a {
+      padding: 6px 0;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .foot-bar {
+      margin-top: 32px;
+      gap: 12px;
+    }
+
+    .foot-legal {
+      gap: 12px;
     }
   }
 </style>

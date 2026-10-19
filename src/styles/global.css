@@ -180,19 +180,31 @@ svg {
 
 @media (max-width: 640px) {
   .wrap {
-    width: min(1180px, calc(100% - 28px));
+    width: min(1180px, calc(100% - 24px));
   }
 
   .section {
-    padding: 56px 0;
+    padding: 44px 0;
   }
 
   .head-row {
     align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .head-row h2 {
-    font-size: clamp(26px, 8vw, 36px);
+    font-size: clamp(24px, 7.2vw, 32px);
+  }
+
+  .head-row p {
+    max-width: none;
+    font-size: 15px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
   }
 
   .btn {
