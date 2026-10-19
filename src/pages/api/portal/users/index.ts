@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro';
 import { randomBytes } from 'node:crypto';
-import { siteUrl } from '../../../../lib/env';
+import {
+  passwordSetUrlFromGenerateLink,
+  portalResetPasswordPath,
+} from '../../../../lib/portal/authLinks';
 import { inviteEmailContent, resetEmailContent, sendEmail } from '../../../../lib/mail/mailgun';
 import { error, json, mapProfile, requireAdmin } from '../../../../lib/portal/api';
 
@@ -62,10 +65,11 @@ export const POST: APIRoute = async (context) => {
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: 'recovery',
     email,
-    options: { redirectTo: `${siteUrl()}/portal/reset-password` },
+    options: { redirectTo: portalResetPasswordPath() },
   });
 
-  if (linkError || !linkData.properties?.action_link) {
+  const resetUrl = passwordSetUrlFromGenerateLink(linkData?.properties || {});
+  if (linkError || !resetUrl) {
     return error(linkError?.message || 'User created but invite link failed', 500);
   }
 
@@ -73,7 +77,7 @@ export const POST: APIRoute = async (context) => {
     fullName,
     email,
     role: role === 'admin' ? 'admin staff' : 'driver / client',
-    resetUrl: linkData.properties.action_link,
+    resetUrl,
   });
   const sent = await sendEmail({ to: email, ...mail });
   await admin.from('email_notices').insert({
@@ -138,14 +142,15 @@ export const PATCH: APIRoute = async (context) => {
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: 'recovery',
       email: profile.email,
-      options: { redirectTo: `${siteUrl()}/portal/reset-password` },
+      options: { redirectTo: portalResetPasswordPath() },
     });
-    if (linkError || !linkData.properties?.action_link) {
+    const resetUrl = passwordSetUrlFromGenerateLink(linkData?.properties || {});
+    if (linkError || !resetUrl) {
       return error(linkError?.message || 'Could not create reset link', 500);
     }
     const mail = resetEmailContent({
       fullName: profile.full_name,
-      resetUrl: linkData.properties.action_link,
+      resetUrl,
     });
     const sent = await sendEmail({ to: profile.email, ...mail });
     await admin.from('email_notices').insert({

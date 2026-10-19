@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { EmailOtpType } from '@supabase/supabase-js';
 import { createBrowserSupabase } from '../../lib/supabase/browser';
 
 export default function ResetPasswordApp() {
@@ -8,10 +9,61 @@ export default function ResetPasswordApp() {
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
 
   useEffect(() => {
-    const supabase = createBrowserSupabase();
-    void supabase.auth.getSession().then(() => setReady(true));
+    let cancelled = false;
+
+    async function init() {
+      try {
+        const supabase = createBrowserSupabase();
+        const params = new URLSearchParams(window.location.search);
+        const tokenHash = params.get('token_hash');
+        const type = (params.get('type') || 'recovery') as EmailOtpType;
+
+        if (tokenHash) {
+          const { error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type,
+          });
+          if (cancelled) return;
+          if (verifyError) {
+            setError(
+              verifyError.message ||
+                'This password link is invalid or has expired. Ask the office to send a new invite.'
+            );
+            setReady(true);
+            return;
+          }
+          window.history.replaceState({}, '', '/portal/reset-password');
+        }
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (cancelled) return;
+
+        if (!session) {
+          setError(
+            'This password link is invalid or has expired. Ask the office to send a new invite.'
+          );
+          setHasSession(false);
+        } else {
+          setHasSession(true);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Could not open password reset.');
+        }
+      } finally {
+        if (!cancelled) setReady(true);
+      }
+    }
+
+    void init();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function submit(e: React.FormEvent) {
@@ -27,10 +79,18 @@ export default function ResetPasswordApp() {
     }
     setBusy(true);
     try {
+      const supabase = createBrowserSupabase();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
       const res = await fetch('/api/portal/auth/update-password', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
@@ -60,12 +120,19 @@ export default function ResetPasswordApp() {
         <section className="portal-card" style={{ maxWidth: 480, margin: '0 auto' }}>
           <h1 style={{ fontSize: 28, marginBottom: 12 }}>Choose a new password</h1>
           {!ready ? (
-            <p className="portal-muted">Checking reset session…</p>
+            <p className="portal-muted">Checking reset link…</p>
           ) : done ? (
             <>
               <div className="portal-alert portal-alert-success">Password updated. You can sign in now.</div>
               <a className="btn btn-y" href="/portal">
                 Go to sign in
+              </a>
+            </>
+          ) : !hasSession ? (
+            <>
+              {error && <div className="portal-alert portal-alert-error">{error}</div>}
+              <a className="btn btn-ghost" href="/portal">
+                Back to sign in
               </a>
             </>
           ) : (

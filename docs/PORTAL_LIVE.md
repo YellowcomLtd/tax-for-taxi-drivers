@@ -34,6 +34,20 @@ where email = 'your-admin@email.com';
 
 Further drivers and staff are invited from **Portal → Users**.
 
+Invite and password-reset emails use a direct link to
+`https://www.taxfortaxidrivers.co.uk/portal/reset-password` (with a Supabase
+`token_hash`). In the Supabase dashboard, under **Authentication → URL
+configuration**, set:
+
+- **Site URL**: `https://www.taxfortaxidrivers.co.uk`
+- **Redirect URLs**: include `https://www.taxfortaxidrivers.co.uk/portal/reset-password`
+
+Also set Vercel env `PUBLIC_SITE_URL=https://www.taxfortaxidrivers.co.uk`
+(Production + Preview if you send invites from preview).
+
+Admins create submissions for a client from **Portal → New submission** (or
+the per-client button on the dashboard / Users list).
+
 ## Security
 
 - Password + emailed OTP at sign-in

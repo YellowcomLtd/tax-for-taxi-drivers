@@ -74,11 +74,20 @@ export function requireEnv(name: string): string {
 }
 
 export function siteUrl(): string {
-  return (
-    readEnvAlias('PUBLIC_SITE_URL', 'SITE_URL', 'VERCEL_PROJECT_PRODUCTION_URL') ||
-    readImportMetaEnv('SITE') ||
-    'https://www.taxfortaxidrivers.co.uk'
-  ).replace(/\/$/, '');
+  // Prefer explicit production URL. Do not fall back to Vercel deployment hosts —
+  // those break invite/reset emails (clients land on a preview front-end).
+  const configured = readEnvAlias('PUBLIC_SITE_URL', 'SITE_URL');
+  if (configured) {
+    const cleaned = configured.replace(/\/$/, '');
+    const withProtocol = cleaned.startsWith('http') ? cleaned : `https://${cleaned}`;
+    try {
+      const host = new URL(withProtocol).hostname;
+      if (!/vercel\.app$/i.test(host)) return withProtocol;
+    } catch {
+      /* fall through */
+    }
+  }
+  return (readImportMetaEnv('SITE') || 'https://www.taxfortaxidrivers.co.uk').replace(/\/$/, '');
 }
 
 export function getMailgunConfig() {

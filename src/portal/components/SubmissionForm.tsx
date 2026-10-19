@@ -23,13 +23,27 @@ interface Props {
   /** Force read-only (admin review view) */
   viewOnly?: boolean;
   backHref?: string;
+  /** When admin creates on behalf of a client */
+  forClientId?: string;
+  forTradeType?: TradeType;
+  clientLabel?: string;
 }
 
-export default function SubmissionForm({ mode, submissionId, adminEdit = false, viewOnly = false, backHref }: Props) {
+export default function SubmissionForm({
+  mode,
+  submissionId,
+  adminEdit = false,
+  viewOnly = false,
+  backHref,
+  forClientId,
+  forTradeType,
+  clientLabel,
+}: Props) {
   const store = loadStore();
   const session = store.session;
   const existing = submissionId ? store.submissions.find((s) => s.id === submissionId) : undefined;
-  const trade: TradeType = existing?.tradeType || session?.tradeType || 'taxi';
+  const trade: TradeType = existing?.tradeType || forTradeType || session?.tradeType || 'taxi';
+  const ownerUserId = existing?.userId || forClientId || session?.userId || '';
 
   const initialMonths = existing?.months || monthsFromPeriodLabel('Apr to Jun 2026');
 
@@ -130,14 +144,44 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
     );
   }
 
-  function onFilePick(fileList: FileList | null) {
+  async function onFilePick(fileList: FileList | null) {
     if (!fileList?.length) return;
-    const added = Array.from(fileList).map((f) => ({
-      id: uid('file'),
-      name: f.name,
-      sizeLabel: f.size > 1024 * 1024 ? `${(f.size / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(f.size / 1024))} KB`,
-      uploadedAt: new Date().toISOString(),
-    }));
+    const maxBytes = 2 * 1024 * 1024;
+    const picked = Array.from(fileList);
+    const tooLarge = picked.filter((f) => f.size > maxBytes);
+    if (tooLarge.length) {
+      setMessage(`Keep each file under 2 MB (${tooLarge.map((f) => f.name).join(', ')}).`);
+    }
+    const ok = picked.filter((f) => f.size <= maxBytes);
+    const added = await Promise.all(
+      ok.map(
+        (f) =>
+          new Promise<{
+            id: string;
+            name: string;
+            sizeLabel: string;
+            uploadedAt: string;
+            dataUrl: string;
+            mimeType: string;
+          }>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () =>
+              resolve({
+                id: uid('file'),
+                name: f.name,
+                sizeLabel:
+                  f.size > 1024 * 1024
+                    ? `${(f.size / 1024 / 1024).toFixed(1)} MB`
+                    : `${Math.max(1, Math.round(f.size / 1024))} KB`,
+                uploadedAt: new Date().toISOString(),
+                dataUrl: String(reader.result || ''),
+                mimeType: f.type || 'application/octet-stream',
+              });
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(f);
+          })
+      )
+    );
     setFiles((prev) => [...prev, ...added]);
   }
 
@@ -153,11 +197,16 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
     const now = new Date().toISOString();
     const label = periodLabelFromMonths(months);
 
+    if (!ownerUserId) {
+      setMessage('No client selected for this submission.');
+      return;
+    }
+
     const base: Submission =
       mode === 'create'
         ? {
             id: crypto.randomUUID(),
-            userId: session.userId,
+            userId: ownerUserId,
             periodLabel: label,
             tradeType: trade,
             status,
@@ -185,20 +234,26 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
       return;
     }
     setMessage(status === 'submitted' ? 'Submitted.' : 'Saved.');
-    window.location.href = adminEdit
+    window.location.href = adminEdit || forClientId
       ? `/portal/admin/submission?id=${saved.id}`
       : `/portal/client/submission?id=${saved.id}`;
   }
 
-  const back = backHref || (adminEdit ? '/portal/admin' : '/portal/client');
+  const back = backHref || (adminEdit || forClientId ? '/portal/admin' : '/portal/client');
 
   return (
     <div className="portal-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
         <div>
-          <h1 style={{ fontSize: 28 }}>{mode === 'create' ? 'New submission' : periodLabel}</h1>
+          <h1 style={{ fontSize: 28 }}>
+            {mode === 'create'
+              ? clientLabel
+                ? `New submission · ${clientLabel}`
+                : 'New submission'
+              : periodLabel}
+          </h1>
           <p className="portal-muted" style={{ marginTop: 6 }}>
-            {adminEdit && <strong>Admin edit · </strong>}
+            {(adminEdit || forClientId) && <strong>Admin · </strong>}
             Named months match your reporting period (typically quarterly for MTD). Totals and profit update live.
           </p>
         </div>
@@ -339,14 +394,33 @@ export default function SubmissionForm({ mode, submissionId, adminEdit = false, 
       <div style={{ marginTop: 28 }}>
         <h2 style={{ fontSize: 18, marginBottom: 8 }}>Supporting files</h2>
         <p className="portal-muted" style={{ marginBottom: 10 }}>
-          Supporting files are attached to this submission.
+          Attach receipts or statements (up to 2 MB each). Files are saved with this submission.
         </p>
-        {!readOnly && <input type="file" multiple onChange={(e) => onFilePick(e.target.files)} />}
+        {!readOnly && (
+          <input type="file" multiple onChange={(e) => void onFilePick(e.target.files)} />
+        )}
         <ul style={{ marginTop: 12, paddingLeft: 18 }}>
           {files.length === 0 && <li className="portal-muted">No files attached.</li>}
           {files.map((f) => (
             <li key={f.id} style={{ fontWeight: 600, marginBottom: 4 }}>
-              {f.name} <span className="portal-muted">({f.sizeLabel})</span>
+              {f.dataUrl ? (
+                <a href={f.dataUrl} download={f.name}>
+                  {f.name}
+                </a>
+              ) : (
+                f.name
+              )}{' '}
+              <span className="portal-muted">({f.sizeLabel})</span>
+              {!readOnly && (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  style={{ marginLeft: 8, padding: '2px 8px', fontSize: 12 }}
+                  onClick={() => setFiles((prev) => prev.filter((x) => x.id !== f.id))}
+                >
+                  Remove
+                </button>
+              )}
             </li>
           ))}
         </ul>

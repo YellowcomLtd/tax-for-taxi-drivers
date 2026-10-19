@@ -35,6 +35,9 @@ export interface SubmissionFile {
   name: string;
   sizeLabel: string;
   uploadedAt: string;
+  /** Small files stored inline so admin/client can download later (max ~2 MB each). */
+  dataUrl?: string;
+  mimeType?: string;
 }
 
 export interface SignDocument {

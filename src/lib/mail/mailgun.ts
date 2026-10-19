@@ -1,4 +1,5 @@
-import { getMailgunConfig, siteUrl } from '../env';
+import { getMailgunConfig } from '../env';
+import { portalPublicUrl } from '../portal/authLinks';
 
 interface SendEmailInput {
   to: string | string[];
@@ -71,7 +72,7 @@ export function inviteEmailContent(opts: {
     `Set your password here (link expires soon):`,
     opts.resetUrl,
     '',
-    `Portal: ${siteUrl()}/portal`,
+    `Portal: ${portalPublicUrl()}/portal`,
     '',
     'If you did not expect this email, contact the office.',
   ].join('\n');
@@ -81,7 +82,7 @@ export function inviteEmailContent(opts: {
     <p>An account has been created for you on the Tax for Taxi Drivers client portal (${escapeHtml(opts.role)}).</p>
     <p><strong>Sign in email:</strong> ${escapeHtml(opts.email)}</p>
     <p><a href="${opts.resetUrl}">Set your password</a> (link expires soon).</p>
-    <p>Then sign in at <a href="${siteUrl()}/portal">${siteUrl()}/portal</a>.</p>
+    <p>Then sign in at <a href="${portalPublicUrl()}/portal">${portalPublicUrl()}/portal</a>.</p>
     <p>If you did not expect this email, contact the office.</p>
   `;
 
@@ -122,7 +123,7 @@ export function enquiryEmailContent(opts: {
   gdprConsent: boolean;
 }) {
   const subject = `Website enquiry from ${opts.name}`;
-  const contactUrl = `${siteUrl()}/contact`;
+  const contactUrl = `${portalPublicUrl()}/contact`;
   const phoneDisplay = opts.phone?.trim() ? opts.phone.trim() : 'Not provided';
   const phoneCell = opts.phone?.trim()
     ? `<a href="tel:${escapeHtml(opts.phone.replace(/\s+/g, ''))}" style="color:#141310;text-decoration:none;font-weight:700;">${escapeHtml(phoneDisplay)}</a>`

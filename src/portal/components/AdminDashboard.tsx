@@ -72,10 +72,13 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="portal-actions">
+          <a className="btn btn-y" href="/portal/admin/new">
+            New submission for client
+          </a>
           <a className="btn btn-ghost" href="/portal/admin/users">
             Manage users
           </a>
-          <a className="btn btn-y" href="/portal/admin/email">
+          <a className="btn btn-ghost" href="/portal/admin/email">
             Compose bulk email
           </a>
         </div>
@@ -114,12 +117,13 @@ export default function AdminDashboard() {
                 <th>Email</th>
                 <th>Trade</th>
                 <th>Submissions</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="portal-muted">
+                  <td colSpan={5} className="portal-muted">
                     No clients yet. Add drivers under Users.
                   </td>
                 </tr>
@@ -130,6 +134,11 @@ export default function AdminDashboard() {
                   <td>{u.email}</td>
                   <td>{u.tradeType ? tradeLabel(u.tradeType) : ' - '}</td>
                   <td>{subs.filter((s) => s.userId === u.id).length}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <a className="btn btn-ghost" href={`/portal/admin/new?client=${u.id}`}>
+                      New submission
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>

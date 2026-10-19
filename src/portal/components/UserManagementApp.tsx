@@ -171,6 +171,11 @@ export default function UserManagementApp() {
                   <td>{u.active === false ? 'Inactive' : 'Active'}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div className="portal-actions" style={{ justifyContent: 'flex-end' }}>
+                      {u.role === 'client' && u.active !== false && (
+                        <a className="btn btn-y" href={`/portal/admin/new?client=${u.id}`}>
+                          New submission
+                        </a>
+                      )}
                       <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void sendReset(u.id)}>
                         Reset password
                       </button>

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { sendEmail } from '../../../../lib/mail/mailgun';
-import { siteUrl } from '../../../../lib/env';
+import { portalPublicUrl } from '../../../../lib/portal/authLinks';
 import { error, json, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -26,7 +26,7 @@ export const POST: APIRoute = async (context) => {
     `Hi ${client.full_name},`,
     '',
     `Your ${sub.period_label} submission is ready to sign.`,
-    `Open the portal: ${siteUrl()}/portal/client`,
+    `Open the portal: ${portalPublicUrl()}/portal/client`,
     '',
     'Tax for Taxi Drivers',
   ].join('\n');

@@ -1,0 +1,10 @@
+---
+import PortalLayout from '../../../portal/PortalLayout.astro';
+import AdminNewSubmission from '../../../portal/components/AdminNewSubmission';
+
+export const prerender = false;
+---
+
+<PortalLayout title="New submission">
+  <AdminNewSubmission client:only="react" />
+</PortalLayout>

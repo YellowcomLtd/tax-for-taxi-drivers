@@ -59,6 +59,7 @@ export default function PortalChrome({ children, requireRole, active }: Props) {
     session.role === 'admin'
       ? [
           { href: '/portal/admin', label: 'Dashboard', key: 'admin' },
+          { href: '/portal/admin/new', label: 'New submission', key: 'new' },
           { href: '/portal/admin/users', label: 'Users', key: 'users' },
           { href: '/portal/admin/email', label: 'Bulk email', key: 'email' },
         ]

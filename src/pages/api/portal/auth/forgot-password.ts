@@ -1,7 +1,10 @@
 import type { APIRoute } from 'astro';
 import { createSupabaseAdmin } from '../../../../lib/supabase/server';
 import { sendEmail, resetEmailContent } from '../../../../lib/mail/mailgun';
-import { siteUrl } from '../../../../lib/env';
+import {
+  passwordSetUrlFromGenerateLink,
+  portalResetPasswordPath,
+} from '../../../../lib/portal/authLinks';
 import { error, json, portalIsLive } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -24,14 +27,15 @@ export const POST: APIRoute = async ({ request }) => {
       type: 'recovery',
       email,
       options: {
-        redirectTo: `${siteUrl()}/portal/reset-password`,
+        redirectTo: portalResetPasswordPath(),
       },
     });
 
-    if (!linkError && linkData?.properties?.action_link) {
+    const resetUrl = passwordSetUrlFromGenerateLink(linkData?.properties || {});
+    if (!linkError && resetUrl) {
       const mail = resetEmailContent({
         fullName: profile.full_name,
-        resetUrl: linkData.properties.action_link,
+        resetUrl,
       });
       await sendEmail({ to: email, ...mail });
       await admin.from('email_notices').insert({
