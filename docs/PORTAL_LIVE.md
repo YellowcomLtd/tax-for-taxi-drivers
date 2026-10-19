@@ -64,9 +64,16 @@ Outbound client emails are **manual / opt-in only**:
 - Creating a user does **not** send mail unless `sendInvite: true`.
 - Creating an engagement pack does **not** email unless `notifyClient: true`.
 - Bulk email and “ready to sign” only run from explicit admin actions.
-- Future bulk imports must create records without sending invites.
+- **Import GoCardless / HMRC** (`POST /api/portal/import-clients`) never sends mail.
 
 Exception: login OTP codes (user-initiated sign-in).
+
+### CRM + import
+
+1. Run `supabase/migrations/20261019160000_profile_crm_fields.sql`.
+2. Run `supabase/migrations/20261019120000_client_documents.sql` if not already applied.
+3. In **Portal → Users**, click **Import GoCardless / HMRC list** (CSVs in `reference/imports/`).
+4. Open a client name for address, UTR, notes, submissions and documents.
 
 ## Security
 

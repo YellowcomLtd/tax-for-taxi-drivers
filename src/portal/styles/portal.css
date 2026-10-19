@@ -592,6 +592,39 @@
   min-width: 0;
 }
 
+.crm-dl {
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.crm-dl > div {
+  display: grid;
+  gap: 2px;
+}
+
+.crm-dl dt {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3, #8f897d);
+}
+
+.crm-dl dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.crm-dl a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--yellow-deep, #c99200);
+  text-underline-offset: 3px;
+}
+
 .portal-actions {
   display: flex;
   flex-wrap: wrap;

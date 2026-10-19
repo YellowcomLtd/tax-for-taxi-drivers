@@ -1,0 +1,10 @@
+---
+import PortalLayout from '../../../../portal/PortalLayout.astro';
+import UserDetailApp from '../../../../portal/components/UserDetailApp';
+
+export const prerender = false;
+---
+
+<PortalLayout title="Client details">
+  <UserDetailApp client:only="react" />
+</PortalLayout>

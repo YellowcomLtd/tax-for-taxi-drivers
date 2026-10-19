@@ -16,6 +16,21 @@ export interface User {
   role: Role;
   tradeType?: TradeType;
   active?: boolean;
+  phone?: string;
+  companyName?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  countryCode?: string;
+  utr?: string;
+  agentReference?: string;
+  gocardlessCustomerId?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PeriodMonth {

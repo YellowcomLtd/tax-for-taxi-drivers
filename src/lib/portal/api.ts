@@ -67,22 +67,30 @@ export function roleFromProfile(role: string): AppRole {
   return role === 'admin' ? 'admin' : 'client';
 }
 
-export function mapProfile(row: {
-  id: string;
-  email: string;
-  full_name: string;
-  role: string;
-  trade_type: string | null;
-  active?: boolean;
-}) {
+export function mapProfile(row: Record<string, unknown>) {
   return {
-    id: row.id,
-    email: row.email,
-    fullName: row.full_name,
-    role: roleFromProfile(row.role),
+    id: row.id as string,
+    email: row.email as string,
+    fullName: row.full_name as string,
+    role: roleFromProfile(String(row.role || 'client')),
     tradeType: (row.trade_type as 'taxi' | 'beautician' | null) || undefined,
     active: row.active !== false,
     password: '',
+    phone: (row.phone as string) || undefined,
+    companyName: (row.company_name as string) || undefined,
+    addressLine1: (row.address_line1 as string) || undefined,
+    addressLine2: (row.address_line2 as string) || undefined,
+    addressLine3: (row.address_line3 as string) || undefined,
+    city: (row.city as string) || undefined,
+    region: (row.region as string) || undefined,
+    postalCode: (row.postal_code as string) || undefined,
+    countryCode: (row.country_code as string) || undefined,
+    utr: (row.utr as string) || undefined,
+    agentReference: (row.agent_reference as string) || undefined,
+    gocardlessCustomerId: (row.gocardless_customer_id as string) || undefined,
+    notes: (row.notes as string) || undefined,
+    createdAt: (row.created_at as string) || undefined,
+    updatedAt: (row.updated_at as string) || undefined,
   };
 }
 
