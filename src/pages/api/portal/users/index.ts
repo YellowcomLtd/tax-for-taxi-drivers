@@ -108,8 +108,25 @@ export const PATCH: APIRoute = async (context) => {
   if ('error' in auth && auth.error instanceof Response) return auth.error;
 
   const body = await context.request.json().catch(() => null);
-  const id = String(body?.id || '');
-  if (!id) return error('User id is required');
+  let id = String(body?.id || '');
+  const emailLookup = String(body?.email || '')
+    .trim()
+    .toLowerCase();
+
+  const { admin } = auth;
+
+  if (!id && emailLookup) {
+    const { data: found, error: findError } = await admin
+      .from('profiles')
+      .select('id')
+      .eq('email', emailLookup)
+      .maybeSingle();
+    if (findError) return error(findError.message, 400);
+    if (!found) return error(`No user found for ${emailLookup}`, 404);
+    id = found.id as string;
+  }
+
+  if (!id) return error('User id or email is required');
 
   const updates: Record<string, unknown> = {};
   if (typeof body?.fullName === 'string') updates.full_name = body.fullName.trim();
@@ -120,8 +137,6 @@ export const PATCH: APIRoute = async (context) => {
   if (body?.role === 'admin' || body?.role === 'client') {
     updates.role = body.role;
   }
-
-  const { admin } = auth;
 
   if (Object.keys(updates).length) {
     const { error: upError } = await admin.from('profiles').update(updates).eq('id', id);

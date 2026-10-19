@@ -168,6 +168,34 @@ export default function UserDetailApp() {
     }
   }
 
+  async function setRole(role: 'admin' | 'client') {
+    if (!user) return;
+    const label = role === 'admin' ? 'admin' : 'client';
+    if (!window.confirm(`Make ${user.fullName} an ${label}?`)) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch('/api/portal/users', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, role }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not update role');
+        return;
+      }
+      setUser(data.user);
+      setDraft(data.user);
+      setMessage(role === 'admin' ? 'Account upgraded to admin.' : 'Account set to client.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!ready) {
     return (
       <PortalChrome requireRole="admin" active="users">
@@ -229,6 +257,15 @@ export default function UserDetailApp() {
         ) : (
           <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void setActive(false)}>
             Deactivate
+          </button>
+        )}
+        {user.role === 'client' ? (
+          <button type="button" className="btn btn-y" disabled={busy} onClick={() => void setRole('admin')}>
+            Make admin
+          </button>
+        ) : (
+          <button type="button" className="btn btn-ghost" disabled={busy} onClick={() => void setRole('client')}>
+            Make client
           </button>
         )}
       </div>

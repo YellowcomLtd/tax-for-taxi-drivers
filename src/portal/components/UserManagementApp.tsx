@@ -35,7 +35,7 @@ export default function UserManagementApp() {
   const [showAdd, setShowAdd] = useState(false);
 
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>('client');
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
   const [utrFilter, setUtrFilter] = useState<UtrFilter>('all');
 
