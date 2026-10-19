@@ -206,19 +206,21 @@ export default function UserManagementApp() {
               </div>
             </>
           )}
-          <p className="portal-muted" style={{ marginBottom: 10, fontSize: 13 }}>
-            Emails are off by default. Nothing is sent unless you tick a box below or use a Send button later.
-          </p>
-          <label style={{ display: 'flex', gap: 10, marginBottom: 10, fontWeight: 600 }}>
-            <input type="checkbox" checked={sendInvite} onChange={(e) => setSendInvite(e.target.checked)} />
-            Also email portal invite (set password link)
-          </label>
-          {role === 'client' && (
-            <label style={{ display: 'flex', gap: 10, marginBottom: 14, fontWeight: 600 }}>
-              <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} />
-              Also email Letter of Engagement + Contract to sign
+          <div className="email-opts">
+            <p className="email-opts-note">
+              Emails are off by default. Nothing is sent unless you tick a box below or use a Send button later.
+            </p>
+            <label className="email-opt">
+              <input type="checkbox" checked={sendInvite} onChange={(e) => setSendInvite(e.target.checked)} />
+              <span>Also email portal invite (set password link)</span>
             </label>
-          )}
+            {role === 'client' && (
+              <label className="email-opt">
+                <input type="checkbox" checked={sendPack} onChange={(e) => setSendPack(e.target.checked)} />
+                <span>Also email Letter of Engagement + Contract to sign</span>
+              </label>
+            )}
+          </div>
           <button className="btn btn-y" type="submit" disabled={busy}>
             Create account
           </button>

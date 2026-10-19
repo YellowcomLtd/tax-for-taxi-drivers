@@ -541,6 +541,57 @@
   margin-bottom: 16px;
 }
 
+.portal-form .email-opts {
+  margin: 4px 0 18px;
+  padding: 14px 16px;
+  background: var(--paper-2, #fbfaf5);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.portal-form .email-opts-note {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink-3, #8f897d);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.portal-form label.email-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.portal-form label.email-opt input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  margin: 2px 0 0;
+  padding: 0;
+  border-radius: 4px;
+  flex-shrink: 0;
+  accent-color: var(--yellow-deep, #c99200);
+}
+
+.portal-form label.email-opt span {
+  flex: 1;
+  min-width: 0;
+}
+
 .portal-actions {
   display: flex;
   flex-wrap: wrap;
