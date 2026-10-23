@@ -161,3 +161,17 @@ export function mapClientDocument(row: Record<string, unknown>) {
     updatedAt: row.updated_at as string,
   };
 }
+
+export function mapClientFile(row: Record<string, unknown>) {
+  return {
+    id: row.id as string,
+    userId: row.user_id as string,
+    name: row.name as string,
+    mimeType: (row.mime_type as string) || 'application/octet-stream',
+    sizeLabel: (row.size_label as string) || '',
+    note: (row.note as string) || undefined,
+    dataUrl: row.data_url as string,
+    uploadedBy: (row.uploaded_by as string) || undefined,
+    createdAt: row.created_at as string,
+  };
+}

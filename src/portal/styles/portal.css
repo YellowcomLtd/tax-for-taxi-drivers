@@ -1089,6 +1089,32 @@
   justify-content: flex-end;
 }
 
+.user-files {
+  margin-top: 22px;
+}
+
+.user-files h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.user-files-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.user-files-form .field {
+  flex: 1 1 220px;
+  margin: 0;
+}
+
+.user-files-table {
+  margin-top: 4px;
+}
+
 @media (max-width: 900px) {
   .users-toolbar {
     grid-template-columns: 1fr 1fr;

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { error, json, mapClientDocument, mapProfile, mapSubmission, requireAdmin } from '../../../../lib/portal/api';
+import { error, json, mapClientDocument, mapClientFile, mapProfile, mapSubmission, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
 
@@ -15,15 +15,22 @@ export const GET: APIRoute = async (context) => {
   if (pError) return error(pError.message, 500);
   if (!profile) return error('User not found', 404);
 
-  const [{ data: submissions }, { data: documents }] = await Promise.all([
+  const [{ data: submissions }, { data: documents }, filesResult] = await Promise.all([
     admin.from('submissions').select('*').eq('user_id', id).order('updated_at', { ascending: false }),
     admin.from('client_documents').select('*').eq('user_id', id).order('created_at', { ascending: false }),
+    admin.from('client_files').select('*').eq('user_id', id).order('created_at', { ascending: false }),
   ]);
+
+  const files =
+    filesResult.error && (filesResult.error.message?.includes('client_files') || filesResult.error.code === '42P01')
+      ? []
+      : (filesResult.data || []).map((row) => mapClientFile(row as Record<string, unknown>));
 
   return json({
     user: mapProfile(profile as Record<string, unknown>),
     submissions: (submissions || []).map((row) => mapSubmission(row as Record<string, unknown>)),
     documents: (documents || []).map((row) => mapClientDocument(row as Record<string, unknown>)),
+    files,
   });
 };
 

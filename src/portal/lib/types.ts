@@ -124,6 +124,18 @@ export interface ClientDocument {
   updatedAt: string;
 }
 
+export interface ClientFile {
+  id: string;
+  userId: string;
+  name: string;
+  mimeType: string;
+  sizeLabel: string;
+  note?: string;
+  dataUrl: string;
+  uploadedBy?: string;
+  createdAt: string;
+}
+
 export interface Session {
   userId: string;
   email: string;
@@ -137,6 +149,7 @@ export interface PortalStore {
   submissions: Submission[];
   campaigns: EmailCampaign[];
   documents: ClientDocument[];
+  files: ClientFile[];
   session: Session | null;
   notices: { id: string; at: string; to: string; subject: string; body: string }[];
 }

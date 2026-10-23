@@ -34,7 +34,7 @@ export function contractTaxReturnsHtml(clientName: string, feeAmount?: string): 
     <p>Client: <strong>${escape(clientName)}</strong></p>
     <ul>
       <li>I agree to pay T.F.T.D. Ltd to prepare and submit my Annual Tax Return.</li>
-      <li>The cost of this service is <strong>£${fee}</strong> for each Tax Year.</li>
+      <li>The cost of this service is <strong>£${fee}</strong> per month, paid by Direct Debit.</li>
       <li>The service is paid for by monthly Direct Debit and any balance in cash.</li>
       <li>The contract is for a minimum of one Tax Return.</li>
       <li>This contract renews annually unless terminated with one month’s notice in writing.</li>

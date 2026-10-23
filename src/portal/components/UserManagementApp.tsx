@@ -274,7 +274,7 @@ export default function UserManagementApp() {
           </div>
           <div className="portal-form users-pack-form">
             <div className="field">
-              <label htmlFor="inlinePackFee">Annual fee (£)</label>
+              <label htmlFor="inlinePackFee">Monthly fee (£)</label>
               <input
                 id="inlinePackFee"
                 value={packFee}
@@ -326,7 +326,7 @@ export default function UserManagementApp() {
                   </select>
                 </div>
                 <div className="field">
-                  <label htmlFor="fee">Annual fee (£)</label>
+                  <label htmlFor="fee">Monthly fee (£)</label>
                   <input id="fee" value={feeAmount} onChange={(e) => setFeeAmount(e.target.value)} placeholder="Optional" />
                 </div>
               </>

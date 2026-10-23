@@ -171,6 +171,30 @@ export interface Database {
           updated_at?: string;
         };
       };
+      client_files: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          mime_type: string;
+          size_label: string;
+          note: string | null;
+          data_url: string;
+          uploaded_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          mime_type?: string;
+          size_label?: string;
+          note?: string | null;
+          data_url: string;
+          uploaded_by?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['client_files']['Insert']>;
+      };
     };
   };
 }

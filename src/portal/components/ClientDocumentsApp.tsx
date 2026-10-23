@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react';
 import PortalChrome from './PortalChrome';
 import { formatDate } from '../lib/calc';
 import { hydrateLiveStore } from '../lib/store';
-import type { ClientDocument } from '../lib/types';
+import type { ClientDocument, ClientFile } from '../lib/types';
 
 export default function ClientDocumentsApp() {
   const [docs, setDocs] = useState<ClientDocument[]>([]);
+  const [files, setFiles] = useState<ClientFile[]>([]);
 
   useEffect(() => {
     void (async () => {
       const store = await hydrateLiveStore();
       if (!store?.session) return;
-      setDocs(store.documents.filter((d) => d.userId === store.session!.userId));
+      const uid = store.session.userId;
+      setDocs(store.documents.filter((d) => d.userId === uid));
+      setFiles((store.files || []).filter((f) => f.userId === uid));
     })();
   }, []);
 
@@ -65,6 +68,50 @@ export default function ClientDocumentsApp() {
                     ) : (
                       <span className="portal-muted">Signed</span>
                     )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="portal-card" style={{ padding: 0, overflow: 'hidden', marginTop: 22 }}>
+        <div style={{ padding: '16px 22px' }}>
+          <h2 style={{ fontSize: 18 }}>Files from your accountant</h2>
+        </div>
+        <div className="portal-table-wrap" style={{ border: 'none', borderRadius: 0 }}>
+          <table className="portal-table">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Note</th>
+                <th>Added</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {files.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="portal-muted">
+                    No extra files yet.
+                  </td>
+                </tr>
+              )}
+              {files.map((f) => (
+                <tr key={f.id}>
+                  <td style={{ fontWeight: 700 }}>{f.name}</td>
+                  <td>{f.note || '—'}</td>
+                  <td>{formatDate(f.createdAt)}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="engagement-doc-actions">
+                      <a className="btn btn-ghost btn-compact" href={f.dataUrl} target="_blank" rel="noreferrer">
+                        View
+                      </a>
+                      <a className="btn btn-y btn-compact" href={f.dataUrl} download={f.name}>
+                        Download
+                      </a>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -3,7 +3,7 @@ import PortalChrome from './PortalChrome';
 import StatusBadge from './StatusBadge';
 import { formatDate, tradeLabel } from '../lib/calc';
 import { downloadLockedDocument, viewLockedDocument } from '../lib/pdf';
-import type { ClientDocument, Submission, User } from '../lib/types';
+import type { ClientDocument, ClientFile, Submission, User } from '../lib/types';
 
 function docFileName(doc: ClientDocument) {
   return `${doc.title.replace(/\s+/g, '-').toLowerCase()}-signed.html`;
@@ -20,6 +20,8 @@ export default function UserDetailApp() {
   const [user, setUser] = useState<User | null>(null);
   const [subs, setSubs] = useState<Submission[]>([]);
   const [docs, setDocs] = useState<ClientDocument[]>([]);
+  const [files, setFiles] = useState<ClientFile[]>([]);
+  const [fileNote, setFileNote] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -39,6 +41,7 @@ export default function UserDetailApp() {
     setDraft(data.user);
     setSubs(data.submissions || []);
     setDocs(data.documents || []);
+    setFiles(data.files || []);
     setReady(true);
   }
 
@@ -196,6 +199,82 @@ export default function UserDetailApp() {
       setDraft(data.user);
       setMessage(role === 'admin' ? 'Account upgraded to admin.' : 'Account set to client.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function uploadFiles(list: FileList | null) {
+    if (!user || !list?.length) return;
+    const picked = Array.from(list);
+    const tooLarge = picked.filter((f) => f.size > 2 * 1024 * 1024);
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      if (tooLarge.length) {
+        setError(`Keep each file under 2 MB (${tooLarge.map((f) => f.name).join(', ')}).`);
+      }
+      const ok = picked.filter((f) => f.size <= 2 * 1024 * 1024);
+      for (const file of ok) {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+        const sizeLabel =
+          file.size > 1024 * 1024
+            ? `${(file.size / 1024 / 1024).toFixed(1)} MB`
+            : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+        const res = await fetch('/api/portal/files', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            name: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            sizeLabel,
+            note: fileNote,
+            dataUrl,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || `Could not upload ${file.name}`);
+          return;
+        }
+      }
+      if (ok.length) {
+        setFileNote('');
+        setMessage(ok.length === 1 ? 'File added to this client.' : `${ok.length} files added to this client.`);
+        await load();
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeFile(file: ClientFile) {
+    if (!window.confirm(`Remove ${file.name} from this client?`)) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch('/api/portal/files', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: file.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not remove file');
+        return;
+      }
+      setFiles((prev) => prev.filter((f) => f.id !== file.id));
+      setMessage('File removed.');
     } finally {
       setBusy(false);
     }
@@ -389,7 +468,7 @@ export default function UserDetailApp() {
             Creates Letter of Engagement + Contract. Email only if you choose “Create &amp; email”.
           </p>
           <div className="field">
-            <label htmlFor="packFee">Annual fee (£)</label>
+            <label htmlFor="packFee">Monthly fee (£)</label>
             <input id="packFee" value={packFee} onChange={(e) => setPackFee(e.target.value)} placeholder="Optional" />
           </div>
           <div className="portal-actions">
@@ -610,6 +689,85 @@ export default function UserDetailApp() {
                     ) : (
                       <span className="portal-muted">—</span>
                     )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="portal-card user-files">
+        <h2>Client files</h2>
+        <p className="portal-muted pack-help">Add licence copies, letters or other paperwork to this record. The client can also see these under Documents.</p>
+        <div className="user-files-form">
+          <div className="field">
+            <label htmlFor="fileNote">Note (optional)</label>
+            <input
+              id="fileNote"
+              value={fileNote}
+              onChange={(e) => setFileNote(e.target.value)}
+              placeholder="e.g. Taxi licence, HMRC letter"
+            />
+          </div>
+          <label className="btn btn-y">
+            {busy ? 'Uploading…' : 'Add files'}
+            <input
+              type="file"
+              multiple
+              hidden
+              disabled={busy}
+              onChange={(e) => {
+                void uploadFiles(e.target.files);
+                e.target.value = '';
+              }}
+            />
+          </label>
+        </div>
+        <div className="portal-table-wrap user-files-table">
+          <table className="portal-table">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Note</th>
+                <th>Size</th>
+                <th>Added</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {files.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="portal-muted">
+                    No files on this record yet.
+                  </td>
+                </tr>
+              )}
+              {files.map((f) => (
+                <tr key={f.id}>
+                  <td data-label="File" style={{ fontWeight: 700 }}>
+                    {f.name}
+                  </td>
+                  <td data-label="Note">{f.note || '—'}</td>
+                  <td data-label="Size">{f.sizeLabel || '—'}</td>
+                  <td data-label="Added">{formatDate(f.createdAt)}</td>
+                  <td data-label="" className="portal-row-action">
+                    <div className="engagement-doc-actions">
+                      <a className="btn btn-ghost btn-compact" href={f.dataUrl} target="_blank" rel="noreferrer">
+                        View
+                      </a>
+                      <a className="btn btn-y btn-compact" href={f.dataUrl} download={f.name}>
+                        Download
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-compact"
+                        disabled={busy}
+                        onClick={() => void removeFile(f)}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

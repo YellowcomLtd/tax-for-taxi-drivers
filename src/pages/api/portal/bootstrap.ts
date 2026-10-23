@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { error, json, mapClientDocument, mapProfile, mapSubmission, requireUser } from '../../../lib/portal/api';
+import { error, json, mapClientDocument, mapClientFile, mapProfile, mapSubmission, requireUser } from '../../../lib/portal/api';
 
 export const prerender = false;
 
@@ -9,7 +9,7 @@ export const GET: APIRoute = async (context) => {
 
   const { supabase, profile } = auth;
 
-  const [{ data: profiles }, { data: submissions }, { data: campaigns }, docsResult] = await Promise.all([
+  const [{ data: profiles }, { data: submissions }, { data: campaigns }, docsResult, filesResult] = await Promise.all([
     profile.role === 'admin'
       ? supabase.from('profiles').select('*').order('full_name')
       : supabase.from('profiles').select('*').eq('id', profile.id),
@@ -22,6 +22,9 @@ export const GET: APIRoute = async (context) => {
     profile.role === 'admin'
       ? supabase.from('client_documents').select('*').order('created_at', { ascending: false })
       : supabase.from('client_documents').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
+    profile.role === 'admin'
+      ? supabase.from('client_files').select('*').order('created_at', { ascending: false })
+      : supabase.from('client_files').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
   ]);
 
   let documents: ReturnType<typeof mapClientDocument>[] = [];
@@ -31,6 +34,15 @@ export const GET: APIRoute = async (context) => {
     }
   } else {
     documents = (docsResult.data || []).map((row) => mapClientDocument(row as Record<string, unknown>));
+  }
+
+  let files: ReturnType<typeof mapClientFile>[] = [];
+  if (filesResult.error) {
+    if (!(filesResult.error.message?.includes('client_files') || filesResult.error.code === '42P01')) {
+      console.error('[bootstrap] files', filesResult.error);
+    }
+  } else {
+    files = (filesResult.data || []).map((row) => mapClientFile(row as Record<string, unknown>));
   }
 
   return json({
@@ -53,6 +65,7 @@ export const GET: APIRoute = async (context) => {
       recipients: (c as { recipients: string[] }).recipients,
     })),
     documents,
+    files,
   });
 };
 
