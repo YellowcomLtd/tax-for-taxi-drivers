@@ -1,4 +1,4 @@
-import type { APIRoute } from 'astro';
+import type { APIRoute, AstroCookies } from 'astro';
 import { createHash, randomInt } from 'node:crypto';
 import { createSupabaseAdmin, createSupabaseServer } from '../../../../lib/supabase/server';
 import { sendEmail, otpEmailContent } from '../../../../lib/mail/mailgun';
@@ -6,8 +6,22 @@ import { error, json, portalIsLive } from '../../../../lib/portal/api';
 
 export const prerender = false;
 
+/** Emails that skip the email OTP step after a successful password sign-in. */
+const OTP_BYPASS_EMAILS = new Set(['s.mcclelland@yellowcom.co.uk']);
+
 function hashCode(code: string) {
   return createHash('sha256').update(code).digest('hex');
+}
+
+function setMfaOk(cookies: AstroCookies) {
+  cookies.delete('tft_login_challenge', { path: '/' });
+  cookies.set('tft_mfa_ok', '1', {
+    httpOnly: true,
+    secure: import.meta.env.PROD,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 12,
+  });
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -37,6 +51,23 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       cookies.delete('tft_mfa_ok', { path: '/' });
       cookies.delete('tft_login_challenge', { path: '/' });
       return error('This account is inactive. Contact the office.', 403);
+    }
+
+    if (OTP_BYPASS_EMAILS.has(email)) {
+      setMfaOk(cookies);
+      return json({
+        ok: true,
+        mfaSkipped: true,
+        email: profile.email,
+        fullName: profile.full_name,
+        session: {
+          userId: profile.id,
+          email: profile.email,
+          fullName: profile.full_name,
+          role: profile.role,
+          tradeType: profile.trade_type || undefined,
+        },
+      });
     }
 
     const code = String(randomInt(100000, 999999));

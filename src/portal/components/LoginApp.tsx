@@ -38,7 +38,18 @@ export default function LoginApp() {
         setError((data as { error?: string }).error || `Sign in failed (${res.status})`);
         return;
       }
-      const payload = data as { email?: string; mailSent?: boolean; mailError?: string };
+      const payload = data as {
+        email?: string;
+        mailSent?: boolean;
+        mailError?: string;
+        mfaSkipped?: boolean;
+        session?: { role?: string };
+      };
+      if (payload.mfaSkipped) {
+        await hydrateLiveStore();
+        window.location.href = payload.session?.role === 'admin' ? '/portal/admin' : '/portal/client';
+        return;
+      }
       if (payload.mailSent) {
         setInfo(`Check your email for a 6-digit code sent to ${payload.email}. It expires in 10 minutes.`);
       } else {
