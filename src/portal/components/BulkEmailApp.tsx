@@ -80,15 +80,13 @@ export default function BulkEmailApp() {
       email: previewUser?.email || 'alex@example.com',
       companyName: previewUser?.companyName || 'Murphy Taxis',
       phone: previewUser?.phone || '07700 900123',
-      portalUrl: 'https://www.taxfortaxidrivers.co.uk/portal',
     }),
     [previewUser]
   );
 
   const previewSubject = applyPersonalization(subject.trim() || 'Reminder for {{first_name}}', previewFields);
   const previewBody = applyPersonalization(
-    body.trim() ||
-      'Just a quick note for {{first_name}} at {{company}} — your portal is ready whenever you need it.',
+    body.trim() || 'Just a quick note for {{first_name}} at {{company}}.',
     previewFields
   );
   const previewName = firstNameFrom(previewFields.fullName) || 'there';
@@ -339,7 +337,6 @@ export default function BulkEmailApp() {
                       </span>
                     ))}
                   </div>
-                  <span className="email-preview-cta">Open client portal</span>
                   <p className="email-preview-signoff">
                     Kind regards,
                     <br />

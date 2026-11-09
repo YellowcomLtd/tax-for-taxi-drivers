@@ -3,7 +3,6 @@ export type PersonalizationFields = {
   email?: string | null;
   companyName?: string | null;
   phone?: string | null;
-  portalUrl?: string | null;
 };
 
 export const EMAIL_VARIABLES = [
@@ -12,7 +11,6 @@ export const EMAIL_VARIABLES = [
   { key: 'email', label: 'Email', sample: 'alex@example.com', description: 'Recipient email address' },
   { key: 'company', label: 'Company', sample: 'Murphy Taxis', description: 'Company name if held on file' },
   { key: 'phone', label: 'Phone', sample: '07700 900123', description: 'Phone number if held on file' },
-  { key: 'portal_url', label: 'Portal link', sample: 'https://www.taxfortaxidrivers.co.uk/portal', description: 'Client portal URL' },
 ] as const;
 
 export type EmailVariableKey = (typeof EMAIL_VARIABLES)[number]['key'];
@@ -27,15 +25,12 @@ export function firstNameFrom(fullName?: string | null): string {
 }
 
 export function buildPersonalizationMap(fields: PersonalizationFields): Record<EmailVariableKey, string> {
-  const portal =
-    fields.portalUrl?.replace(/\/$/, '') || 'https://www.taxfortaxidrivers.co.uk/portal';
   return {
     first_name: firstNameFrom(fields.fullName) || 'there',
     full_name: String(fields.fullName || '').trim() || 'there',
     email: String(fields.email || '').trim(),
     company: String(fields.companyName || '').trim() || 'your company',
     phone: String(fields.phone || '').trim() || '',
-    portal_url: portal.endsWith('/portal') ? portal : `${portal}/portal`,
   };
 }
 

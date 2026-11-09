@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro';
 import { bulkEmailContent, sendEmail } from '../../../../lib/mail/mailgun';
 import { applyPersonalization, firstNameFrom } from '../../../../lib/mail/personalize';
-import { portalPublicUrl } from '../../../../lib/portal/authLinks';
 import { error, json, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -71,7 +70,6 @@ export const POST: APIRoute = async (context) => {
   const recipients = (people || []).filter((c) => Boolean(c.email));
   if (recipients.length === 0) return error('No matching recipients to email', 400);
 
-  const portalUrl = `${portalPublicUrl()}/portal`;
   let sentCount = 0;
   for (const person of recipients) {
     const fields = {
@@ -79,7 +77,6 @@ export const POST: APIRoute = async (context) => {
       email: person.email || undefined,
       companyName: person.company_name || undefined,
       phone: person.phone || undefined,
-      portalUrl,
     };
     const mail = bulkEmailContent({
       subject: applyPersonalization(subject, fields),

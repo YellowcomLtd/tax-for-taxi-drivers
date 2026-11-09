@@ -334,7 +334,6 @@ export function bulkEmailContent(opts: {
           </td>
         </tr>
       </table>`,
-      primaryButton(`${site}/portal`, 'Open client portal'),
       p('Kind regards,<br/><strong style="color:#141310;">Tax for Taxi Drivers</strong>', 'margin:0;font-size:14px;line-height:1.55;color:#57544c;'),
     ].join(''),
   });
