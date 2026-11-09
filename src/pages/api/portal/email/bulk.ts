@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { bulkEmailContent, sendEmail } from '../../../../lib/mail/mailgun';
+import { applyPersonalization, firstNameFrom } from '../../../../lib/mail/personalize';
+import { portalPublicUrl } from '../../../../lib/portal/authLinks';
 import { error, json, requireAdmin } from '../../../../lib/portal/api';
 
 export const prerender = false;
@@ -49,7 +51,10 @@ export const POST: APIRoute = async (context) => {
 
   const { supabase, profile, admin } = auth;
 
-  let query = supabase.from('profiles').select('id, email, full_name, role, active').eq('active', true);
+  let query = supabase
+    .from('profiles')
+    .select('id, email, full_name, role, active, company_name, phone')
+    .eq('active', true);
 
   if (recipientIds.length) {
     query = query.in('id', recipientIds);
@@ -66,12 +71,21 @@ export const POST: APIRoute = async (context) => {
   const recipients = (people || []).filter((c) => Boolean(c.email));
   if (recipients.length === 0) return error('No matching recipients to email', 400);
 
+  const portalUrl = `${portalPublicUrl()}/portal`;
   let sentCount = 0;
   for (const person of recipients) {
-    const mail = bulkEmailContent({
-      subject,
-      body: text,
+    const fields = {
       fullName: person.full_name || undefined,
+      email: person.email || undefined,
+      companyName: person.company_name || undefined,
+      phone: person.phone || undefined,
+      portalUrl,
+    };
+    const mail = bulkEmailContent({
+      subject: applyPersonalization(subject, fields),
+      body: applyPersonalization(text, fields),
+      fullName: person.full_name || undefined,
+      firstName: firstNameFrom(person.full_name) || undefined,
     });
     const result = await sendEmail({ to: person.email, ...mail });
     if (result.ok) sentCount += 1;
@@ -81,7 +95,7 @@ export const POST: APIRoute = async (context) => {
       body: mail.text,
       kind: 'bulk',
       created_by: profile.id,
-      meta: { mailgunOk: result.ok, role: person.role },
+      meta: { mailgunOk: result.ok, role: person.role, personalized: true },
     });
   }
 

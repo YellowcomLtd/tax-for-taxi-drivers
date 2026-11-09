@@ -296,9 +296,15 @@ export function readyToSignEmailContent(opts: {
   return { subject, text, html };
 }
 
-export function bulkEmailContent(opts: { subject: string; body: string; fullName?: string }) {
+export function bulkEmailContent(opts: {
+  subject: string;
+  body: string;
+  fullName?: string;
+  firstName?: string;
+}) {
   const site = portalPublicUrl();
-  const greeting = opts.fullName ? `Hi ${opts.fullName},` : 'Hello,';
+  const greetName = opts.firstName || opts.fullName;
+  const greeting = greetName ? `Hi ${greetName},` : 'Hello,';
   const text = [
     greeting,
     '',
@@ -317,8 +323,8 @@ export function bulkEmailContent(opts: { subject: string; body: string; fullName
     preheader: opts.body.replace(/\s+/g, ' ').trim().slice(0, 120),
     bodyHtml: [
       p(
-        opts.fullName
-          ? `Hi <strong style="color:#141310;">${escapeHtml(opts.fullName)}</strong>,`
+        greetName
+          ? `Hi <strong style="color:#141310;">${escapeHtml(greetName)}</strong>,`
           : 'Hello,'
       ),
       `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 22px;border-left:4px solid #ffc400;background-color:#fffdf5;border-radius:0 14px 14px 0;">
