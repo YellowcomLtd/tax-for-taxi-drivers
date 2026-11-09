@@ -123,11 +123,18 @@ export default function BulkEmailApp() {
     }
   }
 
+  const previewName =
+    selectedCount === 1
+      ? cleanName(users.find((u) => selected.has(u.id))?.fullName || 'there')
+      : 'Alex';
+  const previewSubject = subject.trim() || 'Your subject line';
+  const previewBody = body.trim() || 'Your message will appear here in the branded email layout.';
+
   return (
     <PortalChrome requireRole="admin" active="email">
       <h1 style={{ fontSize: 34, marginBottom: 8 }}>Bulk email</h1>
       <p className="portal-muted" style={{ marginBottom: 22 }}>
-        Search and tick recipients (clients or staff), or select all in the current filter. Messages go through Mailgun and are logged here.
+        Search and tick recipients (clients or staff), or select all in the current filter. Emails send in the branded Tax for Taxi Drivers template via Mailgun.
       </p>
 
       <div className="portal-grid-2 bulk-layout">
@@ -204,21 +211,70 @@ export default function BulkEmailApp() {
           </button>
         </form>
 
-        <section className="portal-card">
-          <h2 style={{ fontSize: 20, marginBottom: 12 }}>Sent history</h2>
-          {campaigns.length === 0 && <p className="portal-muted">No campaigns yet.</p>}
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {campaigns.map((c) => (
-              <li key={c.id} style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 14 }}>
-                <strong>{c.subject}</strong>
-                <div className="portal-muted" style={{ fontSize: 13, marginTop: 4 }}>
-                  {formatDate(c.sentAt)} · {c.recipientCount} recipients
+        <div className="bulk-side">
+          <section className="portal-card bulk-preview-card">
+            <div className="bulk-preview-head">
+              <h2>Live preview</h2>
+              <span className="portal-muted">How the branded email will look</span>
+            </div>
+            <div className="email-preview-frame" aria-live="polite">
+              <article className="email-preview">
+                <header className="email-preview-brand">
+                  <img src="/email-logo.png" alt="" width={44} height={44} />
+                  <div>
+                    <strong>Tax for Taxi Drivers</strong>
+                    <span>Tax made easy</span>
+                  </div>
+                </header>
+                <div className="email-preview-accent" />
+                <div className="email-preview-body">
+                  <p className="email-preview-eyebrow">Message from the office</p>
+                  <h3>{previewSubject}</h3>
+                  <p className="email-preview-greeting">
+                    Hi <strong>{previewName}</strong>,
+                  </p>
+                  <div className="email-preview-message">
+                    {previewBody.split('\n').map((line, i) => (
+                      <span key={`${i}-${line.slice(0, 12)}`}>
+                        {line}
+                        {i < previewBody.split('\n').length - 1 ? <br /> : null}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="email-preview-cta">Open client portal</span>
+                  <p className="email-preview-signoff">
+                    Kind regards,
+                    <br />
+                    <strong>Tax for Taxi Drivers</strong>
+                  </p>
                 </div>
-                <p style={{ marginTop: 8, fontWeight: 500, fontSize: 14 }}>{c.body}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
+                <footer className="email-preview-footer">
+                  <strong>Tax for Taxi Drivers</strong> · Tax made easy
+                  <br />
+                  Unit 4 - North City Business Centre, 2 Duncairn Gardens, Belfast BT15 2GG
+                  <br />
+                  02890 132083 · www.taxfortaxidrivers.co.uk
+                </footer>
+              </article>
+            </div>
+          </section>
+
+          <section className="portal-card">
+            <h2 style={{ fontSize: 20, marginBottom: 12 }}>Sent history</h2>
+            {campaigns.length === 0 && <p className="portal-muted">No campaigns yet.</p>}
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {campaigns.map((c) => (
+                <li key={c.id} style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 14 }}>
+                  <strong>{c.subject}</strong>
+                  <div className="portal-muted" style={{ fontSize: 13, marginTop: 4 }}>
+                    {formatDate(c.sentAt)} · {c.recipientCount} recipients
+                  </div>
+                  <p style={{ marginTop: 8, fontWeight: 500, fontSize: 14 }}>{c.body}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
     </PortalChrome>
   );

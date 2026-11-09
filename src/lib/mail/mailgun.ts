@@ -62,58 +62,78 @@ export function brandedEmailHtml(opts: {
   preheader?: string;
   bodyHtml: string;
   footerHtml?: string;
+  eyebrow?: string;
 }) {
   const site = portalPublicUrl();
+  const logoUrl = `${site}/email-logo.png`;
+  const siteHost = site.replace(/^https?:\/\//, '');
+  const eyebrow = opts.eyebrow || 'Tax for Taxi Drivers';
   const footer =
     opts.footerHtml ||
-    `Tax for Taxi Drivers · Belfast<br/>
-     <a href="${site}" style="color:#57544c;font-weight:700;text-decoration:none;">${escapeHtml(site.replace(/^https?:\/\//, ''))}</a>
+    `<strong style="color:#57544c;">Tax for Taxi Drivers</strong> · Tax made easy<br/>
+     Unit 4 - North City Business Centre, 2 Duncairn Gardens, Belfast BT15 2GG<br/>
+     <a href="tel:02890132083" style="color:#57544c;font-weight:700;text-decoration:none;">02890 132083</a>
      &nbsp;·&nbsp;
-     <a href="tel:02890132083" style="color:#57544c;font-weight:700;text-decoration:none;">02890 132083</a>`;
+     <a href="${site}" style="color:#57544c;font-weight:700;text-decoration:none;">${escapeHtml(siteHost)}</a>`;
 
   return `<!DOCTYPE html>
 <html lang="en-GB">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
   <title>${escapeHtml(opts.title)}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f1efe6;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;">
-  ${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(opts.preheader)}</div>` : ''}
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1efe6;padding:32px 16px;">
+<body style="margin:0;padding:0;background-color:#efece3;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;">
+  ${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">${escapeHtml(opts.preheader)}${'&nbsp;&zwnj;'.repeat(30)}</div>` : ''}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efece3;padding:36px 14px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#ffffff;border:1px solid #e4e0d4;border-radius:16px;overflow:hidden;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border:1px solid #e2ddd0;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(20,19,16,0.06);">
           <tr>
-            <td style="background-color:#141310;padding:22px 28px;">
+            <td style="background-color:#141310;padding:22px 28px 18px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="vertical-align:middle;">
-                    <div style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:#ffc400;margin-right:10px;"></div>
-                    <span style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#ffc400;">Tax for Taxi Drivers</span>
+                  <td style="vertical-align:middle;width:52px;">
+                    <a href="${site}" style="text-decoration:none;">
+                      <img src="${logoUrl}" width="44" height="44" alt="Tax for Taxi Drivers" style="display:block;border:0;border-radius:10px;width:44px;height:44px;" />
+                    </a>
                   </td>
-                </tr>
-                <tr>
-                  <td style="padding-top:10px;">
-                    <h1 style="margin:0;font-size:22px;line-height:1.25;font-weight:800;color:#ffffff;letter-spacing:-0.01em;">${escapeHtml(opts.title)}</h1>
+                  <td style="vertical-align:middle;padding-left:12px;">
+                    <div style="font-size:16px;line-height:1.2;font-weight:800;color:#ffffff;letter-spacing:-0.01em;">Tax for Taxi Drivers</div>
+                    <div style="margin-top:3px;font-size:12px;line-height:1.2;font-weight:600;color:#ffc400;">Tax made easy</div>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:28px;font-size:15px;line-height:1.55;color:#141310;">
+            <td style="height:5px;line-height:5px;font-size:0;background-color:#ffc400;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding:28px 28px 8px;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c99200;">${escapeHtml(eyebrow)}</p>
+              <h1 style="margin:0 0 18px;font-size:24px;line-height:1.25;font-weight:800;color:#141310;letter-spacing:-0.02em;">${escapeHtml(opts.title)}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 28px 28px;font-size:15px;line-height:1.55;color:#141310;">
               ${opts.bodyHtml}
             </td>
           </tr>
           <tr>
-            <td style="padding:16px 28px 22px;border-top:1px solid #e4e0d4;background-color:#fbfaf5;">
-              <p style="margin:0;font-size:12px;line-height:1.5;color:#8f897d;">
+            <td style="padding:18px 28px 22px;border-top:1px solid #e4e0d4;background-color:#fbfaf5;">
+              <p style="margin:0;font-size:12px;line-height:1.55;color:#8f897d;">
                 ${footer}
               </p>
             </td>
           </tr>
         </table>
+        <p style="margin:18px 0 0;font-size:11px;line-height:1.5;color:#a39d90;max-width:600px;">
+          You’re receiving this from Tax for Taxi Drivers. If you have questions, call
+          <a href="tel:02890132083" style="color:#8f897d;font-weight:700;text-decoration:none;">02890 132083</a>.
+        </p>
       </td>
     </tr>
   </table>
@@ -277,21 +297,39 @@ export function readyToSignEmailContent(opts: {
 }
 
 export function bulkEmailContent(opts: { subject: string; body: string; fullName?: string }) {
+  const site = portalPublicUrl();
   const greeting = opts.fullName ? `Hi ${opts.fullName},` : 'Hello,';
-  const text = [greeting, '', opts.body, '', 'Tax for Taxi Drivers', `${portalPublicUrl()}/portal`].join('\n');
+  const text = [
+    greeting,
+    '',
+    opts.body,
+    '',
+    'Tax for Taxi Drivers · Tax made easy',
+    'Unit 4 - North City Business Centre, 2 Duncairn Gardens, Belfast BT15 2GG',
+    '02890 132083',
+    site,
+  ].join('\n');
   const bodyHtml = escapeHtml(opts.body).replace(/\n/g, '<br/>');
 
   const html = brandedEmailHtml({
     title: opts.subject,
-    preheader: opts.body.slice(0, 120),
+    eyebrow: 'Message from the office',
+    preheader: opts.body.replace(/\s+/g, ' ').trim().slice(0, 120),
     bodyHtml: [
       p(
         opts.fullName
           ? `Hi <strong style="color:#141310;">${escapeHtml(opts.fullName)}</strong>,`
           : 'Hello,'
       ),
-      `<div style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#141310;font-weight:500;">${bodyHtml}</div>`,
-      primaryButton(`${portalPublicUrl()}/portal`, 'Open client portal'),
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 22px;border-left:4px solid #ffc400;background-color:#fffdf5;border-radius:0 14px 14px 0;">
+        <tr>
+          <td style="padding:18px 20px;font-size:15px;line-height:1.65;color:#141310;font-weight:500;">
+            ${bodyHtml}
+          </td>
+        </tr>
+      </table>`,
+      primaryButton(`${site}/portal`, 'Open client portal'),
+      p('Kind regards,<br/><strong style="color:#141310;">Tax for Taxi Drivers</strong>', 'margin:0;font-size:14px;line-height:1.55;color:#57544c;'),
     ].join(''),
   });
 
