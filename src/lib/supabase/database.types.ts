@@ -136,6 +136,29 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['email_notices']['Insert']>;
       };
+      email_templates: {
+        Row: {
+          id: string;
+          name: string;
+          subject: string;
+          body: string;
+          created_by: string | null;
+          updated_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          subject: string;
+          body: string;
+          created_by?: string | null;
+          updated_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['email_templates']['Insert']>;
+      };
       client_documents: {
         Row: {
           id: string;

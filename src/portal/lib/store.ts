@@ -1,4 +1,4 @@
-import type { EmailCampaign, PortalStore, Session, Submission, User } from './types';
+import type { EmailCampaign, EmailTemplate, PortalStore, Session, Submission, User } from './types';
 
 const LIVE_CACHE_KEY = 'tft-portal-live-cache';
 
@@ -7,6 +7,7 @@ function emptyStore(): PortalStore {
     users: [],
     submissions: [],
     campaigns: [],
+    templates: [],
     documents: [],
     files: [],
     session: null,
@@ -59,6 +60,7 @@ export async function hydrateLiveStore(): Promise<PortalStore | null> {
     users: data.users as User[],
     submissions: data.submissions as Submission[],
     campaigns: data.campaigns as EmailCampaign[],
+    templates: (data.templates as EmailTemplate[]) || [],
     documents: (data.documents as PortalStore['documents']) || [],
     files: (data.files as PortalStore['files']) || [],
     session: data.session as Session,

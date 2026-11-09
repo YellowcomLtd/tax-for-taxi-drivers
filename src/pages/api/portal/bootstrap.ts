@@ -9,23 +9,27 @@ export const GET: APIRoute = async (context) => {
 
   const { supabase, profile } = auth;
 
-  const [{ data: profiles }, { data: submissions }, { data: campaigns }, docsResult, filesResult] = await Promise.all([
-    profile.role === 'admin'
-      ? supabase.from('profiles').select('*').order('full_name')
-      : supabase.from('profiles').select('*').eq('id', profile.id),
-    profile.role === 'admin'
-      ? supabase.from('submissions').select('*').order('updated_at', { ascending: false })
-      : supabase.from('submissions').select('*').eq('user_id', profile.id).order('updated_at', { ascending: false }),
-    profile.role === 'admin'
-      ? supabase.from('email_campaigns').select('*').order('sent_at', { ascending: false }).limit(50)
-      : Promise.resolve({ data: [] as unknown[] }),
-    profile.role === 'admin'
-      ? supabase.from('client_documents').select('*').order('created_at', { ascending: false })
-      : supabase.from('client_documents').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
-    profile.role === 'admin'
-      ? supabase.from('client_files').select('*').order('created_at', { ascending: false })
-      : supabase.from('client_files').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
-  ]);
+  const [{ data: profiles }, { data: submissions }, { data: campaigns }, docsResult, filesResult, templatesResult] =
+    await Promise.all([
+      profile.role === 'admin'
+        ? supabase.from('profiles').select('*').order('full_name')
+        : supabase.from('profiles').select('*').eq('id', profile.id),
+      profile.role === 'admin'
+        ? supabase.from('submissions').select('*').order('updated_at', { ascending: false })
+        : supabase.from('submissions').select('*').eq('user_id', profile.id).order('updated_at', { ascending: false }),
+      profile.role === 'admin'
+        ? supabase.from('email_campaigns').select('*').order('sent_at', { ascending: false }).limit(50)
+        : Promise.resolve({ data: [] as unknown[] }),
+      profile.role === 'admin'
+        ? supabase.from('client_documents').select('*').order('created_at', { ascending: false })
+        : supabase.from('client_documents').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
+      profile.role === 'admin'
+        ? supabase.from('client_files').select('*').order('created_at', { ascending: false })
+        : supabase.from('client_files').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }),
+      profile.role === 'admin'
+        ? supabase.from('email_templates').select('*').order('updated_at', { ascending: false })
+        : Promise.resolve({ data: [] as unknown[], error: null }),
+    ]);
 
   let documents: ReturnType<typeof mapClientDocument>[] = [];
   if (docsResult.error) {
@@ -43,6 +47,41 @@ export const GET: APIRoute = async (context) => {
     }
   } else {
     files = (filesResult.data || []).map((row) => mapClientFile(row as Record<string, unknown>));
+  }
+
+  let templates: {
+    id: string;
+    name: string;
+    subject: string;
+    body: string;
+    createdBy?: string;
+    updatedBy?: string;
+    createdAt: string;
+    updatedAt: string;
+  }[] = [];
+  if (templatesResult.error) {
+    if (
+      !(
+        templatesResult.error.message?.includes('email_templates') ||
+        templatesResult.error.code === '42P01'
+      )
+    ) {
+      console.error('[bootstrap] templates', templatesResult.error);
+    }
+  } else {
+    templates = (templatesResult.data || []).map((row) => {
+      const t = row as Record<string, unknown>;
+      return {
+        id: String(t.id),
+        name: String(t.name || ''),
+        subject: String(t.subject || ''),
+        body: String(t.body || ''),
+        createdBy: t.created_by ? String(t.created_by) : undefined,
+        updatedBy: t.updated_by ? String(t.updated_by) : undefined,
+        createdAt: String(t.created_at || ''),
+        updatedAt: String(t.updated_at || ''),
+      };
+    });
   }
 
   return json({
@@ -64,6 +103,7 @@ export const GET: APIRoute = async (context) => {
       recipientCount: (c as { recipient_count: number }).recipient_count,
       recipients: (c as { recipients: string[] }).recipients,
     })),
+    templates,
     documents,
     files,
   });

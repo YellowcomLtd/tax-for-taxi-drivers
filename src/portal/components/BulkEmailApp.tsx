@@ -9,7 +9,7 @@ import {
 } from '../../lib/mail/personalize';
 import { formatDate } from '../lib/calc';
 import { hydrateLiveStore } from '../lib/store';
-import type { EmailCampaign, User } from '../lib/types';
+import type { EmailCampaign, EmailTemplate, User } from '../lib/types';
 
 type RoleFilter = 'all' | 'client' | 'admin';
 type FieldTarget = 'subject' | 'body';
@@ -28,6 +28,7 @@ export default function BulkEmailApp() {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
@@ -36,12 +37,17 @@ export default function BulkEmailApp() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [activeField, setActiveField] = useState<FieldTarget>('body');
+  const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
+  const [templateName, setTemplateName] = useState('');
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateBusy, setTemplateBusy] = useState(false);
   const subjectRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   async function sync() {
     const store = await hydrateLiveStore();
     setCampaigns(store?.campaigns || []);
+    setTemplates(store?.templates || []);
     setUsers((store?.users || []).filter((u) => u.active !== false && Boolean(u.email)));
   }
 
@@ -66,6 +72,7 @@ export default function BulkEmailApp() {
   const filteredIds = useMemo(() => filtered.map((u) => u.id), [filtered]);
   const selectedCount = selected.size;
   const allFilteredSelected = filteredIds.length > 0 && filteredIds.every((id) => selected.has(id));
+  const activeTemplate = templates.find((t) => t.id === activeTemplateId) || null;
 
   const previewUser = useMemo(() => {
     if (selectedCount === 1) {
@@ -139,6 +146,95 @@ export default function BulkEmailApp() {
     setValue(`${value}${value ? ' ' : ''}${token}`);
   }
 
+  function loadTemplate(template: EmailTemplate) {
+    setActiveTemplateId(template.id);
+    setTemplateName(template.name);
+    setSubject(template.subject);
+    setBody(template.body);
+    setShowSaveTemplate(false);
+    setError('');
+    setSentMsg(`Loaded template “${template.name}”.`);
+  }
+
+  function startNewTemplate() {
+    setActiveTemplateId(null);
+    setTemplateName('');
+    setSubject('');
+    setBody('');
+    setShowSaveTemplate(true);
+    setSentMsg('');
+    setError('');
+  }
+
+  async function saveTemplate(asNew = false) {
+    setError('');
+    setSentMsg('');
+    const name = templateName.trim() || subject.trim().slice(0, 60);
+    if (!name) {
+      setError('Give the template a name before saving.');
+      setShowSaveTemplate(true);
+      return;
+    }
+    if (!subject.trim() || !body.trim()) {
+      setError('Subject and message are required to save a template.');
+      return;
+    }
+
+    setTemplateBusy(true);
+    try {
+      const updating = Boolean(activeTemplateId) && !asNew;
+      const res = await fetch('/api/portal/email/templates', {
+        method: updating ? 'PUT' : 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: updating ? activeTemplateId : undefined,
+          name,
+          subject: subject.trim(),
+          body: body.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not save template');
+        return;
+      }
+      const saved = data.template as EmailTemplate;
+      setActiveTemplateId(saved.id);
+      setTemplateName(saved.name);
+      setShowSaveTemplate(false);
+      setSentMsg(`Template “${saved.name}” saved.`);
+      await sync();
+    } finally {
+      setTemplateBusy(false);
+    }
+  }
+
+  async function deleteTemplate(template: EmailTemplate) {
+    if (!window.confirm(`Delete template “${template.name}”?`)) return;
+    setTemplateBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/portal/email/templates?id=${encodeURIComponent(template.id)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || 'Could not delete template');
+        return;
+      }
+      if (activeTemplateId === template.id) {
+        setActiveTemplateId(null);
+        setTemplateName('');
+      }
+      setSentMsg(`Deleted template “${template.name}”.`);
+      await sync();
+    } finally {
+      setTemplateBusy(false);
+    }
+  }
+
   async function send(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -175,6 +271,8 @@ export default function BulkEmailApp() {
       setSubject('');
       setBody('');
       setSelected(new Set());
+      setActiveTemplateId(null);
+      setTemplateName('');
       await sync();
     } finally {
       setBusy(false);
@@ -185,13 +283,46 @@ export default function BulkEmailApp() {
     <PortalChrome requireRole="admin" active="email">
       <h1 style={{ fontSize: 34, marginBottom: 8 }}>Bulk email</h1>
       <p className="portal-muted" style={{ marginBottom: 22 }}>
-        Personalise with variables, then search and tick recipients. Each person gets their own filled-in copy in the branded template.
+        Save reusable templates, personalise with variables, then pick recipients. Each person gets their own filled-in copy.
       </p>
 
       <div className="portal-grid-2 bulk-layout">
         <form className="portal-card portal-form" onSubmit={(e) => void send(e)}>
           {error && <div className="portal-alert portal-alert-error">{error}</div>}
           {sentMsg && <div className="portal-alert portal-alert-success">{sentMsg}</div>}
+
+          <div className="bulk-templates">
+            <div className="bulk-templates-head">
+              <h2>Templates</h2>
+              <button type="button" className="btn btn-ghost btn-compact" onClick={startNewTemplate}>
+                New blank
+              </button>
+            </div>
+            {templates.length === 0 ? (
+              <p className="portal-muted" style={{ margin: '0 0 10px' }}>
+                No saved templates yet. Write a message below, then save it.
+              </p>
+            ) : (
+              <div className="bulk-template-list">
+                {templates.map((t) => (
+                  <div key={t.id} className={`bulk-template-item${activeTemplateId === t.id ? ' active' : ''}`}>
+                    <button type="button" className="bulk-template-load" onClick={() => loadTemplate(t)}>
+                      <strong>{t.name}</strong>
+                      <span>{t.subject}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-compact"
+                      onClick={() => void deleteTemplate(t)}
+                      disabled={templateBusy}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="bulk-vars">
             <div className="bulk-vars-head">
@@ -240,6 +371,60 @@ export default function BulkEmailApp() {
               placeholder="Hi — this is a note for {{first_name}} at {{company}}…"
               required
             />
+          </div>
+
+          {(showSaveTemplate || activeTemplate) && (
+            <div className="field">
+              <label htmlFor="templateName">Template name</label>
+              <input
+                id="templateName"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                placeholder="e.g. Self Assessment reminder"
+              />
+            </div>
+          )}
+
+          <div className="bulk-template-actions">
+            {!showSaveTemplate && !activeTemplate && (
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  setShowSaveTemplate(true);
+                  if (!templateName) setTemplateName(subject.trim().slice(0, 60));
+                }}
+                disabled={!subject.trim() || !body.trim()}
+              >
+                Save as template
+              </button>
+            )}
+            {(showSaveTemplate || activeTemplate) && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => void saveTemplate(false)}
+                  disabled={templateBusy || !subject.trim() || !body.trim()}
+                >
+                  {templateBusy
+                    ? 'Saving…'
+                    : activeTemplate
+                      ? 'Update template'
+                      : 'Save template'}
+                </button>
+                {activeTemplate && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => void saveTemplate(true)}
+                    disabled={templateBusy || !subject.trim() || !body.trim()}
+                  >
+                    Save as new
+                  </button>
+                )}
+              </>
+            )}
           </div>
 
           <div className="bulk-recipients">
@@ -308,9 +493,7 @@ export default function BulkEmailApp() {
             <div className="bulk-preview-head">
               <h2>Live preview</h2>
               <span className="portal-muted">
-                {previewUser
-                  ? `Showing as ${cleanName(previewUser.fullName)}`
-                  : 'Sample recipient'}
+                {previewUser ? `Showing as ${cleanName(previewUser.fullName)}` : 'Sample recipient'}
               </span>
             </div>
             <div className="email-preview-frame" aria-live="polite">

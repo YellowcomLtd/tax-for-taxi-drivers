@@ -75,6 +75,13 @@ Exception: login OTP codes (user-initiated sign-in).
 3. In **Portal → Users**, click **Import GoCardless / HMRC list** (CSVs in `reference/imports/`).
 4. Open a client name for address, UTR, notes, submissions and documents.
 
+### Email templates
+
+Run `supabase/migrations/20261109120000_email_templates.sql` in the SQL editor.
+
+Admins can save reusable subject/body templates (with personalisation variables) from
+**Portal → Bulk email**.
+
 ## Security
 
 - Password + emailed OTP at sign-in

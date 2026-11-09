@@ -104,6 +104,17 @@ export interface EmailCampaign {
   recipients: string[];
 }
 
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ClientDocType = 'letter_of_engagement' | 'contract_tax_returns';
 export type ClientDocStatus = 'sent' | 'signed';
 
@@ -148,6 +159,7 @@ export interface PortalStore {
   users: User[];
   submissions: Submission[];
   campaigns: EmailCampaign[];
+  templates: EmailTemplate[];
   documents: ClientDocument[];
   files: ClientFile[];
   session: Session | null;
