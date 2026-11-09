@@ -38,32 +38,50 @@ export const POST: APIRoute = async (context) => {
   const text = String(body?.body || '').trim();
   if (!subject || !text) return error('Subject and message are required');
 
-  const { supabase, profile, admin } = auth;
-  const { data: clients } = await supabase
-    .from('profiles')
-    .select('email, full_name, active')
-    .eq('role', 'client')
-    .eq('active', true);
+  const recipientIds = Array.isArray(body?.recipientIds)
+    ? body.recipientIds.map((id: unknown) => String(id || '').trim()).filter(Boolean)
+    : [];
+  const recipientEmails = Array.isArray(body?.recipientEmails)
+    ? body.recipientEmails
+        .map((email: unknown) => String(email || '').trim().toLowerCase())
+        .filter(Boolean)
+    : [];
 
-  const recipients = (clients || []).filter((c) => Boolean(c.email));
-  if (recipients.length === 0) return error('No active clients to email', 400);
+  const { supabase, profile, admin } = auth;
+
+  let query = supabase.from('profiles').select('id, email, full_name, role, active').eq('active', true);
+
+  if (recipientIds.length) {
+    query = query.in('id', recipientIds);
+  } else if (recipientEmails.length) {
+    query = query.in('email', recipientEmails);
+  } else {
+    // Legacy / fallback: all active clients
+    query = query.eq('role', 'client');
+  }
+
+  const { data: people, error: listError } = await query;
+  if (listError) return error(listError.message, 500);
+
+  const recipients = (people || []).filter((c) => Boolean(c.email));
+  if (recipients.length === 0) return error('No matching recipients to email', 400);
 
   let sentCount = 0;
-  for (const client of recipients) {
+  for (const person of recipients) {
     const mail = bulkEmailContent({
       subject,
       body: text,
-      fullName: client.full_name || undefined,
+      fullName: person.full_name || undefined,
     });
-    const result = await sendEmail({ to: client.email, ...mail });
+    const result = await sendEmail({ to: person.email, ...mail });
     if (result.ok) sentCount += 1;
     await admin.from('email_notices').insert({
-      to_email: client.email,
+      to_email: person.email,
       subject: mail.subject,
       body: mail.text,
       kind: 'bulk',
       created_by: profile.id,
-      meta: { mailgunOk: result.ok },
+      meta: { mailgunOk: result.ok, role: person.role },
     });
   }
 
